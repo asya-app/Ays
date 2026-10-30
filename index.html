@@ -76,11 +76,46 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 .tab[aria-current="true"]{color:var(--gold);background:rgba(232,204,140,.08)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--gold);color:#231A08;font-weight:600;padding:9px 16px;border-radius:999px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:6}
 .toast.on{opacity:1}
-@media (prefers-reduced-motion:reduce){.face,.deck.shuffle .back{animation:none}.back{transition:none}}
+/* профиль сверху */
+.hud{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px;color:var(--text);font:600 12px var(--body);cursor:pointer}
+.hud svg{width:30px;height:30px;border-radius:50%;display:block}
+.hud .c{color:var(--gold)}
+.me{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:center}
+.ava svg{width:100%;border-radius:22px;display:block;border:1px solid var(--line)}
+.bar{height:8px;border-radius:99px;background:var(--ink);overflow:hidden;margin:8px 0 4px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--rose),var(--gold));border-radius:99px;transition:width .6s}
+.badges{display:flex;flex-wrap:wrap;gap:8px}.badges span{font-size:12px;border:1px solid var(--line);border-radius:12px;padding:6px 10px;color:var(--muted)}.badges span.on{color:var(--gold);border-color:var(--gold)}
+.shopcat{font-size:12px;color:var(--muted);margin:10px 0 6px;letter-spacing:.08em;text-transform:uppercase}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.si{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:8px 6px;color:var(--text);font:500 12px var(--body);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.si svg{width:56px;height:56px;border-radius:12px}.si .pr{color:var(--gold);font-weight:600}.si.on{border-color:var(--gold)}.si.no{opacity:.5}
+/* плитки и тесты */
+.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hcard{border:0;border-radius:18px;padding:16px 14px;color:#fff;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px;font:600 15px var(--body);background:radial-gradient(120% 90% at 0% 0%,var(--g1),transparent 70%),linear-gradient(160deg,var(--g2),#120D2A)}
+.hcard .he{font-size:26px}.hcard small{font:400 12px var(--body);color:rgba(255,255,255,.75)}
+.tlist{display:flex;flex-direction:column;gap:8px}
+.titem{display:flex;align-items:center;gap:12px;background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--text);cursor:pointer;text-align:left;font:500 14px var(--body)}
+.titem .te{font-size:24px}.titem small{display:block;color:var(--muted);font-size:12px}.titem .tb{margin-left:auto;color:var(--gold);font-size:12px;white-space:nowrap}
+.tq{font:400 22px/1.25 var(--display);text-wrap:balance}
+.topts{display:flex;flex-direction:column;gap:8px}
+.topt{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:13px 14px;color:var(--text);font:500 15px var(--body);text-align:left;cursor:pointer;animation:dealIn .4s both}
+.topt:active{border-color:var(--gold)}
+.tseg{display:flex;gap:4px}.tseg i{flex:1;height:4px;border-radius:9px;background:var(--ink)}.tseg i.on{background:var(--gold)}.tseg i.now{background:var(--rose)}
+@keyframes dealIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* дыхание */
+.sos{display:flex;flex-direction:column;align-items:center;gap:14px;padding-block:10px}
+.sring{width:190px;height:190px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center}
+.sball{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--rose) 45%,#8B6CFF);box-shadow:0 0 40px rgba(233,166,184,.6);animation:breathe 14s ease-in-out infinite}
+@keyframes breathe{0%{transform:scale(1)}28.5%{transform:scale(2.4)}57%{transform:scale(2.4)}100%{transform:scale(1)}}
+.stext{position:relative;height:24px;width:200px;text-align:center;font:400 20px var(--display);color:var(--gold)}
+.stext span{position:absolute;inset:0;opacity:0;animation:st 14s infinite}.stext .s2{animation-delay:4s}.stext .s3{animation-delay:8s}
+@keyframes st{0%,26%{opacity:1}29%,100%{opacity:0}}
+.xp{position:fixed;left:50%;top:40%;transform:translateX(-50%);font:400 34px var(--display);color:var(--gold);text-shadow:0 0 20px rgba(232,204,140,.8);pointer-events:none;animation:xpUp 1.4s ease-out forwards;z-index:9}
+@keyframes xpUp{from{opacity:0;transform:translate(-50%,20px) scale(.8)}20%{opacity:1}to{opacity:0;transform:translate(-50%,-60px) scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.face,.deck.shuffle .back,.sball,.stext span,.xp,.topt{animation:none}.stext .s1{opacity:1}.back{transition:none}}
 </style>
 
 <div class="app">
-  <div class="top"><span class="brand">Ася</span><span class="demo">демо</span></div>
+  <div class="top"><span class="brand">Ася</span><button class="hud" id="hud" data-go="vWay" aria-label="Мой профиль"></button></div>
 
   <!-- Сегодня -->
   <section class="view" id="vToday">
@@ -100,7 +135,11 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
     <label for="selfDay">День рождения<select id="selfDay"></select></label>
     <button class="btn gold" id="selfBtn">Открыть мою карту</button>
     <div id="selfOut"></div>
+    <div class="block"><span class="eyebrow">Тесты · 2 минуты · +50 опыта</span><div class="tlist" id="testList"></div></div>
   </section>
+
+  <!-- Тест -->
+  <section class="view" id="vTest" hidden></section>
 
   <!-- Ты и он -->
   <section class="view" id="vPair" hidden>
@@ -113,7 +152,13 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 
   <!-- Поддержка -->
   <section class="view" id="vHelp" hidden>
-    <div><div class="date">Поддержка</div><h1>Если тебе плохо прямо сейчас</h1></div>
+    <div><div class="date">Поддержка</div><h1>Я рядом</h1></div>
+    <p class="lead">Выговориться, разобраться, что ответить ему, или просто выдохнуть. Я подруга, которая всегда на твоей стороне.</p>
+    <div class="hgrid">
+      <button class="hcard" id="talkBtn" style="--g1:#8B6CFF;--g2:#2C1F7A"><span class="he">💬</span><b>Поговорить с Асей</b><small>выговориться, разобраться</small></button>
+      <button class="hcard" data-go="vBreath" style="--g1:#3EE6E0;--g2:#0F4A63"><span class="he">🌬️</span><b>Дыши со мной</b><small>успокоиться за минуту</small></button>
+    </div>
+    <h2 style="margin-top:6px">Если тебе плохо прямо сейчас</h2>
     <p class="lead">Ты не одна. Если есть угроза жизни или мысли навредить себе, позвони живому человеку прямо сейчас. Это бесплатно.</p>
     <div class="phones">
       <div class="phone"><div><b>112</b><br><span>экстренные службы</span></div></div>
@@ -124,13 +169,22 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
     <p class="note">Ася — поддержка и самопомощь, не медицинская и не психологическая помощь.</p>
   </section>
 
-  <!-- Путь -->
+  <!-- Дыхание -->
+  <section class="view" id="vBreath" hidden>
+    <div><div class="date">Дыши со мной</div><h1>Одна минута для себя</h1></div>
+    <div class="sos"><div class="sring"><div class="sball"></div></div><div class="stext"><span class="s1">Вдох — 4</span><span class="s2">Задержка — 4</span><span class="s3">Выдох — 6</span></div></div>
+    <p class="lead" style="text-align:center">Дыши за кругом. 6 кругов — около минуты. Плечи вниз, челюсть расслабь.</p>
+    <div class="row"><button class="btn gold" id="breathOk">Стало легче</button><button class="btn" data-go="vHelp">Назад</button></div>
+  </section>
+
+  <!-- Я -->
   <section class="view" id="vWay" hidden>
-    <div><div class="date">Путь · пример</div><h1>Твоя неделя</h1></div>
-    <div class="stat"><div><b>5</b><small>карт открыто</small></div><div><b>4</b><small>шага сделано</small></div><div><b>2</b><small>тебе ответили</small></div></div>
-    <div class="block"><span class="eyebrow">Посмотри, что ты сделала</span><p style="margin:0">За неделю ты четыре раза сделала шаг, который откладывала, и дважды написала первой. Это смелость, а не мелочь.</p></div>
-    <div class="block"><span class="eyebrow">Твой статус</span><div class="ladder"><span class="on">Искра</span><span>Огонёк</span><span>Звезда</span><span>Комета</span><span>Созвездие</span><span>Луна</span><span>Солнце</span><span>Галактика</span><span>Вселенная</span></div></div>
-    <p class="note">Это пример: в тесте итог недели приходит в воскресенье.</p>
+    <div class="me"><div class="ava" id="meAva"></div><div><div class="date" id="meLvl"></div><h1 id="meName" style="font-size:26px"></h1><div class="bar"><i id="meBar"></i></div><div class="note" id="meNext"></div></div></div>
+    <div class="stat" id="meStat"></div>
+    <div class="block"><span class="eyebrow">Посмотри, что ты сделала</span><p style="margin:0" id="meDid"></p></div>
+    <div class="block"><span class="eyebrow">Твой путь</span><div class="ladder" id="meLadder"></div></div>
+    <div class="block"><span class="eyebrow">Награды</span><div class="badges" id="meBadges"></div></div>
+    <div class="block"><span class="eyebrow">Магазин · <span id="shopCoins"></span></span><p class="note" style="margin:0">Монетки — за карты, шаги и тесты. Наряжай свой образ.</p><div id="shop"></div></div>
     <div class="block"><span class="eyebrow">Подари подруге</span><div class="ready" id="giftText">Нашла классную штуку: каждое утро вытягиваешь карту дня, и она даёт один маленький шаг. Узнай свою личную карту по дню рождения, мне понравилось) t.me/Asya_app_bot</div><div class="row"><button class="btn" data-copy="giftText">Скопировать текст</button></div></div>
   </section>
   <p class="note" style="text-align:center">18+ · Ася — развлекательно-мотивационный формат, не гадание и не предсказание, не медицинская и не психологическая помощь.</p>
@@ -141,7 +195,7 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
   <button class="tab" data-view="vSelf"><i>☾</i>Узнай себя</button>
   <button class="tab" data-view="vPair"><i>♡</i>Ты и он</button>
   <button class="tab" data-view="vHelp"><i>❋</i>Поддержка</button>
-  <button class="tab" data-view="vWay"><i>☆</i>Путь</button>
+  <button class="tab" data-view="vWay"><i>☆</i>Я</button>
 </nav>
 <div class="toast" id="toast" role="status"></div>
 
@@ -180,6 +234,7 @@ function showDay(n){
   $('cardArea').innerHTML = `<div class="reveal">${face(a)}<div class="meaning"><span class="eyebrow">Карта дня</span><h2>${esc(a.name)}</h2><p style="margin:0">${esc(d.meaning)}</p></div></div>
     <div class="block"><span class="eyebrow">Шаг на сегодня${d.sphere ? ' · ' + esc(d.sphere) : ''}</span><p style="margin:0">${esc(d.step)}</p></div>
     <div class="block"><span class="eyebrow">Сделай за меня</span><div class="ready" id="dayText">${esc(d.text)}</div><div class="row">${copyBtn('dayText')}</div><span class="note">Отправляешь сама, когда будешь готова.</span></div>
+    <div class="row">${G.st.stepDay === today ? '<button class="btn" disabled>Шаг сделан ✦</button>' : '<button class="btn gold" id="stepBtn">Сделала шаг · +20</button>'}</div>
     <div class="block"><span class="eyebrow">Вечером спрошу</span><p style="margin:0">${esc(d.evening)}</p></div>
     <p class="note">Новая карта будет завтра.</p>`;
 }
@@ -188,10 +243,10 @@ document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click'
   const n = three[+b.dataset.pick]; buzz('medium');
   store.set('asya-day', {date: today, n});
   store.set('asya-recent', [n, ...(store.get('asya-recent') || [])].slice(0, 7));
+  if (!G.st.days.includes(today)){ G.st.days.push(today); G.add(10, 'карта дня'); }
   showDay(n);
 }));
 $('shuffleBtn').addEventListener('click', shuffle);
-{ const saved = store.get('asya-day'); if (saved && saved.date === today && byN(saved.n)) showDay(saved.n); else shuffle(); }
 
 /* Узнай себя */
 const days = Array.from({length:31}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
@@ -214,14 +269,168 @@ $('pairBtn').addEventListener('click', () => {
     <div class="block"><span class="eyebrow">Полный разбор</span><div class="lock"><p>${esc(p.full)}</p><div class="over"><b>Как вам договариваться, шаг и готовое сообщение ему</b><span class="note">Откроется в полной версии</span></div></div></div>`;
 });
 
-/* копирование и меню */
+/* ===== Игра: опыт, статус, монетки, образ, магазин, награды. Хранится у неё (телефон + облако Telegram) ===== */
+const LADDER = ['Искра','Огонёк','Звезда','Комета','Созвездие','Луна','Солнце','Галактика','Вселенная'];
+const LVL = [0, 60, 150, 280, 450, 680, 960, 1300, 1700];
+const SHOP = [
+  {id:'o_sweater', cat:'Образ', slot:'outfit', n:'Уютный свитер', p:30, c:'#C9A3B8'},
+  {id:'o_midi', cat:'Образ', slot:'outfit', n:'Платье миди', p:60, c:'#7B5CC9'},
+  {id:'o_silk', cat:'Образ', slot:'outfit', n:'Шёлковое платье', p:120, c:'#E8CC8C'},
+  {id:'o_evening', cat:'Образ', slot:'outfit', n:'Вечернее платье', p:250, c:'#7A1E3A'},
+  {id:'h_bob', cat:'Причёска', slot:'hair', n:'Каре', p:40},
+  {id:'h_waves', cat:'Причёска', slot:'hair', n:'Волны', p:60},
+  {id:'h_bun', cat:'Причёска', slot:'hair', n:'Пучок', p:50},
+  {id:'a_earrings', cat:'Детали', slot:'earrings', n:'Серьги', p:50},
+  {id:'a_glasses', cat:'Детали', slot:'glasses', n:'Очки', p:50},
+  {id:'a_flower', cat:'Детали', slot:'flower', n:'Цветок', p:40},
+  {id:'b_room', cat:'Место', slot:'place', n:'Уютная комната', p:100, lv:1},
+  {id:'b_cafe', cat:'Место', slot:'place', n:'Кофейня', p:200, lv:2},
+  {id:'b_sea', cat:'Место', slot:'place', n:'Море на закате', p:400, lv:3}
+];
+const BADGES = [
+  {id:'first', n:'✦ Первая карта', ok: s => s.days.length >= 1},
+  {id:'step3', n:'👣 3 шага', ok: s => s.steps >= 3},
+  {id:'test1', n:'🧠 Узнала себя', ok: s => Object.keys(s.tests).length >= 1},
+  {id:'streak3', n:'🔥 3 дня подряд', ok: s => streak(s) >= 3},
+  {id:'calm', n:'🌬️ Выдохнула', ok: s => s.breath >= 1},
+  {id:'style', n:'👗 Свой образ', ok: s => s.owned.length >= 1},
+  {id:'week', n:'🌟 Неделя со мной', ok: s => streak(s) >= 7}
+];
+function streak(s){ let n = 0; const d = new Date(); for (;;){ const k = d.toISOString().slice(0, 10); if (!s.days.includes(k)) break; n++; d.setDate(d.getDate() - 1); } return n; }
+const G = {
+  st: Object.assign({xp: 0, spent: 0, owned: [], wear: {}, tests: {}, steps: 0, stepDay: '', days: [], breath: 0}, store.get('asya-game') || {}),
+  save(){ store.set('asya-game', G.st); try { TG?.CloudStorage?.setItem('game', JSON.stringify(G.st)); } catch {} hud(); },
+  lvl(){ let l = 0; while (l < LVL.length - 1 && G.st.xp >= LVL[l + 1]) l++; return l; },
+  coins(){ return Math.floor(G.st.xp / 2) - G.st.spent; },
+  add(x, why){ const before = G.lvl(); G.st.xp += x; G.save(); const el = document.createElement('div'); el.className = 'xp'; el.textContent = '+' + x; document.body.appendChild(el); setTimeout(() => el.remove(), 1500); buzz('light');
+    if (G.lvl() > before){ setTimeout(() => { toast('Новый статус: ' + LADDER[G.lvl()] + ' ✦'); buzz('heavy'); }, 900); } else toast('+' + x + ' · ' + why); }
+};
+/* облако Telegram: если там прогресс больше — берём его (новый телефон) */
+try { TG?.CloudStorage?.getItem('game', (err, v) => { if (!err && v){ const c = JSON.parse(v); if ((c.xp || 0) > G.st.xp){ G.st = Object.assign(G.st, c); store.set('asya-game', G.st); hud(); renderMe(); } } }); } catch {}
+
+function avatar(w = G.st.wear, lvl = G.lvl() + 1){
+  const it = id => SHOP.find(x => x.id === id) || {};
+  const place = it(w.place).lv || 0, dress = it(w.outfit).c || '#4B3F7A', hair = w.hair || '';
+  const bg = ['<defs><radialGradient id="g0" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#3A2C78"/><stop offset="1" stop-color="#140E30"/></radialGradient></defs><rect width="100" height="100" fill="url(#g0)"/><circle cx="20" cy="18" r="1" fill="#fff"/><circle cx="80" cy="25" r="1.2" fill="#fff"/><circle cx="70" cy="12" r=".8" fill="#fff"/>',
+    '<rect width="100" height="100" fill="#F3E3D8"/><rect y="74" width="100" height="26" fill="#D9BFAF"/><rect x="64" y="14" width="24" height="30" rx="2" fill="#BFD9EC"/><path d="M76 14v30M64 29h24" stroke="#fff" stroke-width="1.5"/><circle cx="18" cy="30" r="6" fill="#9CC48A"/><rect x="16" y="34" width="4" height="10" fill="#8C6B4F"/>',
+    '<rect width="100" height="100" fill="#6B4A3A"/><rect y="70" width="100" height="30" fill="#4A3328"/><circle cx="20" cy="16" r="5" fill="#FFD98A"/><circle cx="50" cy="12" r="5" fill="#FFD98A"/><circle cx="80" cy="16" r="5" fill="#FFD98A"/><rect x="66" y="56" width="20" height="14" rx="2" fill="#E8C9A6"/>',
+    '<defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9E7A"/><stop offset="1" stop-color="#FFD7B0"/></linearGradient></defs><rect width="100" height="100" fill="url(#g3)"/><circle cx="76" cy="40" r="11" fill="#FFF0C9"/><rect y="52" width="100" height="18" fill="#4FA3C4"/><rect y="70" width="100" height="30" fill="#EBD3AE"/>'][place];
+  const hairBack = hair === 'h_bob' ? '<path d="M33 42c0-14 8-21 17-21s17 7 17 21v16H33z" fill="#3B2418"/>' : hair === 'h_bun' ? '<circle cx="50" cy="20" r="8" fill="#3B2418"/><path d="M35 44c0-13 7-20 15-20s15 7 15 20z" fill="#3B2418"/>' : hair === 'h_waves' ? '<path d="M31 44c0-15 9-22 19-22s19 7 19 22c2 10-2 22 2 34H29c4-12 0-24 2-34z" fill="#5A3420"/>' : '<path d="M32 44c0-15 8-22 18-22s18 7 18 22v30H32z" fill="#3B2418"/>';
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${bg}${hairBack}
+    <path d="M26 100c2-18 12-28 24-28s22 10 24 28z" fill="${dress}"/>
+    ${w.outfit === 'o_evening' || w.outfit === 'o_silk' ? '<path d="M42 74q8 8 16 0" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.4"/>' : ''}
+    <rect x="45" y="60" width="10" height="13" rx="4" fill="#EDC3A5"/>
+    <ellipse cx="50" cy="45" rx="13.5" ry="16" fill="#F4D0B5"/>
+    ${hair === 'h_bun' || hair === 'h_bob' ? '<path d="M36.5 42c1-10 7-15 13.5-15s12.5 5 13.5 15c-4-6-8-8-13.5-8s-9.5 2-13.5 8z" fill="#3B2418"/>' : '<path d="M36.5 44c0-11 6-17 13.5-17s13.5 6 13.5 17c-3-7-7-10-13.5-10s-10.5 3-13.5 10z" fill="' + (hair === 'h_waves' ? '#5A3420' : '#3B2418') + '"/>'}
+    <path d="M43.5 44.5q1.8-1.6 3.6 0M52.9 44.5q1.8-1.6 3.6 0" fill="none" stroke="#2A1A12" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M46.5 53q3.5 2.6 7 0" fill="none" stroke="#C0606A" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="42" cy="50" r="2.4" fill="#F2A7A7" opacity=".55"/><circle cx="58" cy="50" r="2.4" fill="#F2A7A7" opacity=".55"/>
+    ${w.earrings ? '<circle cx="36.8" cy="50" r="1.6" fill="#E8CC8C"/><circle cx="63.2" cy="50" r="1.6" fill="#E8CC8C"/>' : ''}
+    ${w.glasses ? '<g fill="none" stroke="#2A1A12" stroke-width="1.3"><circle cx="45.3" cy="45" r="4.2"/><circle cx="54.7" cy="45" r="4.2"/><path d="M49.5 45h1"/></g>' : ''}
+    ${w.flower ? '<g transform="translate(62 30)"><circle r="2.6" fill="#F28DB2" cx="0" cy="-3"/><circle r="2.6" fill="#F28DB2" cx="3" cy="0"/><circle r="2.6" fill="#F28DB2" cx="0" cy="3"/><circle r="2.6" fill="#F28DB2" cx="-3" cy="0"/><circle r="1.6" fill="#FFE08A"/></g>' : ''}
+    <rect x="2" y="2" width="24" height="13" rx="6.5" fill="rgba(0,0,0,.5)"/><text x="14" y="11.5" text-anchor="middle" font-size="8" font-weight="700" fill="#E8CC8C" font-family="system-ui">✦${lvl}</text>
+  </svg>`;
+}
+function hud(){ $('hud').innerHTML = avatar() + `<span>${esc(LADDER[G.lvl()])}</span><span class="c">● ${G.coins()}</span>${streak(G.st) ? `<span>🔥${streak(G.st)}</span>` : ''}`; }
+function renderMe(){
+  const l = G.lvl(), s = G.st, nx = LVL[l + 1];
+  $('meAva').innerHTML = avatar(); $('meLvl').textContent = 'Статус ' + (l + 1) + ' из ' + LADDER.length; $('meName').textContent = LADDER[l];
+  $('meBar').style.width = (nx ? Math.round((s.xp - LVL[l]) / (nx - LVL[l]) * 100) : 100) + '%';
+  $('meNext').textContent = nx ? `${s.xp} опыта · до «${LADDER[l + 1]}» ещё ${nx - s.xp}` : `${s.xp} опыта · высший статус`;
+  $('meStat').innerHTML = `<div><b>${s.days.length}</b><small>карт открыто</small></div><div><b>${s.steps}</b><small>шагов сделано</small></div><div><b>${streak(s)}</b><small>дней подряд</small></div>`;
+  $('meDid').textContent = s.steps ? `Ты сделала ${s.steps} ${s.steps === 1 ? 'шаг' : s.steps < 5 ? 'шага' : 'шагов'}, которые обычно откладывают. Это смелость, а не мелочь.` : 'Здесь будут твои победы: каждый сделанный шаг из карты дня.';
+  $('meLadder').innerHTML = LADDER.map((x, i) => `<span class="${i === l ? 'on' : ''}">${x}</span>`).join('');
+  $('meBadges').innerHTML = BADGES.map(b => `<span class="${b.ok(s) ? 'on' : ''}">${b.n}</span>`).join('');
+  $('shopCoins').textContent = G.coins() + ' монет';
+  const cats = [...new Set(SHOP.map(i => i.cat))];
+  $('shop').innerHTML = cats.map(c => `<div class="shopcat">${c}</div><div class="sgrid">${SHOP.filter(i => i.cat === c).map(i => { const own = s.owned.includes(i.id), on = s.wear[i.slot] === i.id;
+    return `<button class="si${on ? ' on' : ''}${!own && i.p > G.coins() ? ' no' : ''}" data-buy="${i.id}">${avatar({...s.wear, [i.slot]: i.id}, '')}${esc(i.n)}<span class="pr">${own ? (on ? 'надето' : 'надеть') : '● ' + i.p}</span></button>`; }).join('')}</div>`).join('');
+}
+function buy(id){
+  const i = SHOP.find(x => x.id === id), s = G.st;
+  if (!s.owned.includes(id)){ if (i.p > G.coins()){ toast(`Нужно ещё ${i.p - G.coins()} монет — открой карту или сделай шаг`); return; } s.owned.push(id); s.spent += i.p; toast('Твоё: ' + i.n + ' ✦'); buzz('medium'); }
+  s.wear[i.slot] = s.wear[i.slot] === id ? null : id; G.save(); renderMe();
+}
+
+/* ===== Тесты самопознания (ориентир, не диагноз) ===== */
+const TESTS = [
+  {id:'love', e:'💞', n:'Как ты чувствуешь любовь', d:'5 языков любви', cats:{W:'Слова', T:'Время вместе', G:'Подарки', S:'Помощь делом', P:'Прикосновения'},
+    about:{W:'Тебе важно слышать: «горжусь тобой», «ты у меня лучшая». Резкие слова ранят сильнее, чем других.', T:'Любовь для тебя — внимание без телефона: вечер вдвоём, разговор, общие планы.', G:'Для тебя важны знаки внимания: продуманный подарок значит «обо мне думали».', S:'Любовь — когда за тебя сделали: решили задачу, приготовили, помогли в трудный момент.', P:'Тебе нужна близость: объятия, рука в руке — без этого холодно.'},
+    q:[['Чтобы почувствовать, что тебя любят, важнее всего…', ['услышать «я тобой горжусь»','W'],['вечер вдвоём без телефонов','T'],['продуманный подарок','G'],['когда за тебя решили задачу','S'],['крепко обнять','P']],
+       ['После тяжёлого дня лучше всего помогает…', ['тёплые слова поддержки','W'],['просто побыть рядом и поговорить','T'],['маленький сюрприз','G'],['ужин уже готов','S'],['объятия','P']],
+       ['Больнее всего ранит…', ['резкие слова и критика','W'],['когда человек вечно занят','T'],['забытый праздник','G'],['обещал помочь и не сделал','S'],['холодность','P']],
+       ['Свою любовь ты чаще показываешь так…', ['говоришь тёплые слова','W'],['зовёшь провести время вместе','T'],['даришь подарки','G'],['делаешь что-то для человека','S'],['обнимаешь','P']],
+       ['Идеальный день рождения — это…', ['тёплые тосты и слова','W'],['день вдвоём с близким','T'],['подарок, о котором мечтала','G'],['всё организовали за тебя','S'],['много объятий','P']],
+       ['В отношениях не хватает, когда…', ['тебя не хвалят','W'],['мало времени вместе','T'],['нет знаков внимания','G'],['всё на тебе','S'],['мало нежности','P']],
+       ['Сильнее запоминается…', ['сообщение с признанием','W'],['совместная поездка','T'],['вещь со смыслом','G'],['помощь в трудный момент','S'],['рука в руке','P']],
+       ['Ссора быстрее закончится, если…', ['скажут «прости, ты мне важна»','W'],['сядете и спокойно поговорите','T'],['принесут что-то в знак мира','G'],['исправят то, из-за чего поссорились','S'],['обнимут','P']]]},
+  {id:'conflict', e:'⚔️', n:'Какая ты в конфликте', d:'5 стилей: где ты сильна', cats:{C:'Соперничество', K:'Сотрудничество', M:'Компромисс', A:'Избегание', P:'Уступчивость'},
+    about:{C:'Ты идёшь на победу: быстро и твёрдо. Сила — в кризисе. Риск — выигрываешь спор, теряешь людей.', K:'Ты ищешь решение, где выигрывают оба. Сила — прочные договорённости. Риск — долго, когда нужно быстро.', M:'Ты быстро встречаешься посередине. Сила — скорость. Риск — обе стороны получают половину.', A:'Ты уходишь от напряжения. Сила — не тратишь силы на мелочи. Риск — важное копится и взрывается.', P:'Ты уступаешь ради отношений. Сила — тебя любят. Риск — твои желания остаются на потом.'},
+    q:[['С решением коллеги ты не согласна. Ты…', ['доказываешь свою правоту','C'],['ищете вместе вариант для обоих','K'],['предлагаешь встретиться посередине','M'],['откладываешь разговор','A'],['соглашаешься, чтобы не ссориться','P']],
+       ['Спорите с близким, куда поехать…', ['настаиваешь на своём','C'],['выясняешь, что важно каждому','K'],['раз по-твоему, раз по-моему','M'],['«решай сам»','A'],['едешь, куда хочет он','P']],
+       ['Подруга обиделась на твою шутку…', ['считаешь, что она перегибает','C'],['спрашиваешь, что задело, и обсуждаете','K'],['извиняешься, но объясняешь свою сторону','M'],['ждёшь, пока пройдёт','A'],['сразу извиняешься, даже если не виновата','P']],
+       ['Когда напряжение растёт, хочется…', ['победить','C'],['разобраться до конца','K'],['быстрее договориться','M'],['уйти','A'],['сгладить','P']],
+       ['В споре для тебя главное…', ['результат','C'],['чтобы обе стороны были довольны','K'],['быстро закончить','M'],['сохранить спокойствие','A'],['сохранить отношения','P']],
+       ['После конфликта ты обычно…', ['чувствуешь, что права','C'],['рада, что договорились','K'],['довольна, что разошлись честно','M'],['рада, что обошлось без ругани','A'],['переживаешь, не обидела ли','P']]]},
+  {id:'money', e:'💰', n:'Твои отношения с деньгами', d:'какие убеждения ими управляют', cats:{AV:'Избегание денег', WO:'Деньги решат всё', ST:'Деньги = статус', VI:'Осторожность'},
+    about:{AV:'Где-то внутри деньги кажутся чем-то неудобным. Из-за этого трудно просить свою цену и считать деньги.', WO:'Кажется, что больше денег — и все проблемы уйдут. Риск — не замечать, что важно ещё.', ST:'Деньги для тебя — способ показать, кто ты. Риск — тратить на «выглядеть», а не на себя.', VI:'Ты бережёшь деньги. Сила — подушка и контроль. Риск — боишься вкладывать в себя.'},
+    agree:[['Богатые люди часто жадные','AV'],['Не люблю думать о деньгах и считать их','AV'],['Будь у меня больше денег, почти все проблемы решились бы','WO'],['Деньги — главный путь к счастью','WO'],['О человеке многое говорит его одежда и сумка','ST'],['Мне важно выглядеть успешнее, чем я есть','ST'],['Стараюсь откладывать часть денег','VI'],['Не рассказываю другим, сколько зарабатываю','VI']]}
+];
+let T = null;
+function renderTests(){
+  $('testList').innerHTML = TESTS.map(t => { const r = G.st.tests[t.id];
+    return `<button class="titem" data-test="${t.id}"><span class="te">${t.e}</span><span>${esc(t.n)}<small>${r ? esc(r.top.join(' · ')) : esc(t.d)}</small></span><span class="tb">${r ? 'Результат ›' : '+50'}</span></button>`; }).join('');
+}
+function startTest(id){ const t = TESTS.find(x => x.id === id); T = {t, i: 0, sc: {}, result: !!G.st.tests[id]}; showView('vTest'); renderTest(); }
+function renderTest(){
+  const {t} = T, qs = t.q || t.agree, n = qs.length;
+  if (T.result){
+    const r = G.st.tests[t.id], c0 = r.order[0], c1 = r.order[1];
+    $('vTest').innerHTML = `<div><div class="date">${t.e} ${esc(t.n)}</div><h1>${esc(t.cats[c0])}</h1><p class="note" style="margin:4px 0 0">и ещё: ${esc(t.cats[c1])}</p></div>
+      <div class="block"><p style="margin:0">${esc(t.about[c0])}</p><p style="margin:0;opacity:.8">${esc(t.about[c1])}</p></div>
+      <p class="note">Это ориентир для самопознания, а не диагноз.</p>
+      <div class="row"><button class="btn gold" data-go="vSelf">Все тесты</button><button class="btn" data-retest="${t.id}">Пройти заново</button></div>`; return; }
+  const seg = `<div class="tseg">${qs.map((_, j) => `<i class="${j < T.i ? 'on' : j === T.i ? 'now' : ''}"></i>`).join('')}</div>`;
+  const qq = qs[T.i];
+  $('vTest').innerHTML = seg + `<div class="date">${t.e} ${esc(t.n)} · ${T.i + 1} из ${n}</div>` + (t.q
+    ? `<div class="tq">${esc(qq[0])}</div><div class="topts">${qq.slice(1).map(([x, c], k) => `<button class="topt" style="animation-delay:${k * 40}ms" data-ans="${c}">${esc(x)}</button>`).join('')}</div>`
+    : `<div class="tq">«${esc(qq[0])}»</div><div class="topts"><button class="topt" data-ans="2">Да, это про меня</button><button class="topt" style="animation-delay:40ms" data-ans="1">Отчасти</button><button class="topt" style="animation-delay:80ms" data-ans="0">Нет, не про меня</button></div>`)
+    + `<button class="btn" data-go="vSelf">Выйти</button>`;
+}
+function answer(v){
+  const {t} = T, qs = t.q || t.agree; buzz();
+  if (t.q) T.sc[v] = (T.sc[v] || 0) + 1; else { const c = qs[T.i][1]; T.sc[c] = (T.sc[c] || 0) + (+v); }
+  if (++T.i < qs.length) return renderTest();
+  const order = Object.keys(t.cats).sort((a, b) => (T.sc[b] || 0) - (T.sc[a] || 0));
+  const first = !G.st.tests[t.id];
+  G.st.tests[t.id] = {date: today, order, top: order.slice(0, 2).map(c => t.cats[c])}; G.save();
+  if (first) G.add(50, 'узнала себя');
+  T.result = true; renderTest(); renderTests();
+}
+
+/* ===== навигация ===== */
+function showView(id){
+  document.querySelectorAll('.view').forEach(v => v.hidden = v.id !== id);
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-current', b.dataset.view === id));
+  if (id === 'vWay') renderMe(); if (id === 'vSelf') renderTests();
+  window.scrollTo(0, 0);
+}
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-copy]');
   if (c){ const t = $(c.dataset.copy).textContent; navigator.clipboard?.writeText(t).then(() => toast('Скопировано'), () => { const r = document.createRange(); r.selectNodeContents($(c.dataset.copy)); getSelection().removeAllRanges(); getSelection().addRange(r); toast('Текст выделен, скопируй'); }); return; }
-  const t = e.target.closest('.tab'); if (!t) return; buzz();
-  document.querySelectorAll('.view').forEach(v => v.hidden = v.id !== t.dataset.view);
-  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-current', b === t));
-  window.scrollTo(0, 0);
+  const g = e.target.closest('[data-go],.tab'); if (g){ buzz(); return showView(g.dataset.go || g.dataset.view); }
+  const s = e.target.closest('#stepBtn'); if (s){ G.st.steps++; G.st.stepDay = today; G.add(20, 'шаг сделан'); const sv = store.get('asya-day'); if (sv) showDay(sv.n); return; }
+  const b = e.target.closest('[data-buy]'); if (b) return buy(b.dataset.buy);
+  const tt = e.target.closest('[data-test]'); if (tt) return startTest(tt.dataset.test);
+  const rt = e.target.closest('[data-retest]'); if (rt){ T = {t: TESTS.find(x => x.id === rt.dataset.retest), i: 0, sc: {}, result: false}; return renderTest(); }
+  const a = e.target.closest('[data-ans]'); if (a) return answer(a.dataset.ans);
+  if (e.target.closest('#breathOk')){ G.st.breath++; G.add(5, 'выдохнула'); return showView('vHelp'); }
+  if (e.target.closest('#talkBtn')){
+    const link = 'https://t.me/Asya_app_bot?start=talk';
+    if (TG?.openTelegramLink){ TG.openTelegramLink(link); setTimeout(() => TG.close(), 300); } else window.open(link, '_blank');
+  }
 });
+hud(); renderTests();
+{ const saved = store.get('asya-day'); if (saved && saved.date === today && byN(saved.n)) showDay(saved.n); else shuffle(); }
 </script>
 </body></html>
