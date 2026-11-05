@@ -115,6 +115,43 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 .xp{position:fixed;left:50%;top:40%;transform:translateX(-50%);font:400 34px var(--display);color:var(--gold);text-shadow:0 0 20px rgba(232,204,140,.8);pointer-events:none;animation:xpUp 1.4s ease-out forwards;z-index:9}
 @keyframes xpUp{from{opacity:0;transform:translate(-50%,20px) scale(.8)}20%{opacity:1}to{opacity:0;transform:translate(-50%,-60px) scale(1.1)}}
 @media (prefers-reduced-motion:reduce){.face,.deck.shuffle .back,.sball,.stext span,.xp,.topt{animation:none}.stext .s1{opacity:1}.back{transition:none}}
+/* ===== v2: хаб выбора, порталы, дневник, Ася ===== */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.55;
+  background-image:radial-gradient(1px 1px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 72% 12%,#fff,transparent),radial-gradient(1.5px 1.5px at 38% 62%,#FFF2C9,transparent),radial-gradient(1px 1px at 86% 48%,#fff,transparent),radial-gradient(1px 1px at 22% 82%,#fff,transparent),radial-gradient(1.2px 1.2px at 58% 34%,#E9A6B8,transparent),radial-gradient(1px 1px at 92% 86%,#fff,transparent),radial-gradient(1px 1px at 6% 52%,#FFF2C9,transparent);
+  animation:twinkle 6s ease-in-out infinite alternate}
+@keyframes twinkle{to{opacity:.25}}
+.tab i svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.back-link{align-self:flex-start;background:none;border:0;color:var(--muted);font:500 14px var(--body);padding:4px 0;cursor:pointer}
+.phrase{font:400 26px/1.25 var(--display);color:var(--text);text-wrap:balance;margin:0}
+.ritual{display:flex;align-items:center;gap:14px;padding:14px;border-radius:20px;background:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.01));border:1px solid var(--line);backdrop-filter:blur(6px)}
+.ring{width:64px;height:64px;flex:none}.ring circle{fill:none;stroke-width:6}.ring .bg{stroke:var(--ink)}.ring .fg{stroke:url(#rg);stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset .8s}
+.rlist{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}.rlist button{background:none;border:0;color:var(--text);text-align:left;font:500 14px var(--body);padding:2px 0;cursor:pointer;display:flex;gap:8px;align-items:center}
+.rlist button.done{color:var(--muted);text-decoration:line-through}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;padding:14px 12px;min-height:96px;display:flex;flex-direction:column;justify-content:space-between;gap:6px;text-align:left;color:var(--text);cursor:pointer;font:600 15px var(--body);
+  background:radial-gradient(120% 90% at 100% 0%,var(--g1,#5B47B8),transparent 65%),linear-gradient(160deg,var(--g2,#221B40),#120D2A);box-shadow:0 12px 30px -18px rgba(0,0,0,.9);transition:transform .2s}
+.tile:active{transform:scale(.97)}.tile .ti{font-size:26px;line-height:1}.tile small{font:400 12px var(--body);color:rgba(255,255,255,.72)}.tile .ok{position:absolute;top:10px;right:10px;font-size:12px;color:var(--gold)}
+.portals{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.portal{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:22px;aspect-ratio:1/1.08;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;text-align:left;color:var(--text);cursor:pointer;font:400 20px/1.1 var(--display);
+  background:radial-gradient(90% 70% at 50% 25%,var(--g1),transparent 70%),linear-gradient(170deg,var(--g2),#0D0920)}
+.portal svg.cv{position:absolute;inset:0;width:100%;height:100%;opacity:.55}.portal .pi{position:absolute;top:16px;left:50%;transform:translateX(-50%);font-size:40px;filter:drop-shadow(0 0 16px rgba(255,230,170,.55))}
+.portal small{font:400 12px var(--body);color:rgba(255,255,255,.7)}
+.selfcard{border:1px solid var(--gold);border-radius:20px;padding:14px;background:linear-gradient(150deg,rgba(232,204,140,.1),rgba(232,204,140,.02));display:flex;flex-direction:column;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid var(--line);border-radius:999px;padding:6px 11px;font:500 12px var(--body);color:var(--muted);background:var(--ink);cursor:pointer}
+.chip.on{color:#231A08;background:var(--gold);border-color:var(--gold)}.chip.got{color:var(--gold);border-color:var(--gold)}
+.opt{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:18px;padding:14px;background:var(--ink);color:var(--text);cursor:pointer;text-align:left;font:600 15px var(--body)}
+.opt .oi{font-size:26px;width:38px;text-align:center}.opt small{display:block;font:400 12px var(--body);color:var(--muted)}.opt .go{margin-left:auto;color:var(--gold)}
+details.more{border-top:1px solid var(--line);padding-top:10px}details.more summary{cursor:pointer;color:var(--gold);font-size:13px;list-style:none}details.more summary::-webkit-details-marker{display:none}
+.spread{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.spread .pos{font-size:11px;color:var(--rose);text-transform:uppercase;letter-spacing:.1em;text-align:center;margin-bottom:4px}
+.deckgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.deckgrid button{border:0;padding:0;background:none;cursor:pointer}.deckgrid .face{animation:none;padding:6px 3px}.deckgrid .face .sym{font-size:22px}.deckgrid .face .nm{font-size:10px}
+textarea{font:400 16px/1.5 var(--body);background:var(--ink);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px;min-height:110px;resize:vertical;width:100%;box-sizing:border-box}
+.moods{display:flex;gap:6px}.moods button{flex:1;border:1px solid var(--line);border-radius:14px;background:var(--ink);color:var(--text);padding:8px 2px;font:500 11px var(--body);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}.moods button b{font-size:22px}.moods button.on{border-color:var(--gold);background:rgba(232,204,140,.12)}
+.cal{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}.cal i{aspect-ratio:1;border-radius:50%;background:var(--ink);display:grid;place-items:center;font-size:10px;font-style:normal}
+.entry{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--ink)}.entry .note{display:block;margin-bottom:4px}
+.guide{display:flex;gap:12px;align-items:center;border-radius:20px;padding:14px;border:1px solid var(--line);cursor:pointer;color:var(--text);text-align:left;font:600 16px var(--body);background:radial-gradient(120% 90% at 0% 0%,var(--g1),transparent 70%),linear-gradient(160deg,var(--g2),#120D2A)}
+.guide .gi{font-size:30px}.guide small{display:block;font:400 13px var(--body);color:rgba(255,255,255,.75)}
+.wheel{width:220px;height:220px;margin:0 auto;display:block}
+.slider{display:flex;flex-direction:column;gap:4px}.slider input{width:100%;accent-color:#E8CC8C;padding:0;border:0;background:none}
 /* ===== FX: тасовка, раскрытие, праздники, переходы ===== */
 .deck{position:relative;perspective:900px}
 .ghost{position:absolute;left:50%;top:50%;width:92px;aspect-ratio:2/3;margin:-69px 0 0 -46px;border-radius:12px;border:1px solid var(--gold);pointer-events:none;
@@ -126,7 +163,8 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 @keyframes viewIn{from{opacity:0;transform:translateY(14px) scale(.985);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
 .tab[aria-current="true"] i{animation:tabPop .45s cubic-bezier(.3,1.6,.5,1)}
 @keyframes tabPop{40%{transform:scale(1.35) translateY(-3px)}}
-.sound{background:none;border:1px solid var(--line);border-radius:999px;color:var(--muted);font:500 12px var(--body);padding:5px 9px;cursor:pointer;margin-left:auto;margin-right:8px}
+.sound{background:none;border:1px solid var(--line);border-radius:999px;color:var(--muted);font:500 12px var(--body);padding:5px 9px;cursor:pointer;margin-left:auto;margin-right:8px;white-space:nowrap}
+.top{align-items:center}
 .celebrate{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:radial-gradient(70% 50% at 50% 40%,#3B2683 0%,rgba(10,7,24,.98) 72%),rgba(10,7,24,.98);animation:cIn .35s ease-out both}
 .celebrate canvas{position:absolute;inset:0;width:100%;height:100%}
 .cbox{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:24px;max-width:340px}
@@ -162,10 +200,43 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 </style>
 
 <div class="app">
-  <div class="top"><span class="brand">Ася</span><button class="sound" id="soundBtn" aria-label="Звук"></button><button class="hud" id="hud" data-go="vWay" aria-label="Мой профиль"></button></div>
+  <div class="top"><span class="brand">Ася</span><button class="sound" data-go="vHelp" aria-label="Мне плохо — помощь">❋ SOS</button><button class="sound" id="soundBtn" aria-label="Звук" style="margin-left:0"></button><button class="hud" id="hud" data-go="vWay" aria-label="Мой профиль"></button></div>
+
+  <!-- Главная: хаб выбора -->
+  <section class="view" id="vHome">
+    <div><div class="date" id="homeDate"></div><h1 id="homeHello">Привет</h1></div>
+    <div id="homeRitual"></div>
+    <div><span class="eyebrow">Что хочешь сегодня?</span><div class="tiles" id="homeTiles" style="margin-top:10px"></div></div>
+    <div id="homeSelf"></div>
+  </section>
+
+  <!-- Познай себя: библиотека -->
+  <section class="view" id="vKnow" hidden>
+    <div><div class="date">Познай себя</div><h1>Кто ты — по-разному</h1></div>
+    <div id="knowSelf"></div>
+    <div class="portals" id="knowPortals"></div>
+  </section>
+  <section class="view" id="vTarot" hidden></section>
+  <section class="view" id="vAstro" hidden></section>
+  <section class="view" id="vNumero" hidden></section>
+  <section class="view" id="vTests" hidden>
+    <button class="back-link" data-go="vKnow">‹ Познай себя</button>
+    <div><div class="date">Тесты</div><h1>Узнай себя за 2 минуты</h1></div>
+    <div class="tlist" id="testList"></div>
+  </section>
+  <section class="view" id="vSpread" hidden></section>
+  <section class="view" id="vDeck" hidden></section>
+  <section class="view" id="vBalance" hidden></section>
+
+  <!-- Дневник -->
+  <section class="view" id="vDiary" hidden></section>
+
+  <!-- Ася: разговор -->
+  <section class="view" id="vChat" hidden></section>
 
   <!-- Сегодня -->
-  <section class="view" id="vToday">
+  <section class="view" id="vToday" hidden>
+    <button class="back-link" data-go="vHome">‹ Сегодня</button>
     <div><div class="date" id="todayDate"></div><h1 id="todayTitle">Твоя карта на сегодня</h1></div>
     <button class="sos-link" data-go="vHelp">❋ Мне плохо — помощь рядом</button>
     <div id="pickArea">
@@ -183,8 +254,8 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
     <div class="dob"><label for="selfDay">День<select id="selfDay"></select></label><label for="selfMonth">Месяц<select id="selfMonth"></select></label><label for="selfYear">Год<select id="selfYear"></select></label></div>
     <button class="btn gold" id="selfBtn">Открыть мою карту</button>
     <div id="selfOut"></div>
+    <button class="back-link" data-go="vKnow" style="order:-1">‹ Познай себя</button>
     <div class="block"><span class="eyebrow">Кем ты растёшь</span><p style="margin:0" id="selfArch">Выбери, какую женщину ты выращиваешь в себе: 12 образов, у каждой — сила, навыки и тень.</p><div class="row"><button class="btn" data-go="vArch">Выбрать образ</button></div></div>
-    <div class="block"><span class="eyebrow">Тесты · 2 минуты · +50 опыта</span><div class="tlist" id="testList"></div></div>
   </section>
 
   <!-- Тест -->
@@ -195,19 +266,21 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 
   <!-- Ты и он -->
   <section class="view" id="vPair" hidden>
-    <div><div class="date">Ты и он</div><h1>Где вы совпадаете</h1></div>
+    <button class="back-link" data-go="vKnow">‹ Познай себя</button>
+    <div><div class="date">Отношения</div><h1>Ты и он</h1></div>
     <p class="lead">Нужны только дни рождения: твой и его. Имя не нужно.</p>
     <div class="pair"><label for="pairA">Твой день<select id="pairA"></select></label><label for="pairB">Его день<select id="pairB"></select></label></div>
     <button class="btn gold" id="pairBtn">Посмотреть</button>
     <div id="pairOut"></div>
+    <div class="block"><span class="eyebrow">Ваши знаки<span class="tag">традиция</span></span><p style="margin:0" class="note">Стихии знаков — огонь, земля, воздух, вода — и как вам ладить.</p><label for="hisSign">Его знак<select id="hisSign"></select></label><button class="btn" id="signBtn">Сравнить знаки</button><div id="signOut"></div></div>
   </section>
 
   <!-- Поддержка -->
   <section class="view" id="vHelp" hidden>
-    <div><div class="date">Поддержка</div><h1>Я рядом</h1></div>
-    <p class="lead">Выговориться, разобраться, что ответить ему, или просто выдохнуть. Я подруга, которая всегда на твоей стороне.</p>
+    <button class="back-link" data-go="vChat">‹ Ася</button>
+    <div><div class="date">SOS</div><h1>Я рядом</h1></div>
     <div class="hgrid">
-      <button class="hcard" id="talkBtn" style="--g1:#8B6CFF;--g2:#2C1F7A"><span class="he">💬</span><b>Поговорить с Асей</b><small>выговориться, разобраться</small></button>
+      <button class="hcard" data-guide="friend" style="--g1:#8B6CFF;--g2:#2C1F7A"><span class="he">🤍</span><b>Написать Асе</b><small>прямо сейчас</small></button>
       <button class="hcard" data-go="vBreath" style="--g1:#3EE6E0;--g2:#0F4A63"><span class="he">🌬️</span><b>Дыши со мной</b><small>успокоиться за минуту</small></button>
     </div>
     <h2 style="margin-top:6px">Если тебе плохо прямо сейчас</h2>
@@ -227,7 +300,7 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
     <div><div class="date">Дыши со мной</div><h1>Одна минута для себя</h1></div>
     <div class="sos"><div class="sring"><div class="sball"></div></div><div class="stext"><span class="s1">Вдох — 4</span><span class="s2">Задержка — 4</span><span class="s3">Выдох — 6</span></div></div>
     <p class="lead" style="text-align:center">Дыши за кругом. 6 кругов — около минуты. Плечи вниз, челюсть расслабь.</p>
-    <div class="row"><button class="btn gold" id="breathOk">Стало легче</button><button class="btn" data-go="vHelp">Назад</button></div>
+    <div class="row"><button class="btn gold" id="breathOk">Стало легче</button><button class="btn" data-go="vChat">Назад</button></div>
   </section>
 
   <!-- Я -->
@@ -246,11 +319,11 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 </div>
 
 <nav class="tabs" aria-label="Разделы">
-  <button class="tab" data-view="vToday" aria-current="true"><i>✦</i>Сегодня</button>
-  <button class="tab" data-view="vSelf"><i>☾</i>Узнай себя</button>
-  <button class="tab" data-view="vPair"><i>♡</i>Ты и он</button>
-  <button class="tab" data-view="vHelp"><i>❋</i>Поддержка</button>
-  <button class="tab" data-view="vWay"><i>☆</i>Я</button>
+  <button class="tab" data-view="vHome" aria-current="true"><i><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/></svg></i>Сегодня</button>
+  <button class="tab" data-view="vKnow"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></i>Познай себя</button>
+  <button class="tab" data-view="vDiary"><i><svg viewBox="0 0 24 24"><path d="M6 3.5h10a2 2 0 012 2v15H8a2 2 0 01-2-2z"/><path d="M6 18.5a2 2 0 012-2h10M10 8h5M10 11h4"/></svg></i>Дневник</button>
+  <button class="tab" data-view="vChat"><i><svg viewBox="0 0 24 24"><path d="M4 6.5a2.5 2.5 0 012.5-2.5h11A2.5 2.5 0 0120 6.5v7a2.5 2.5 0 01-2.5 2.5H10l-4.5 3.5V16H6.5A2.5 2.5 0 014 13.5z"/><path d="M12 7.5c-.9-1-2.6-.6-2.6.8 0 1.2 2.6 2.7 2.6 2.7s2.6-1.5 2.6-2.7c0-1.4-1.7-1.8-2.6-.8z"/></svg></i>Ася</button>
+  <button class="tab" data-view="vWay"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c1.3-4 4.2-6 7.5-6s6.2 2 7.5 6"/></svg></i>Я</button>
 </nav>
 <div class="toast" id="toast" role="status"></div>
 
@@ -351,8 +424,7 @@ function confetti(canvas, palette){
 const CQ = []; let cBusy = false;
 function fxCelebrate(o){ if (QUIET) return toast(o.kicker + ': ' + o.title); CQ.push(o); if (!cBusy) nextCelebrate(); }
 function applyQuiet(){
-  document.querySelector('.tab[data-view="vPair"]').hidden = QUIET;
-  document.querySelector('.tabs').style.gridTemplateColumns = `repeat(${QUIET ? 4 : 5},1fr)`;
+  document.querySelectorAll('[data-rel]').forEach(el => el.hidden = QUIET);  // раздел «Отношения» не на виду
   document.querySelectorAll('[data-quiet]').forEach(b => b.textContent = QUIET ? '🤫 Тихий режим включён — выключить' : '🤫 Включить тихий режим');
 }
 function nextCelebrate(){
@@ -425,7 +497,7 @@ function showDay(n){
   $('pickArea').hidden = true; $('cardArea').hidden = false;
   $('cardArea').innerHTML = `<div class="reveal">${face(a)}<div class="meaning"><span class="eyebrow">Карта дня</span><h2>${esc(a.name)}</h2><p style="margin:0">${esc(d.meaning)}</p></div></div>
     ${(() => { const g = growStep(); return g
-      ? `<div class="grow"><span class="eyebrow">Шаг роста · ${g.a.e} ${esc(g.a.name)} · навык «${esc(g.s.name)}»</span><p style="margin:0">${esc(g.text)}</p><span class="note">Или шаг от карты${d.sphere ? ' (' + esc(d.sphere) + ')' : ''}: ${esc(d.step)}</span><span class="note">Если шаг сейчас небезопасен или не подходит — пропусти, это тоже выбор.</span></div>`
+      ? `<div class="grow"><span class="eyebrow">Шаг роста · ${g.a.e} ${esc(g.a.name)} · навык «${esc(g.s.name)}» · сфера «${esc(C.balance[skillSphere(g.a, g.s)].split(' ')[0])}»</span><p style="margin:0">${esc(g.text)}</p><span class="note">Или шаг от карты${d.sphere ? ' (' + esc(d.sphere) + ')' : ''}: ${esc(d.step)}</span><span class="note">Если шаг сейчас небезопасен или не подходит — пропусти, это тоже выбор.</span></div>`
       : `<div class="block"><span class="eyebrow">Шаг на сегодня${d.sphere ? ' · ' + esc(d.sphere) : ''}</span><p style="margin:0">${esc(d.step)}</p><span class="note">Хочешь шаги со смыслом? <a href="#" data-go="vArch" style="color:var(--gold)">Выбери, кем ты растёшь</a>.</span></div>`; })()}
     <div class="block"><span class="eyebrow">Сделай за меня</span><div class="ready" id="dayText">${esc(d.text)}</div><div class="row">${copyBtn('dayText')}</div><span class="note">Отправляешь сама, когда будешь готова.</span></div>
     <div class="row">${G.st.stepDay === today ? '<button class="btn" disabled>Шаг сделан ✦</button>' : '<button class="btn gold" id="stepBtn">Сделала шаг · +20</button>'}</div>
@@ -443,7 +515,7 @@ document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click'
   const first = !G.st.days.includes(today); if (first){ G.st.days.push(today); G.save(); }  // день записан, даже если закроет во время анимации
   await fxReveal(b);
   showDay(n); SFX.chime(); picking = false;
-  if (first) G.add(10, 'карта дня');
+  if (first) G.add(10, 'карта дня'); done('card');
 }));
 $('shuffleBtn').addEventListener('click', () => { if (!shuffling && !picking) shuffle(); });
 
@@ -468,7 +540,7 @@ $('selfBtn').addEventListener('click', () => {
   if (!dd || !mm){ toast('Выбери день и месяц рождения'); return; }
   SFX.chime(); buzz('medium');
   const a = byN(reduce(dd)), s = a.self, z = zodiac(mm, dd), num = yy ? destiny(dd, mm, yy) : null;
-  G.st.me = {arc: a.n, sign: z.name, num: num ? num.n : null}; G.save();  // храним только итоги, не дату
+  G.st.me = {arc: a.n, sign: z.name, num: num ? num.n : null, dm: dsum(dd) + dsum(mm)}; G.save();  // храним только итоги (и сумму цифр дня и месяца для личного года), не дату
   const nb = near(a.n);
   $('selfOut').innerHTML = `<div class="reveal">${face(a)}<div class="meaning"><span class="eyebrow">Твой аркан<span class="tag">традиция</span></span><h2>${esc(s.title)}</h2><p style="margin:0" class="note">${esc(a.name)}</p></div></div>
     <div class="block"><span class="eyebrow">Твоя сила</span><p style="margin:0">${esc(s.strength)}</p></div>
@@ -668,7 +740,7 @@ TESTS.unshift(Object.assign({}, AR.test, {src: 'вдохновение · арх
 let T = null;
 function renderTests(){
   $('testList').innerHTML = TESTS.map(t => { const r = G.st.tests[t.id];
-    return `<button class="titem" data-test="${t.id}"><span class="te">${t.e}</span><span>${esc(t.n)}<small>${r ? esc(r.top.join(' · ')) : esc(t.d)}</small></span><span class="tb">${r ? 'Результат ›' : '+50'}</span></button>`; }).join('');
+    return `<button class="titem" data-test="${t.id}"${t.id === 'love' ? ' data-rel="1"' : ''}><span class="te">${t.e}</span><span>${esc(t.n)}<small>${r ? esc(r.top.join(' · ')) : esc(t.d)}</small></span><span class="tb">${r ? 'Результат ›' : '+50'}</span></button>`; }).join('');
 }
 function startTest(id){ const t = TESTS.find(x => x.id === id); T = {t, i: 0, sc: {}, result: !!G.st.tests[id]}; showView('vTest'); renderTest(); }
 function renderTest(){
@@ -695,27 +767,188 @@ function answer(v){
   const first = !G.st.tests[t.id];
   G.st.tests[t.id] = {date: today, order, top: order.slice(0, 2).map(c => t.cats[c])}; G.save();
   if (first) G.add(50, 'узнала себя');
-  T.result = true; renderTest(); renderTests(); SFX.chime(); const h = $('vTest').querySelector('h1'); if (h){ const r = h.getBoundingClientRect(); fxBurst(r.left + r.width / 2, r.top + r.height / 2, 24); }
+  T.result = true; done('test'); renderTest(); renderTests(); SFX.chime(); const h = $('vTest').querySelector('h1'); if (h){ const r = h.getBoundingClientRect(); fxBurst(r.left + r.width / 2, r.top + r.height / 2, 24); }
 }
 
-/* ===== навигация ===== */
-function showView(id){
+/* ===== v2: главная-хаб, порталы самопознания, дневник, Ася ===== */
+const C = {"phrases": ["Ты уже целая. Сегодня ты просто раскрываешься.", "Маленький шаг сильнее большого плана.", "Всему своё время — и твоё время тоже придёт.", "Любовь к себе — не эгоизм, а мера любви к другим.", "У каждой есть дар. Твой — не для того, чтобы его прятать.", "Ты имеешь право хотеть.", "Нежность к себе — тоже сила.", "Сегодня можно меньше, но честнее.", "Твоё «нет» делает твоё «да» ценным.", "Тень — не враг. Это дверь к себе.", "Благодарность открывает сердце.", "Ты не одна.", "Мечта — это компас, а не долг.", "Отдых — часть пути, а не провал.", "Что посеешь сегодня — расцветёт потом.", "Твой голос важен.", "Можно начать с двух минут.", "Ты — главная героиня своей жизни.", "Красота — в том, как ты к себе относишься.", "Сегодня ты на своей стороне."], "evening": [{"k": "rose", "e": "🌹", "q": "Роза: что сегодня было хорошего?"}, {"k": "bud", "e": "🌱", "q": "Бутон: чего ты ждёшь, что только начинается?"}, {"k": "thorn", "e": "🥀", "q": "Шип: что было трудным?"}], "followups": {"glow": "Что из этого ты хочешь повторить завтра?", "calm": "Что помогло тебе почувствовать спокойствие?", "ok": "Чего бы добавить в завтрашний день, чтобы он стал чуть теплее?", "tired": "Что ты можешь отложить, чтобы отдохнуть?", "heavy": "Что могло бы стать хотя бы на 1% легче завтра? И кто может быть рядом?"}, "moon": [{"name": "Новолуние", "e": "🌑", "about": "Время тишины и намерений. Энергия собирается внутрь.", "step": "Запиши одно намерение на этот лунный месяц — коротко, в настоящем времени."}, {"name": "Растущий серп", "e": "🌒", "about": "Первые ростки. Хорошо начинать маленькое.", "step": "Сделай первый крошечный шаг к своему намерению."}, {"name": "Первая четверть", "e": "🌓", "about": "Время решений и первых препятствий.", "step": "Реши одну вещь, которую откладывала: да или нет."}, {"name": "Растущая луна", "e": "🌔", "about": "Силы прибывают. Доводи начатое.", "step": "Добавь к своему делу ещё одно усилие — чуть больше, чем вчера."}, {"name": "Полнолуние", "e": "🌕", "about": "Пик и ясность. Видно, что получилось, эмоции ярче.", "step": "Запиши, что у тебя получилось за этот месяц, — и поблагодари себя."}, {"name": "Убывающая луна", "e": "🌖", "about": "Время делиться и благодарить.", "step": "Поделись с кем-то тем, что знаешь или имеешь."}, {"name": "Последняя четверть", "e": "🌗", "about": "Время отпускать лишнее.", "step": "Отпусти одну вещь, привычку или мысль, которая тянет назад."}, {"name": "Убывающий серп", "e": "🌘", "about": "Отдых и восстановление перед новым циклом.", "step": "Разреши себе сегодня меньше дел и больше отдыха."}], "year": [{"n": 1, "title": "Год начала", "about": "Новый цикл из девяти лет. Время сеять и пробовать.", "step": "Начни в этом году одно дело, которое давно хочешь."}, {"n": 2, "title": "Год союза", "about": "Отношения, терпение, партнёрство. Всё растёт медленно.", "step": "Вложись в одни важные отношения."}, {"n": 3, "title": "Год самовыражения", "about": "Творчество, общение, радость, видимость.", "step": "Покажи миру то, что ты создаёшь."}, {"n": 4, "title": "Год фундамента", "about": "Порядок, работа, здоровье, системы.", "step": "Построй одну привычку, которая будет держать тебя."}, {"n": 5, "title": "Год перемен", "about": "Свобода, путешествия, неожиданные повороты.", "step": "Скажи «да» одной новой возможности."}, {"n": 6, "title": "Год любви и дома", "about": "Семья, забота, красота, ответственность.", "step": "Сделай свой дом местом силы."}, {"n": 7, "title": "Год глубины", "about": "Учёба, тишина, ответы внутри себя.", "step": "Выдели время на одно глубокое обучение."}, {"n": 8, "title": "Год силы", "about": "Деньги, карьера, влияние, результаты.", "step": "Назови свою цену и поставь денежную цель."}, {"n": 9, "title": "Год завершения", "about": "Подведение итогов, отпускание, благодарность.", "step": "Заверши то, что тянется, и освободи место новому."}], "elements": {"fire": {"name": "Огонь", "signs": ["Овен", "Лев", "Стрелец"], "e": "🔥"}, "earth": {"name": "Земля", "signs": ["Телец", "Дева", "Козерог"], "e": "🌿"}, "air": {"name": "Воздух", "signs": ["Близнецы", "Весы", "Водолей"], "e": "🌬️"}, "water": {"name": "Вода", "signs": ["Рак", "Скорпион", "Рыбы"], "e": "💧"}}, "pairs": {"fire-fire": {"match": "Страсть, азарт, общий темп.", "friction": "Два лидера — кто уступит?", "step": "Договоритесь, кто ведёт в чём: один выбирает отдых, другая — планы."}, "earth-earth": {"match": "Надёжность, общий быт, спокойствие.", "friction": "Рутина и упрямство.", "step": "Устройте одно спонтанное свидание без плана."}, "air-air": {"match": "Разговоры, идеи, лёгкость.", "friction": "Много слов, мало дел.", "step": "Выберите одно общее дело и доведите его до конца."}, "water-water": {"match": "Глубина, чуткость, понимание без слов.", "friction": "Обиды и ожидание, что догадается сам.", "step": "Скажите друг другу прямо одно своё желание."}, "fire-air": {"match": "Воздух раздувает огонь: вдохновение и движение.", "friction": "Вспыхнуть и остыть.", "step": "Запланируйте общее приключение на месяц вперёд."}, "earth-water": {"match": "Вода питает землю: забота и стабильность.", "friction": "Земле не хватает слов, воде — опоры.", "step": "Обсудите, как каждый из вас чувствует любовь."}, "fire-earth": {"match": "Огонь даёт идеи, земля — воплощение.", "friction": "Разный темп: «сейчас» против «потом».", "step": "Найдите одно дело, где темп задаёт один, а план — другой."}, "fire-water": {"match": "Притяжение противоположностей, сильные чувства.", "friction": "Пар: вспышки и обиды.", "step": "Договоритесь о паузе в споре: 20 минут тишины, потом разговор."}, "air-earth": {"match": "Идеи и практичность дополняют друг друга.", "friction": "Одному скучно, другому тревожно.", "step": "Пусть воздух придумает, а земля выберет, как сделать."}, "air-water": {"match": "Ум и сердце: интересно и глубоко.", "friction": "Логика против чувств.", "step": "Перед советом спроси: «Тебе сейчас нужен совет или поддержка?»"}}, "diary": ["Что сегодня дало тебе силы?", "Что сегодня забрало силы — и что с этим можно сделать?", "За что ты можешь поблагодарить себя сегодня?", "Какое чувство было сегодня самым сильным? Где оно жило в теле?", "Что ты хотела сказать, но промолчала?", "Какой маленький шаг ты сделала для себя?", "Где сегодня ты была на своей стороне?", "Чего тебе сейчас хочется больше всего — честно?", "Кто сегодня был для тебя опорой?", "Что ты больше не хочешь терпеть?", "Какая мечта сегодня напомнила о себе?", "Что бы сказала тебе мудрая версия тебя через 5 лет?", "За что ты сегодня себя критиковала — и что бы сказала подруга?", "Что сегодня было красивым?", "Какое «нет» ты сказала или хотела сказать?", "Что тебя сегодня удивило в себе?", "Где ты сегодня проявила свой образ?", "Что ты отпускаешь этим вечером?", "Какая твоя потребность сегодня осталась без внимания?", "О чём ты думаешь перед сном чаще всего?", "Если бы день был картой таро — какой?"], "moods": [{"id": "glow", "e": "✨", "name": "Сияю"}, {"id": "calm", "e": "🌿", "name": "Спокойно"}, {"id": "ok", "e": "☁️", "name": "Ровно"}, {"id": "tired", "e": "🌙", "name": "Устала"}, {"id": "heavy", "e": "🌧️", "name": "Тяжело"}], "balance": ["Любовь и отношения", "Тело и энергия", "Деньги", "Работа и дело", "Подруги и близкие", "Отдых и радость", "Развитие", "Дом и уют"], "guides": [{"id": "friend", "e": "🤍", "name": "Ася-подруга", "about": "Выговориться, разобраться в чувствах, просто чтобы кто-то был рядом."}, {"id": "love", "e": "💞", "name": "Ася об отношениях", "about": "Что с ним, что ему ответить, как сказать о важном."}, {"id": "power", "e": "👑", "name": "Ася-наставница", "about": "Уверенность, границы, деньги, смелые шаги."}, {"id": "soul", "e": "🌙", "name": "Ася о душе", "about": "Смысл, предназначение, карты и звёзды как язык самопознания."}]}; /* луна, личный год, стихии, дневник, колесо баланса, проводники — content.json */
+const dsum = s => [...String(s)].reduce((a, c) => a + (+c || 0), 0);
+const red9 = n => { while (n > 9) n = dsum(n); return n || 9; };
+const hour = now.getHours(), dayN = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 864e5);
+function moonToday(){ const age = ((Date.now() - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) % 29.53059; return C.moon[Math.floor(age / 29.53059 * 8 + .5) % 8]; }
+const dayNumber = () => red9(dsum(today.replaceAll('-', '')));
+const personalYear = () => G.st.me?.dm ? red9(G.st.me.dm + dsum(now.getFullYear())) : null;
+function done(k){ G.st.doneDay = G.st.doneDay?.date === today ? G.st.doneDay : {date: today, items: []}; if (!G.st.doneDay.items.includes(k)){ G.st.doneDay.items.push(k); G.save(); } }
+const isDone = k => G.st.doneDay?.date === today && G.st.doneDay.items.includes(k);
+const RITUALS = {card: ['🂠', 'Вытянуть карту дня', 'vToday'], step: ['🌱', 'Сделать шаг роста', 'vToday'], diary: ['📖', 'Запись в дневник', 'vDiary'], sphere: ['◎', 'Шаг сферы недели', 'vBalance'],
+  moon: ['🌙', 'Луна сегодня', 'vAstro'], breath: ['🌬️', 'Минута дыхания', 'vBreath'], test: ['🧠', 'Пройти тест', 'vTests']};
+let pickRituals = false;
+function renderHome(){
+  const parts = hour < 5 ? 'Доброй ночи' : hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
+  $('homeDate').textContent = now.toLocaleDateString('ru-RU', {weekday: 'long', day: 'numeric', month: 'long'});
+  const a = archOf(); $('homeHello').innerHTML = `<span class="phrase">${esc(C.phrases[dayN % C.phrases.length])}</span>`;
+  const okR = (G.st.rituals || []).filter(k => RITUALS[k]).slice(0, 3), mine = okR.length ? okR : ['card', 'step', 'diary'], n = mine.filter(isDone).length, L = 2 * Math.PI * 26;
+  $('homeRitual').innerHTML = pickRituals
+    ? `<div class="selfcard"><span class="eyebrow">Выбери 3 ритуала на свой день</span><div class="chips">${Object.entries(RITUALS).map(([k, r]) => `<button class="chip${mine.includes(k) ? ' on' : ''}" data-rit="${k}">${r[0]} ${esc(r[1])}</button>`).join('')}</div><button class="btn gold" data-rit-ok="1">Готово</button></div>`
+    : `<div class="ritual"><svg class="ring" viewBox="0 0 64 64"><defs><linearGradient id="rg"><stop offset="0" stop-color="#E9A6B8"/><stop offset="1" stop-color="#E8CC8C"/></linearGradient></defs><circle class="bg" cx="32" cy="32" r="26"/><circle class="fg" cx="32" cy="32" r="26" stroke-dasharray="${L}" stroke-dashoffset="${L * (1 - n / mine.length)}"/><text x="32" y="37" text-anchor="middle" fill="#E8CC8C" font-size="15" font-family="Forum,serif">${n}/${mine.length}</text></svg>
+      <div class="rlist"><span class="eyebrow">${a ? a.e + ' Мой день · ' + esc(a.name) : 'Мой день'}</span>${mine.map(k => `<button class="${isDone(k) ? 'done' : ''}" data-go="${RITUALS[k][2]}">${RITUALS[k][0]} ${esc(RITUALS[k][1])}</button>`).join('')}<button style="color:var(--muted);font-size:12px" data-rit-edit="1">Изменить ритуалы ›</button></div></div>`;
+  const m = moonToday();
+  const tiles = [['🂠', 'Карта дня', isDone('card') ? 'открыта ✦' : 'вытяни 1 из 3', 'vToday', '#7B5CC9', '#2A1E5C'], ['🔮', 'Расклад на ситуацию', 'ситуация · что мешает · шаг', 'vSpread', '#B06AD6', '#3A1654'],
+    [m.e, 'Луна сегодня', m.name, 'vAstro', '#7AA7E8', '#14234A'], ['∞', 'Число дня', 'энергия дня ' + dayNumber(), 'vNumero', '#E8B86B', '#4A2E10'],
+    ['🧠', 'Тест', 'узнай себя за 2 минуты', 'vTests', '#6BD6B5', '#0E3A33'], ['📖', 'Дневник', hour >= 18 ? 'итог дня: роза, бутон, шип' : 'запиши, что чувствуешь', 'vDiary', '#E98FA8', '#4A1630'],
+    ['💬', 'Поговорить с Асей', 'подруга, наставница, о душе', 'vChat', '#9C8CFF', '#241B5C'], ['🌬️', 'Подышать', 'минута, чтобы выдохнуть', 'vBreath', '#3EE6E0', '#0F4A63']];
+  $('homeTiles').innerHTML = tiles.map(([i, t, s, go, g1, g2]) => `<button class="tile" data-go="${go}" style="--g1:${g1};--g2:${g2}"><span class="ti">${i}</span><span>${esc(t)}<small style="display:block">${esc(s)}</small></span></button>`).join('');
+  const wk = sphereWeek();
+  $('homeSelf').innerHTML = (wk !== null
+    ? `<button class="opt" data-go="vBalance"><span class="oi">◎</span><span>Сфера недели: ${esc(C.balance[wk])}<small>${isDone('sphere') ? 'шаг сегодня сделан ✦' : 'твой шаг недели ждёт'}</small></span><span class="go">›</span></button>`
+    : `<button class="opt" data-go="vBalance"><span class="oi">◎</span><span>Выбери сферу недели<small>где тебе сейчас хочется перемен</small></span><span class="go">›</span></button>`) + selfCard(true);
+}
+/* «Карта себя» — что она уже узнала о себе; каждый пункт открывает свой раздел */
+function selfItems(){ const me = G.st.me || {}, T = G.st.tests || {};
+  return [['🂠', 'Аркан', me.arc ? byN(me.arc).name : null, 'vSelf'], ['☉', 'Знак', me.sign, 'vSelf'], ['∞', 'Число пути', me.num, 'vSelf'],
+    ['👑', 'Образ', archOf()?.name, 'vArch'], ['💞', 'Любовь', T.love?.top[0], 'vTests'], ['⚔️', 'Конфликт', T.conflict?.top[0], 'vTests'],
+    ['💰', 'Деньги', T.money?.top[0], 'vTests'], ['◎', 'Баланс', G.st.balance ? 'есть' : null, 'vBalance']]; }
+function selfCard(short){ const it = selfItems(), got = it.filter(x => x[2]).length;
+  return `<div class="selfcard"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="eyebrow">Карта себя</span><span class="note">${got} из ${it.length} открыто</span></div>
+    <div class="bar" style="margin:0"><i style="width:${Math.round(got / it.length * 100)}%"></i></div>
+    <div class="chips">${it.map(([i, n, v, go]) => `<button class="chip${v ? ' got' : ''}" data-go="${go}"${n === 'Любовь' ? ' data-rel="1"' : ''}>${i} ${esc(n)}${v ? ': ' + esc(v) : ''}</button>`).join('')}</div>
+    ${short && got < it.length ? '<span class="note">Каждый пункт — новая грань тебя. Нажми, чтобы открыть.</span>' : ''}</div>`; }
+const cover = seed => { let s = seed * 9301 + 49297, r = () => (s = (s * 9301 + 49297) % 233280) / 233280; const pts = Array.from({length: 7}, () => [10 + r() * 80, 10 + r() * 55]);
+  return `<svg class="cv" viewBox="0 0 100 100" preserveAspectRatio="none">${pts.map((p, i) => i ? `<line x1="${pts[i - 1][0]}" y1="${pts[i - 1][1]}" x2="${p[0]}" y2="${p[1]}" stroke="#E8CC8C" stroke-width=".3" opacity=".6"/>` : '').join('')}${pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="${.6 + r()}" fill="#FFF2C9"/>`).join('')}</svg>`; };
+function renderKnow(){
+  $('knowSelf').innerHTML = selfCard(false);
+  const P = [['🂡', 'Таро', '22 аркана, расклады, колода', 'vTarot', '#9B6CFF', '#2A1460'], ['☉', 'Астрология', 'знак, луна, совместимость', 'vAstro', '#6C9BFF', '#122A5C'],
+    ['∞', 'Нумерология', 'число пути, личный год', 'vNumero', '#E8B86B', '#4A2E10'], ['🧠', 'Тесты', 'любовь, конфликт, деньги', 'vTests', '#6BD6B5', '#0E3A33'],
+    ['♡', 'Отношения', 'ты и он, ваши знаки', 'vPair', '#F28DB2', '#4A1630', 1], ['👑', 'Образы', 'кем ты растёшь', 'vArch', '#E8CC8C', '#4A3410'],
+    ['◎', 'Колесо баланса', '8 сфер жизни', 'vBalance', '#A8E6B8', '#123A22'], ['✧', 'Моя дата', 'аркан · знак · число', 'vSelf', '#B9A7E8', '#24183F']];
+  $('knowPortals').innerHTML = P.map(([i, t, s, go, g1, g2, rel], k) => `<button class="portal" data-go="${go}"${rel ? ' data-rel="1"' : ''} style="--g1:${g1};--g2:${g2}">${cover(k + 3)}<span class="pi">${i}</span>${esc(t)}<small>${esc(s)}</small></button>`).join('');
+  applyQuiet();
+}
+const backTo = (v, t) => `<button class="back-link" data-back="${v}">‹ Назад</button>`;
+const needDate = (what, why = 'Нужна твоя дата рождения — один раз') => `<div class="opt" data-go="vSelf"><span class="oi">✧</span><span>${what}<small>${why}</small></span><span class="go">›</span></div>`;
+function renderTarot(){
+  const me = G.st.me, a = me?.arc && byN(me.arc);
+  $('vTarot').innerHTML = backTo('vKnow', 'Познай себя') + `<div><div class="date">Таро<span class="tag">традиция</span></div><h1>Карты как зеркало</h1></div><p class="lead">Карта не предсказывает — она задаёт вопрос, на который отвечаешь ты.</p>
+    <div class="tlist"><button class="opt" data-go="vToday"><span class="oi">🂠</span><span>Карта дня<small>${isDone('card') ? 'уже открыта сегодня' : 'вытяни одну из трёх'}</small></span><span class="go">›</span></button>
+    <button class="opt" data-go="vSpread"><span class="oi">🔮</span><span>Расклад на ситуацию<small>ситуация · что мешает · твой шаг</small></span><span class="go">›</span></button>
+    ${a ? `<button class="opt" data-card="${a.n}"><span class="oi">${a.symbol}</span><span>Мой аркан: ${esc(a.name)}<small>${esc(a.self.title)}</small></span><span class="go">›</span></button>` : needDate('Мой аркан')}
+    <button class="opt" data-go="vDeck"><span class="oi">📜</span><span>Вся колода<small>22 старших аркана — смысл каждого</small></span><span class="go">›</span></button></div>`;
+}
+let spreadTheme = 'Я сама', lastSpread = null;
+function renderSpread(cards){
+  const th = ['Любовь', 'Работа', 'Деньги', 'Я сама'];
+  $('vSpread').innerHTML = backTo('vTarot', 'Таро') + `<div><div class="date">Расклад<span class="tag">традиция</span></div><h1>О чём спросим карты?</h1></div>
+    <div class="chips">${th.map(t => `<button class="chip${t === spreadTheme ? ' on' : ''}" data-theme="${t}"${t === 'Любовь' ? ' data-rel="1"' : ''}>${t}</button>`).join('')}</div>` +
+    (cards ? `<div class="spread">${cards.map((c, i) => `<div><div class="pos">${['Ситуация', 'Что мешает', 'Твой шаг'][i]}</div>${face(c)}</div>`).join('')}</div>
+      <div class="block"><span class="eyebrow">Ситуация · ${esc(cards[0].name)}</span><p style="margin:0">${esc(cards[0].self.title)}. ${esc(cards[0].self.strength)}</p></div>
+      <div class="block"><span class="eyebrow">Что мешает · ${esc(cards[1].name)}</span><p style="margin:0">${esc(cards[1].self.trap)}</p></div>
+      <div class="grow"><span class="eyebrow">Твой шаг · ${esc(cards[2].name)}</span><p style="margin:0">${esc(cards[2].day.step)}</p></div>
+      <details class="more"><summary>Вопрос к себе</summary><p>Где в теме «${esc(spreadTheme)}» ты узнаёшь эти три карты? Что из этого ты можешь сделать уже сегодня?</p></details>
+      <button class="btn" data-spread="1">Разложить ещё раз</button>`
+      : `<p class="lead">Подумай о своей ситуации. Три карты покажут, где ты сейчас, что мешает и какой шаг сделать.</p><button class="btn gold" data-spread="1">Разложить карты</button>`);
+}
+function renderDeck(n){
+  const a = n && byN(n);
+  $('vDeck').innerHTML = a
+    ? backTo('vDeck', 'Колода') + `<div class="reveal">${face(a)}<div class="meaning"><span class="eyebrow">${ROMAN[a.n]} · ${esc(a.name)}</span><h2>${esc(a.self.title)}</h2></div></div>
+      <div class="block"><span class="eyebrow">Сила</span><p style="margin:0">${esc(a.self.strength)}</p></div><div class="block"><span class="eyebrow">Ловушка</span><p style="margin:0">${esc(a.self.trap)}</p></div>
+      <div class="grow"><span class="eyebrow">Шаг на неделю</span><p style="margin:0">${esc(a.self.week)}</p></div>
+      <p class="note">Образы, которые с ней звучат: ${near(a.n).map(x => x.e + ' ' + esc(x.name)).join(' · ') || '—'}</p>`
+    : backTo('vTarot', 'Таро') + `<div><div class="date">Колода</div><h1>22 старших аркана</h1></div><p class="lead">Путь Шута — от первого шага до целостности. Нажми на карту.</p><div class="deckgrid">${A.map(x => `<button data-card="${x.n}">${face(x)}</button>`).join('')}</div>`;
+}
+const signEl = name => Object.entries(C.elements).find(([, e]) => e.signs.includes(name));
+function renderAstro(){
+  const me = G.st.me, z = me?.sign && AR.zodiac.find(x => x.name === me.sign), m = moonToday(), el = z && signEl(z.name);
+  $('vAstro').innerHTML = backTo('vKnow', 'Познай себя') + `<div><div class="date">Астрология<span class="tag">традиция</span></div><h1>Язык звёзд</h1></div>
+    <div class="grow"><span class="eyebrow">${m.e} Луна сегодня · ${esc(m.name)}</span><p style="margin:0">${esc(m.about)}</p><p style="margin:0">Ритуал: ${esc(m.step)}</p></div>
+    ${z ? `<div class="block"><span class="eyebrow">${z.sym} Твой знак · ${esc(z.name)}${el ? ' · ' + el[1].e + ' ' + el[1].name : ''}</span><p style="margin:0">${esc(z.trait)}</p><details class="more"><summary>В любви и шаг</summary><p>${esc(z.love)}</p><p>Шаг: ${esc(z.step)}</p></details></div>` : needDate('Мой знак')}
+    <button class="opt" data-go="vPair" data-rel="1"><span class="oi">♡</span><span>Совместимость знаков<small>твоя стихия и его</small></span><span class="go">›</span></button>`;
+  done('moon'); applyQuiet();
+}
+function renderNumero(){
+  const me = G.st.me, num = me?.num && AR.numbers.find(x => x.n === me.num), py = personalYear(), y = py && C.year.find(x => x.n === py), dn = AR.numbers.find(x => x.n === dayNumber());
+  $('vNumero').innerHTML = backTo('vKnow', 'Познай себя') + `<div><div class="date">Нумерология<span class="tag">традиция</span></div><h1>Числа твоего пути</h1></div>
+    <div class="grow"><span class="eyebrow">Число дня · ${dn.n} · ${esc(dn.title)}</span><p style="margin:0">Шаг: ${esc(dn.step)}</p></div>
+    ${num ? `<div class="block"><span class="eyebrow">Число пути · ${num.n} · ${esc(num.title)}</span><p style="margin:0">${esc(num.task)}</p><details class="more"><summary>Шаг</summary><p>${esc(num.step)}</p></details></div>` : needDate('Число пути')}
+    ${y ? `<div class="block"><span class="eyebrow">Личный год ${now.getFullYear()} · ${y.n} · ${esc(y.title)}</span><p style="margin:0">${esc(y.about)}</p><details class="more"><summary>Шаг года</summary><p>${esc(y.step)}</p></details></div>` : needDate('Личный год', me?.arc ? 'Обнови дату — откроется личный год' : undefined)}`;
+}
+/* колесо баланса — линза для шага (решение совета 05.11): сфера недели — её выбор, каждый шаг образа помечен сферой.
+   Оценки, выбор сферы и счётчики шагов — только в телефоне (юрист). Индексы сфер — по C.balance */
+const ARCH_SPH = {queen: [3, 0], princess: [0, 5], cat: [5, 4], goddess: [1, 0], warrior: [3, 4], priestess: [6, 1], hostess: [7, 4], muse: [6, 3], wanderer: [5, 6], healer: [1, 4], star: [3, 4], strategist: [2, 3]};
+const skillSphere = (a, s) => ARCH_SPH[a.id][a.skills.indexOf(s) < 2 ? 0 : 1];
+const sphereWeek = () => { const s = store.get('asya-sphere'); return s && s.week === weekKey() ? s.i : null; };
+const sphSteps = () => { const s = store.get('asya-sphsteps'); return Array.isArray(s) && s.length === C.balance.length ? s : C.balance.map(() => 0); };
+function addSphStep(i){ const s = sphSteps(); s[i]++; store.set('asya-sphsteps', s); }
+function sphereStep(i){ const pool = AR.archetypes.flatMap(a => a.skills.flatMap(s => skillSphere(a, s) === i ? s.steps.map(t => ({t, a})) : [])); return pool[dayN % pool.length]; }
+function renderBalance(){
+  const bl = store.get('asya-balance'), b = bl?.vals || C.balance.map(() => 5), N = b.length, ss = sphSteps(), wk = sphereWeek();
+  const pt = (v, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N, r = v * 9.5; return [110 + Math.cos(a) * r, 110 + Math.sin(a) * r]; };
+  const st = wk !== null && sphereStep(wk);
+  $('vBalance').innerHTML = backTo('vKnow', 'Познай себя') + `<div><div class="date">Колесо баланса<span class="tag">наука</span></div><h1>Как ты живёшь сейчас</h1></div>
+    <svg class="wheel" viewBox="-30 -14 280 248" style="width:260px;height:230px">${[2, 4, 6, 8, 10].map(r => `<circle cx="110" cy="110" r="${r * 9.5}" fill="none" stroke="rgba(232,204,140,.15)"/>`).join('')}
+      <polygon points="${b.map((v, i) => pt(v, i).join(',')).join(' ')}" fill="rgba(233,166,184,.3)" stroke="#E8CC8C" stroke-width="1.5"/>
+      ${ss.map((n, i) => Array.from({length: Math.min(n, 10)}, (_, k) => { const [x, y] = pt(k + 1, i); return `<circle cx="${x}" cy="${y}" r="2.6" fill="#FFF2C9"/>`; }).join('')).join('')}
+      ${C.balance.map((s, i) => { const [x, y] = pt(11.4, i); return `<text x="${x}" y="${y}" text-anchor="middle" font-size="7.5" fill="${i === wk ? '#E8CC8C' : '#B4AACB'}" font-family="Golos Text,sans-serif">${esc(s.split(' ')[0])}</text>`; }).join('')}</svg>
+    <p class="note" style="text-align:center;margin:0">Розовое — как ты оцениваешь сферы. Золотые точки — твои сделанные шаги в каждой сфере.</p>
+    <div class="block"><span class="eyebrow">Сфера недели — выбери сама</span><div class="chips">${C.balance.map((s, i) => `<button class="chip${i === wk ? ' on' : ''}" data-sph="${i}">${esc(s)}</button>`).join('')}</div><span class="note">Не обязательно самая низкая — та, где тебе сейчас хочется перемен.</span></div>
+    ${st ? `<div class="grow"><span class="eyebrow">Шаг недели · ${esc(C.balance[wk])}</span><p style="margin:0">${esc(st.t)}</p><span class="note">Из пути образа ${st.a.e} ${esc(st.a.name)}. Если не подходит — пропусти.</span>${isDone('sphere') ? '<button class="btn" disabled>Сделано сегодня ✦</button>' : '<button class="btn gold" id="sphDone">Сделала шаг · +15</button>'}</div>` : ''}
+    <details class="more"${bl ? '' : ' open'}><summary>${bl ? 'Переоценить сферы (раз в месяц достаточно)' : 'Оцени сферы от 1 до 10 — честно, без «надо»'}</summary>
+    ${C.balance.map((s, i) => `<label class="slider">${esc(s)} · <b>${b[i]}</b> <span class="note">шагов: ${ss[i]}</span><input type="range" min="1" max="10" value="${b[i]}" data-bal="${i}"></label>`).join('')}
+    <button class="btn gold" id="balSave">Сохранить</button></details>
+    <p class="note">Колесо — инструмент самонаблюдения, не диагностика и не медицинская, психологическая или финансовая помощь. Низкая оценка — это сезон, а не провал. Всё хранится только в этом телефоне.</p>${bl && b[1] <= 2 ? '<div class="block"><p style="margin:0">Если силы на нуле давно — это повод заглянуть к врачу или психологу. Ты не обязана справляться одна.</p></div>' : ''}`;
+}
+/* Дневник — только в её телефоне; Ася задаёт один вопрос после записи */
+const diary = { get(){ return store.get('asya-diary') || []; }, add(e){ const d = diary.get(); d.unshift(e); store.set('asya-diary', d.slice(0, 400)); } };
+let dMood = null, dQ = dayN, dDraft = '';
+function renderDiary(){
+  const D = diary.get(), eve = hour >= 18, todayE = D.filter(e => e.d === today);
+  const days = Array.from({length: 30}, (_, i) => { const x = new Date(now); x.setDate(x.getDate() - 29 + i); const k = dayKey(x), e = D.find(z => z.d === k && z.mood); return e ? C.moods.find(m => m.id === e.mood)?.e : ''; });
+  const words = Object.entries(D.slice(0, 40).flatMap(e => (e.text + ' ' + Object.values(e.parts || {}).join(' ')).toLowerCase().match(/[а-яё]{5,}/g) || []).filter(w => !['которые', 'потому', 'сегодня', 'только', 'просто', 'чтобы', 'очень', 'когда', 'хочется'].includes(w)).reduce((m, w) => (m[w] = (m[w] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1]).slice(0, 6).filter(x => x[1] > 1);
+  $('vDiary').innerHTML = `<div><div class="date">Дневник · только в твоём телефоне</div><h1>${eve ? 'Как прошёл день?' : 'Что у тебя внутри?'}</h1></div>
+    <div class="moods">${C.moods.map(m => `<button class="${dMood === m.id ? 'on' : ''}" data-mood="${m.id}"><b>${m.e}</b>${m.name}</button>`).join('')}</div>
+    ${eve ? C.evening.map(x => `<label>${x.e} ${esc(x.q)}<textarea data-part="${x.k}" style="min-height:64px"></textarea></label>`).join('')
+      : `<div class="block"><span class="eyebrow">Вопрос дня</span><p style="margin:0;font:400 20px/1.3 var(--display)">${esc(C.diary[dQ % C.diary.length])}</p><button class="back-link" data-dq="1">Другой вопрос ↻</button></div><textarea id="dText" placeholder="Пиши как есть — это видишь только ты">${esc(dDraft)}</textarea>`}
+    <button class="btn gold" id="dSave">Сохранить запись</button>
+    ${todayE[0]?.follow ? `<div class="grow"><span class="eyebrow">Ася спрашивает</span><p style="margin:0">${esc(todayE[0].follow)}</p></div>` : ''}
+    ${QUIET ? '<details class="more"><summary>Показать мой месяц и записи</summary>' : ''}<div class="block"><span class="eyebrow">Твой месяц · ${D.filter(e => e.d >= dayKey(new Date(now - 29 * 864e5))).length} записей</span><div class="cal">${days.map(e => `<i>${e}</i>`).join('')}</div>
+      ${words.length ? `<p class="note" style="margin:0">Чаще всего ты пишешь: ${words.map(w => esc(w[0])).join(', ')}</p>` : ''}</div>
+    ${D.length ? `<details class="more"><summary>Прошлые записи (${D.length})</summary>${D.slice(0, 20).map(e => `<div class="entry" style="margin-top:8px"><span class="note">${esc(e.d)} ${e.mood ? C.moods.find(m => m.id === e.mood)?.e : ''} ${esc(e.q || '')}</span>${esc(e.text || Object.entries(e.parts || {}).map(([k, v]) => C.evening.find(x => x.k === k).e + ' ' + v).join('\n'))}</div>`).join('')}</details>` : ''}${QUIET ? '</details>' : ''}
+    <p class="note">Записи хранятся только в этом телефоне: не уходят ни нам, ни в интернет, но пропадут, если очистить данные Telegram. Скоро Ася сможет помогать находить в них закономерности — только если ты разрешишь.</p>`;
+}
+function renderChat(){
+  $('vChat').innerHTML = `<div><div class="date">Ася рядом</div><h1>С кем поговорим?</h1></div><p class="lead">Ася — подруга, которая всегда на твоей стороне. Выбери, какая Ася тебе сейчас нужна.</p>
+    <div class="tlist">${C.guides.map((g, i) => `<button class="guide" data-guide="${g.id}"${g.id === 'love' ? ' data-rel="1"' : ''} style="--g1:${['#8B6CFF', '#F28DB2', '#E8CC8C', '#7AA7E8'][i]};--g2:${['#2C1F7A', '#4A1630', '#4A3410', '#14234A'][i]}"><span class="gi">${g.e}</span><span>${esc(g.name)}<small>${esc(g.about)}</small></span></button>`).join('')}</div>
+    <div class="tiles"><button class="tile" data-go="vBreath" style="--g1:#3EE6E0;--g2:#0F4A63"><span class="ti">🌬️</span><span>Дыши со мной<small style="display:block">минута тишины</small></span></button>
+      <button class="tile" data-go="vHelp" style="--g1:#E98FA8;--g2:#4A1630"><span class="ti">❋</span><span>Мне плохо<small style="display:block">помощь прямо сейчас</small></span></button></div>
+    <p class="note">Ася — не врач и не психотерапевт. Разговор идёт в чате бота и не сохраняется.</p>`;
+}
+const HIST = [];
+function goBack(fallback){ const prev = HIST.pop(); showView(prev || fallback || 'vHome', true); }
+try { TG?.BackButton?.onClick(() => goBack()); } catch {}
+function showView(id, isBack){
   const was = document.querySelector('.view:not([hidden])');
+  if (!isBack && was && was.id !== id) HIST.push(was.id); if (HIST.length > 30) HIST.shift();
   document.querySelectorAll('.view').forEach(v => v.hidden = v.id !== id);
   const v = $(id); if (v && was !== v){ v.classList.remove('enter'); void v.offsetWidth; v.classList.add('enter'); SFX.whoosh(); }
   if (id === 'vToday' && !$('pickArea').hidden) setTimeout(fxShuffle, 60);
-  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-current', b.dataset.view === id));
-  if (id === 'vWay') renderMe(); if (id === 'vSelf') renderTests(); if (id === 'vArch') renderArch();
-  window.scrollTo(0, 0);
+  const PARENT = {vToday: 'vHome', vTarot: 'vKnow', vSpread: 'vKnow', vDeck: 'vKnow', vAstro: 'vKnow', vNumero: 'vKnow', vTests: 'vKnow', vTest: 'vKnow', vPair: 'vKnow', vArch: 'vKnow', vSelf: 'vKnow', vBalance: 'vKnow', vHelp: 'vChat', vBreath: 'vChat'};
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-current', b.dataset.view === (PARENT[id] || id)));
+  ({vWay: renderMe, vTests: renderTests, vArch: () => renderArch(), vHome: renderHome, vKnow: renderKnow, vTarot: renderTarot, vSpread: () => renderSpread(), vDeck: () => renderDeck(),
+    vAstro: renderAstro, vNumero: renderNumero, vBalance: renderBalance, vDiary: renderDiary, vChat: renderChat})[id]?.();
+  try { const top = ['vHome', 'vKnow', 'vDiary', 'vChat', 'vWay'].includes(id); if (top) HIST.length = 0; TG?.BackButton && (top ? TG.BackButton.hide() : TG.BackButton.show()); } catch {}
+  applyQuiet(); window.scrollTo(0, 0);
 }
+/* колесо баланса: ползунки живые */
+document.addEventListener('input', e => { const s = e.target.closest('[data-bal]'); if (!s) return; s.parentNode.querySelector('b').textContent = s.value; });
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-copy]');
   if (c){ const t = $(c.dataset.copy).textContent; navigator.clipboard?.writeText(t).then(() => toast('Скопировано'), () => { const r = document.createRange(); r.selectNodeContents($(c.dataset.copy)); getSelection().removeAllRanges(); getSelection().addRange(r); toast('Текст выделен, скопируй'); }); return; }
+  const bk = e.target.closest('[data-back]'); if (bk){ buzz(); return goBack(bk.dataset.back); }
   const g = e.target.closest('[data-go],.tab'); if (g){ buzz(); return showView(g.dataset.go || g.dataset.view); }
   const s = e.target.closest('#stepBtn'); if (s){ if (G.st.stepDay === today) return; G.st.steps++; G.st.stepDay = today;
     SFX.step(); const r = s.getBoundingClientRect(); fxBurst(r.left + r.width / 2, r.top + r.height / 2, 22);
     const g = growStep(); if (g){ const st0 = stageOf(); G.st.skills[g.s.id] = (G.st.skills[g.s.id] || 0) + 1; G.st.archSteps++; if (stageOf() > st0) stageUp(g.a); }
-    G.add(20, g ? 'навык «' + g.s.name + '» растёт' : 'шаг сделан'); const sv = store.get('asya-day'); if (sv) showDay(sv.n); return; }
+    if (g) addSphStep(skillSphere(g.a, g.s)); done('step'); G.add(20, g ? 'навык «' + g.s.name + '» растёт' : 'шаг сделан'); const sv = store.get('asya-day'); if (sv) showDay(sv.n); return; }
   if (e.target.closest('#chalBtn')){ const st0 = stageOf(); G.st.chal = weekKey(); G.st.archSteps += 2; G.add(40, 'испытание недели'); fxBadge('🏆', 'испытание недели пройдено'); if (stageOf() > st0) stageUp(archOf()); return renderMe(); }
   const as = e.target.closest('[data-arch-see]'); if (as){ buzz(); return renderArch(as.dataset.archSee); }
   const ap = e.target.closest('[data-arch-pick]'); if (ap) return pickArch(ap.dataset.archPick);
@@ -723,18 +956,43 @@ document.addEventListener('click', e => {
   const tt = e.target.closest('[data-test]'); if (tt) return startTest(tt.dataset.test);
   const rt = e.target.closest('[data-retest]'); if (rt){ T = {t: TESTS.find(x => x.id === rt.dataset.retest), i: 0, sc: {}, result: false}; return renderTest(); }
   const a = e.target.closest('[data-ans]'); if (a){ SFX.tap(); return answer(a.dataset.ans); }
-  if (e.target.closest('#breathOk')){ SFX.chime(); G.st.breath++; G.add(5, 'выдохнула'); return showView('vHelp'); }
+  if (e.target.closest('#breathOk')){ SFX.chime(); G.st.breath++; done('breath'); G.add(5, 'выдохнула'); return showView('vHome'); }
   if (e.target.closest('#soundBtn')){ SFX.toggle(); soundBtn(); SFX.chime(); return; }
   if (e.target.closest('[data-quiet]')){ QUIET = !QUIET; try { localStorage.setItem('asya-quiet', JSON.stringify(QUIET)); } catch {} if (QUIET && SFX.on){ SFX.toggle(); soundBtn(); } applyQuiet(); hud(); toast(QUIET ? 'Тихий режим включён' : 'Тихий режим выключен'); return; }
+  /* v2: ритуалы дня, таро, расклад, колесо, дневник, проводники */
+  const rt2 = e.target.closest('[data-rit]'); if (rt2){ const k = rt2.dataset.rit, m = (G.st.rituals || ['card', 'step', 'diary']).filter(x => RITUALS[x]);
+    const nx = m.includes(k) ? m.filter(x => x !== k) : (m.length >= 3 ? [...m.slice(1), k] : [...m, k]); if (!nx.length){ toast('Оставь хотя бы один ритуал'); return; } G.st.rituals = nx; G.save(); SFX.tap(); return renderHome(); }
+  if (e.target.closest('[data-rit-edit]')){ pickRituals = true; return renderHome(); }
+  if (e.target.closest('[data-rit-ok]')){ pickRituals = false; if (!(G.st.rituals || []).length) G.st.rituals = ['card']; G.save(); SFX.chime(); return renderHome(); }
+  const cd = e.target.closest('[data-card]'); if (cd){ SFX.flip(); if ($('vDeck').hidden) showView('vDeck'); else HIST.push('vDeck'); return renderDeck(+cd.dataset.card); }
+  const th = e.target.closest('[data-theme]'); if (th){ spreadTheme = th.dataset.theme; SFX.tap(); return renderSpread(lastSpread); }
+  if (e.target.closest('[data-spread]')){ const sh = [...A]; for (let i = sh.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [sh[i], sh[j]] = [sh[j], sh[i]]; } const pool = lastSpread = sh.slice(0, 3); SFX.riffle(); buzz('medium'); setTimeout(() => { renderSpread(pool); SFX.flip(); SFX.chime(); }, 450); done('spread'); return; }
+  const sp = e.target.closest('[data-sph]'); if (sp){ store.set('asya-sphere', {week: weekKey(), i: +sp.dataset.sph}); SFX.chime(); buzz('medium'); toast('Сфера недели: ' + C.balance[+sp.dataset.sph]); return renderBalance(); }
+  const sd = e.target.closest('#sphDone'); if (sd){ const wk = sphereWeek(); if (wk === null || isDone('sphere')) return; addSphStep(wk); done('sphere'); SFX.step(); const r = sd.getBoundingClientRect(); fxBurst(r.left + r.width / 2, r.top + r.height / 2, 22); G.add(15, 'шаг в сфере «' + C.balance[wk] + '»'); return renderBalance(); }
+  if (e.target.closest('#balSave')){ const vals = [...document.querySelectorAll('[data-bal]')].map(x => +x.value); store.set('asya-balance', {date: today, vals}); G.st.balance = true; G.save(); SFX.chime(); toast('Колесо сохранено ✦'); return renderBalance(); }
+  const md = e.target.closest('[data-mood]'); if (md){ dMood = md.dataset.mood; SFX.tap(); document.querySelectorAll('[data-mood]').forEach(b => b.classList.toggle('on', b === md)); return; }
+  if (e.target.closest('[data-dq]')){ dDraft = $('dText')?.value || dDraft; dQ++; return renderDiary(); }
+  if (e.target.closest('#dSave')){
+    const parts = Object.fromEntries([...document.querySelectorAll('[data-part]')].map(x => [x.dataset.part, x.value.trim()]).filter(x => x[1]));
+    const text = $('dText')?.value.trim() || '';
+    if (!text && !Object.keys(parts).length && !dMood){ toast('Напиши хоть пару слов или выбери настроение'); return; }
+    diary.add({d: today, mood: dMood, q: $('dText') ? C.diary[dQ % C.diary.length] : 'Итог дня', text, parts, follow: C.followups[dMood || 'ok']});
+    const first = !isDone('diary'); done('diary'); if (first) G.add(15, 'запись в дневнике'); else SFX.chime();
+    dMood = null; dDraft = ''; return renderDiary(); }
+  const gd = e.target.closest('[data-guide]'); if (gd){ SFX.tap(); const link = 'https://t.me/Asya_app_bot?start=talk_' + gd.dataset.guide; if (TG?.openTelegramLink) TG.openTelegramLink(link); else window.open(link, '_blank'); return; }
+  if (e.target.closest('#signBtn')){ const me = G.st.me; if (!me?.sign){ toast('Сначала узнай свой знак — в «Моя дата»'); return showView('vSelf'); }
+    const a = signEl(me.sign), b = signEl($('hisSign').value), key = [a[0], b[0]].sort((x, y) => ['fire', 'earth', 'air', 'water'].indexOf(x) - ['fire', 'earth', 'air', 'water'].indexOf(y)).join('-'), p = C.pairs[key] || C.pairs[key.split('-').reverse().join('-')];
+    SFX.chime(); $('signOut').innerHTML = `<p style="margin:8px 0 0">${a[1].e} ${esc(me.sign)} + ${b[1].e} ${esc($('hisSign').value)}</p><p style="margin:0">💞 ${esc(p.match)}</p><p style="margin:0">⚡ ${esc(p.friction)}</p><div class="grow" style="margin-top:6px"><span class="eyebrow">Шаг для вас</span><p style="margin:0">${esc(p.step)}</p></div>`; return; }
   const tl = e.target.closest('[data-tglink]');
   if (e.target.closest('#talkBtn') || tl){
     const link = 'https://t.me/Asya_app_bot?start=' + (tl ? tl.dataset.tglink : 'talk');
     if (TG?.openTelegramLink) TG.openTelegramLink(link); else window.open(link, '_blank');  // приложение не закрываем — Ася остаётся рядом
   }
 });
-hud(); renderTests(); soundBtn(); applyQuiet();
-/* первая минута по ФУНДАМЕНТу: сначала подарок — её аркан по дате, потом карта дня */
-if (FIRST_RUN && !G.st.me){ showView('vSelf'); $('vSelf').querySelector('.date').textContent = 'Подарок для начала'; }
+$('hisSign').innerHTML = AR.zodiac.map(z => `<option>${z.name}</option>`).join('');
+hud(); renderTests(); soundBtn(); renderHome(); applyQuiet();
 { const saved = store.get('asya-day'); if (saved && saved.date === today && byN(saved.n)) showDay(saved.n); else shuffle(); }
+/* первая минута по ФУНДАМЕНТу: сначала подарок — её аркан по дате, потом всё остальное */
+if (FIRST_RUN && !G.st.me){ showView('vSelf'); $('vSelf').querySelector('.date').textContent = 'Подарок для начала'; }
 </script>
 </body></html>
