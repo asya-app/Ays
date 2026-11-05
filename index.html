@@ -59,7 +59,10 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 .lock p{margin:0;filter:blur(5px);user-select:none}
 .lock .over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;padding:12px;background:rgba(14,11,31,.55)}
 .phones{display:flex;flex-direction:column;gap:10px}
-.phone{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.phone{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--text);text-decoration:none}
+.phone>span{color:var(--gold);font-size:13px;white-space:nowrap}
+.sos-link{align-self:flex-start;background:none;border:1px solid rgba(233,166,184,.45);color:var(--rose);border-radius:999px;padding:6px 12px;font:500 13px var(--body);cursor:pointer;margin-top:-6px}
+.tag{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:2px 7px;color:var(--muted);margin-left:6px;vertical-align:middle}
 .phone b{font:600 18px var(--body);letter-spacing:.02em;user-select:all;font-variant-numeric:tabular-nums}
 .phone span{font-size:12px;color:var(--muted)}
 .ladder{display:flex;flex-wrap:wrap;gap:6px}
@@ -164,6 +167,7 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
   <!-- Сегодня -->
   <section class="view" id="vToday">
     <div><div class="date" id="todayDate"></div><h1 id="todayTitle">Твоя карта на сегодня</h1></div>
+    <button class="sos-link" data-go="vHelp">❋ Мне плохо — помощь рядом</button>
     <div id="pickArea">
       <p class="lead">Перетасуй колоду и вытяни одну карту из трёх. Карта — повод для шага, а не предсказание.</p>
       <div class="deck" id="deck"><button class="back" data-pick="0" aria-label="Карта 1">✦</button><button class="back" data-pick="1" aria-label="Карта 2">✦</button><button class="back" data-pick="2" aria-label="Карта 3">✦</button></div>
@@ -209,12 +213,13 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
     <h2 style="margin-top:6px">Если тебе плохо прямо сейчас</h2>
     <p class="lead">Ты не одна. Если есть угроза жизни или мысли навредить себе, позвони живому человеку прямо сейчас. Это бесплатно.</p>
     <div class="phones">
-      <div class="phone"><div><b>112</b><br><span>экстренные службы</span></div></div>
-      <div class="phone"><div><b>8-495-989-50-50</b><br><span>экстренная психологическая помощь МЧС, круглосуточно</span></div></div>
-      <div class="phone"><div><b>8-800-100-49-94</b><br><span>телефон доверия, бесплатно</span></div></div>
-      <div class="phone"><div><b>051</b><br><span>психологическая помощь, Москва (с мобильного 8-495-051)</span></div></div>
+      <a class="phone" href="tel:112"><div><b>112</b><br><span>экстренные службы</span></div><span>Позвонить ›</span></a>
+      <a class="phone" href="tel:+74959895050"><div><b>8-495-989-50-50</b><br><span>экстренная психологическая помощь МЧС, круглосуточно</span></div><span>Позвонить ›</span></a>
+      <a class="phone" href="tel:88001004994"><div><b>8-800-100-49-94</b><br><span>телефон доверия, бесплатно</span></div><span>Позвонить ›</span></a>
+      <a class="phone" href="tel:+7495051"><div><b>051</b><br><span>психологическая помощь, Москва (с мобильного 8-495-051)</span></div><span>Позвонить ›</span></a>
     </div>
     <p class="note">Ася — поддержка и самопомощь, не медицинская и не психологическая помощь.</p>
+    <div class="block"><span class="eyebrow">Если телефон могут смотреть</span><p style="margin:0">Тихий режим убирает звук, вибрацию, салюты и раздел «Ты и он» с нижнего меню.</p><div class="row"><button class="btn" data-quiet="1"></button></div></div>
   </section>
 
   <!-- Дыхание -->
@@ -234,6 +239,7 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
     <div class="block"><span class="eyebrow">Твой путь</span><div class="ladder" id="meLadder"></div></div>
     <div class="block"><span class="eyebrow">Награды</span><div class="badges" id="meBadges"></div></div>
     <div class="block"><span class="eyebrow">Магазин · <span id="shopCoins"></span></span><p class="note" style="margin:0">Монетки — за карты, шаги и тесты. Наряжай свой образ.</p><div id="shop"></div></div>
+    <div class="block"><span class="eyebrow">Помоги сделать Асю лучше</span><p style="margin:0">Что понравилось, что мешает, где что-то сломалось — напиши мне. Отзыв анонимный, команда читает каждый.</p><div class="row"><button class="btn" data-tglink="feedback">💌 Написать отзыв</button></div></div>
     <div class="block"><span class="eyebrow">Подари подруге</span><div class="ready" id="giftText">Нашла классную штуку: каждое утро вытягиваешь карту дня, и она даёт один маленький шаг. Узнай свою личную карту по дню рождения, мне понравилось) t.me/Asya_app_bot</div><div class="row"><button class="btn" data-copy="giftText">Скопировать текст</button></div></div>
   </section>
   <p class="note" style="text-align:center">18+ · Ася — развлекательно-мотивационный формат, не гадание и не предсказание, не медицинская и не психологическая помощь.</p>
@@ -255,20 +261,27 @@ const AR = {"stages": [{"name": "Пробуждение", "from": 0, "about": "�
 /* внутри Telegram: на весь экран, цвета под приложение, лёгкая вибрация */
 const TG = window.Telegram?.WebApp;
 if (TG){ try { TG.ready(); TG.expand(); TG.setHeaderColor('#0E0B1F'); TG.setBackgroundColor('#0E0B1F'); TG.disableVerticalSwipes?.(); } catch {} }
-const buzz = (k = 'light') => { try { TG?.HapticFeedback?.impactOccurred(k); } catch {} };
+/* тихий режим: без вибрации, салютов, серии и раздела «Ты и он» на виду — для тех, у кого телефон могут смотреть */
+let QUIET = false; try { QUIET = JSON.parse(localStorage.getItem('asya-quiet')) === true; } catch {}
+const buzz = (k = 'light') => { if (QUIET) return; try { TG?.HapticFeedback?.impactOccurred(k); } catch {} };
 const A = DATA.arcana, $ = id => document.getElementById(id);
 const ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII'];
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const byN = n => A.find(a => a.n === n);
 const reduce = n => { while (n > 22) n -= 22; return n; };
-const now = new Date(), today = now.toISOString().slice(0, 10);
+/* день — по местному времени девушки, а не по Гринвичу (иначе ночью в Москве «вчерашняя» карта) */
+const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const now = new Date(), today = dayKey(now);
+/* приложение открыто через полночь — начинаем новый день */
+document.addEventListener('visibilitychange', () => { if (!document.hidden && dayKey() !== today) location.reload(); });
+let FIRST_RUN = false; try { FIRST_RUN = !localStorage.getItem('asya-game'); } catch {}
 const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('on'); setTimeout(() => el.classList.remove('on'), 1600); }
 
 /* ===== Звук: синтез прямо в браузере (Web Audio) — свои звуки, без чужих файлов; колокольчики, шелест карт, монетки ===== */
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SFX = (() => {
-  let ctx = null, out = null, unlocked = false, on = store.get('asya-sound') !== false;
+  let ctx = null, out = null, unlocked = false, on = store.get('asya-sound') === true;  // по умолчанию тихо: телефон может быть рядом с чужими ушами
   addEventListener('pointerdown', () => { unlocked = true; }, {capture: true});
   function ac(){
     if (!on || !unlocked) return null;
@@ -336,16 +349,22 @@ function confetti(canvas, palette){
 }
 /* большой праздник: новая ступень, новый статус, выбор образа. Идут по очереди */
 const CQ = []; let cBusy = false;
-function fxCelebrate(o){ CQ.push(o); if (!cBusy) nextCelebrate(); }
+function fxCelebrate(o){ if (QUIET) return toast(o.kicker + ': ' + o.title); CQ.push(o); if (!cBusy) nextCelebrate(); }
+function applyQuiet(){
+  document.querySelector('.tab[data-view="vPair"]').hidden = QUIET;
+  document.querySelector('.tabs').style.gridTemplateColumns = `repeat(${QUIET ? 4 : 5},1fr)`;
+  document.querySelectorAll('[data-quiet]').forEach(b => b.textContent = QUIET ? '🤫 Тихий режим включён — выключить' : '🤫 Включить тихий режим');
+}
 function nextCelebrate(){
   const o = CQ.shift(); if (!o){ cBusy = false; return; } cBusy = true;
   const el = document.createElement('div'); el.className = 'celebrate'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', o.title);
   el.innerHTML = `<canvas></canvas><div class="cbox"><div class="crays"></div><div class="cicon" style="--c1:${esc(o.c1 || '#F1DCA6')};--c2:${esc(o.c2 || '#3A2C78')}">${o.icon}</div><div class="ckick">${esc(o.kicker)}</div><div class="ctitle">${esc(o.title)}</div>${o.sub ? `<div class="csub">${esc(o.sub)}</div>` : ''}<button class="btn gold">${esc(o.btn || 'Дальше ✦')}</button></div>`;
   document.body.appendChild(el); SFX.level(); buzz('heavy'); setTimeout(() => buzz('medium'), 350);
   if (!reduced) confetti(el.querySelector('canvas'), ['#E8CC8C', '#FFF2C9', '#E9A6B8', '#B9A7E8', o.c1 || '#F1DCA6']);
-  el.querySelector('.btn').addEventListener('click', () => { SFX.tap(); el.animate([{opacity: 1}, {opacity: 0}], {duration: 250}).finished.then(() => { el.remove(); nextCelebrate(); }); });
+  el.querySelector('.btn').addEventListener('click', e => { e.currentTarget.disabled = true; SFX.tap(); el.animate([{opacity: 1}, {opacity: 0}], {duration: 250}).finished.then(() => { el.remove(); nextCelebrate(); }); }, {once: true});
 }
 function fxBadge(icon, text){
+  if (QUIET) return toast('Награда: ' + text);
   const el = document.createElement('div'); el.className = 'badgefx'; el.setAttribute('role', 'status'); el.innerHTML = `<b>${icon}</b><span>Награда: ${esc(text)}</span>`;
   document.body.appendChild(el); SFX.badge(); buzz('medium'); setTimeout(() => el.remove(), 3300);
 }
@@ -374,8 +393,9 @@ function shuffle(){
 let shuffling = false;
 async function fxShuffle(){
   const d = $('deck'), backs = [...d.querySelectorAll('.back')];
+  if (shuffling || picking) return;
   backs.forEach(b => { b.getAnimations().forEach(a => a.cancel()); b.style.opacity = ''; });
-  if (reduced || shuffling || d.offsetParent === null) return;
+  if (reduced || d.offsetParent === null) return;
   shuffling = true; backs.forEach(b => b.style.opacity = 0);
   const gs = Array.from({length: 14}, (_, i) => { const g = document.createElement('div'); g.className = 'ghost'; g.style.transform = `translate(0,${-i * .7}px)`; d.appendChild(g); return g; });
   const side = i => (i % 2 ? 1 : -1), yy = i => -i * .7;
@@ -420,35 +440,42 @@ document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click'
   const n = three[+b.dataset.pick]; buzz('medium');
   store.set('asya-day', {date: today, n});
   store.set('asya-recent', [n, ...(store.get('asya-recent') || [])].slice(0, 7));
+  const first = !G.st.days.includes(today); if (first){ G.st.days.push(today); G.save(); }  // день записан, даже если закроет во время анимации
   await fxReveal(b);
   showDay(n); SFX.chime(); picking = false;
-  if (!G.st.days.includes(today)){ G.st.days.push(today); G.add(10, 'карта дня'); }
+  if (first) G.add(10, 'карта дня');
 }));
-$('shuffleBtn').addEventListener('click', () => { if (!shuffling) shuffle(); });
+$('shuffleBtn').addEventListener('click', () => { if (!shuffling && !picking) shuffle(); });
 
 /* Узнай себя */
 const days = Array.from({length:31}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
-['selfDay', 'pairA', 'pairB'].forEach(id => $(id).innerHTML = days);
-$('selfDay').value = '14'; $('pairA').value = '14'; $('pairB').value = '3';
+['pairA', 'pairB'].forEach(id => $(id).innerHTML = days);
+$('pairA').value = '14'; $('pairB').value = '3';
 const MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-$('selfMonth').innerHTML = MONTHS.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
+/* поля даты пустые, пока она не выберет сама; дней в месяце — сколько есть на самом деле (29 февраля — только в високосный) */
+$('selfMonth').innerHTML = '<option value="">месяц</option>' + MONTHS.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
 $('selfYear').innerHTML = '<option value="">не скажу</option>' + Array.from({length:50}, (_, i) => `<option>${now.getFullYear() - 18 - i}</option>`).join('');
-$('selfMonth').value = '1';
+function fillDays(){ const m = +$('selfMonth').value || 1, y = +$('selfYear').value || 2000, max = new Date(y, m, 0).getDate(), cur = $('selfDay').value;
+  $('selfDay').innerHTML = '<option value="">день</option>' + Array.from({length: max}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
+  if (cur && +cur <= max) $('selfDay').value = cur; }
+fillDays(); $('selfMonth').addEventListener('change', fillDays); $('selfYear').addEventListener('change', fillDays);
 /* знак — по началу знака в календаре; число пути — сумма цифр даты до одной цифры */
 function zodiac(m, d){ const z = [...AR.zodiac].sort((a, b) => a.from[0] - b.from[0] || a.from[1] - b.from[1]); let r = z[z.length - 1]; for (const s of z) if (m > s.from[0] || (m === s.from[0] && d >= s.from[1])) r = s; return r; }
 function destiny(d, m, y){ let n = [...`${d}${m}${y}`].reduce((s, c) => s + +c, 0); while (n > 9) n = [...String(n)].reduce((s, c) => s + +c, 0); return AR.numbers.find(x => x.n === n); }
 const near = arc => AR.archetypes.filter(x => x.arcana.includes(arc));
 $('selfBtn').addEventListener('click', () => {
   const dd = +$('selfDay').value, mm = +$('selfMonth').value, yy = $('selfYear').value;
+  if (!dd || !mm){ toast('Выбери день и месяц рождения'); return; }
+  SFX.chime(); buzz('medium');
   const a = byN(reduce(dd)), s = a.self, z = zodiac(mm, dd), num = yy ? destiny(dd, mm, yy) : null;
   G.st.me = {arc: a.n, sign: z.name, num: num ? num.n : null}; G.save();  // храним только итоги, не дату
   const nb = near(a.n);
-  $('selfOut').innerHTML = `<div class="reveal">${face(a)}<div class="meaning"><span class="eyebrow">Твой аркан</span><h2>${esc(s.title)}</h2><p style="margin:0" class="note">${esc(a.name)}</p></div></div>
+  $('selfOut').innerHTML = `<div class="reveal">${face(a)}<div class="meaning"><span class="eyebrow">Твой аркан<span class="tag">традиция</span></span><h2>${esc(s.title)}</h2><p style="margin:0" class="note">${esc(a.name)}</p></div></div>
     <div class="block"><span class="eyebrow">Твоя сила</span><p style="margin:0">${esc(s.strength)}</p></div>
     <div class="block"><span class="eyebrow">Твоя ловушка</span><p style="margin:0">${esc(s.trap)}</p></div>
     <div class="block"><span class="eyebrow">Шаг на неделю</span><p style="margin:0">${esc(s.week)}</p></div>
-    <div class="block"><span class="eyebrow">Знак зодиака · ${z.sym} ${esc(z.name)}</span><p style="margin:0">${esc(z.trait)}</p><p style="margin:0;opacity:.85">В любви: ${esc(z.love)}</p><p style="margin:0">Шаг: ${esc(z.step)}</p></div>
-    ${num ? `<div class="block"><span class="eyebrow">Число пути · ${num.n} · ${esc(num.title)}</span><p style="margin:0">${esc(num.task)}</p><p style="margin:0">Шаг: ${esc(num.step)}</p></div>` : '<p class="note">Укажи год — откроется число пути.</p>'}
+    <div class="block"><span class="eyebrow">Знак зодиака · ${z.sym} ${esc(z.name)}<span class="tag">традиция</span></span><p style="margin:0">${esc(z.trait)}</p><p style="margin:0;opacity:.85">В любви: ${esc(z.love)}</p><p style="margin:0">Шаг: ${esc(z.step)}</p></div>
+    ${num ? `<div class="block"><span class="eyebrow">Число пути · ${num.n} · ${esc(num.title)}<span class="tag">традиция</span></span><p style="margin:0">${esc(num.task)}</p><p style="margin:0">Шаг: ${esc(num.step)}</p></div>` : '<p class="note">Укажи год — откроется число пути.</p>'}
     ${nb.length ? `<div class="block"><span class="eyebrow">Твоей природе близки</span><p style="margin:0">${nb.map(x => x.e + ' ' + esc(x.name)).join(' · ')}</p><span class="note">Но выбирать, кем расти, — тебе.</span></div>` : ''}
     <p class="note">Для игры и вдохновения: карта и знаки — повод для шага, а не предсказание.</p>`;
 });
@@ -459,7 +486,7 @@ $('pairBtn').addEventListener('click', () => {
   $('pairOut').innerHTML = `<div class="reveal">${face(a)}<div class="meaning"><span class="eyebrow">Карта вашей пары</span><h2>${esc(a.name)}</h2><p class="note" style="margin:0">Ты — ${esc(byN(x).name)}, он — ${esc(byN(y).name)}</p></div></div>
     <div class="block"><span class="eyebrow">Где вы совпадаете</span><p style="margin:0">${esc(p.match)}</p></div>
     <div class="block"><span class="eyebrow">Где трение</span><p style="margin:0">${esc(p.friction)}</p></div>
-    <div class="block"><span class="eyebrow">Полный разбор</span><div class="lock"><p>${esc(p.full)}</p><div class="over"><b>Как вам договариваться, шаг и готовое сообщение ему</b><span class="note">Откроется в полной версии</span></div></div></div>`;
+    <div class="block"><span class="eyebrow">Полный разбор</span><div class="lock"><p>${esc(p.full)}</p><div class="over"><b>Как вам договариваться, шаг и готовое сообщение ему</b><span class="note">Скоро в полной версии</span><button class="btn gold" data-tglink="want_him" style="margin-top:6px">Хочу первой</button></div></div></div>`;
 });
 
 /* ===== Игра: опыт, статус, монетки, образ, магазин, награды. Хранится у неё (телефон + облако Telegram) ===== */
@@ -489,10 +516,11 @@ const BADGES = [
   {id:'style', n:'👗 Свой образ', ok: s => s.owned.length >= 1},
   {id:'week', n:'🌟 Неделя со мной', ok: s => streak(s) >= 7}
 ];
-function streak(s){ let n = 0; const d = new Date(); for (;;){ const k = d.toISOString().slice(0, 10); if (!s.days.includes(k)) break; n++; d.setDate(d.getDate() - 1); } return n; }
+function streak(s){ let n = 0; const d = new Date(); if (!s.days.includes(dayKey(d))) d.setDate(d.getDate() - 1);  // утром до карты серия ещё жива
+  for (;;){ if (!s.days.includes(dayKey(d))) break; n++; d.setDate(d.getDate() - 1); } return n; }
 const G = {
   st: Object.assign({xp: 0, spent: 0, owned: [], wear: {}, tests: {}, steps: 0, stepDay: '', days: [], breath: 0, arch: null, skills: {}, archSteps: 0, chal: '', me: null}, store.get('asya-game') || {}),
-  save(){ store.set('asya-game', G.st); try { TG?.CloudStorage?.setItem('game', JSON.stringify(G.st)); } catch {} hud();
+  save(){ store.set('asya-game', G.st); if (G.cloudReady) try { G.st.days = G.st.days.slice(-120); TG?.CloudStorage?.setItem('game', JSON.stringify(G.st)); } catch {} hud();
     if (G.st.got){ BADGES.filter(b => b.ok(G.st) && !G.st.got.includes(b.id)).forEach((b, i) => { G.st.got.push(b.id); store.set('asya-game', G.st); setTimeout(() => fxBadge(b.n.split(' ')[0], b.n.split(' ').slice(1).join(' ')), 600 + i * 1400); }); } },
   lvl(){ let l = 0; while (l < LVL.length - 1 && G.st.xp >= LVL[l + 1]) l++; return l; },
   coins(){ return Math.floor(G.st.xp / 2) - G.st.spent; },
@@ -501,7 +529,10 @@ const G = {
 };
 if (!G.st.got) G.st.got = BADGES.filter(b => b.ok(G.st)).map(b => b.id);  // старые награды без салюта
 /* облако Telegram: если там прогресс больше — берём его (новый телефон) */
-try { TG?.CloudStorage?.getItem('game', (err, v) => { if (!err && v){ const c = JSON.parse(v); if ((c.xp || 0) > G.st.xp){ G.st = Object.assign(G.st, c); store.set('asya-game', G.st); hud(); renderMe(); } } }); } catch {}
+/* в облако пишем только после того, как прочитали его, — иначе новый телефон затрёт старый прогресс */
+try { if (!TG?.CloudStorage?.getItem || !TG.isVersionAtLeast?.('6.9')) throw 0;
+  TG.CloudStorage.getItem('game', (err, v) => { G.cloudReady = !err;
+    if (!err && v){ const c = JSON.parse(v); if ((c.xp || 0) > G.st.xp){ G.st = Object.assign(G.st, c, {days: [...new Set([...(c.days || []), ...G.st.days])].sort()}); store.set('asya-game', G.st); hud(); renderMe(); } } }); } catch {}
 
 function avatar(w = G.st.wear, lvl = G.lvl() + 1){
   const it = id => SHOP.find(x => x.id === id) || {};
@@ -526,7 +557,7 @@ function avatar(w = G.st.wear, lvl = G.lvl() + 1){
     <rect x="2" y="2" width="24" height="13" rx="6.5" fill="rgba(0,0,0,.5)"/><text x="14" y="11.5" text-anchor="middle" font-size="8" font-weight="700" fill="#E8CC8C" font-family="system-ui">✦${lvl}</text>
   </svg>`;
 }
-function hud(){ const a = archOf(); $('hud').innerHTML = avatar() + `<span>${a ? a.e + ' ' + esc(AR.stages[stageOf()].name) : esc(LADDER[G.lvl()])}</span><span class="c">● ${G.coins()}</span>${streak(G.st) ? `<span>🔥${streak(G.st)}</span>` : ''}`; }
+function hud(){ const a = archOf(); $('hud').innerHTML = avatar() + `<span>${a ? a.e + ' ' + esc(AR.stages[stageOf()].name) : esc(LADDER[G.lvl()])}</span><span class="c">● ${G.coins()}</span>${streak(G.st) && !QUIET ? `<span>🔥${streak(G.st)}</span>` : ''}`; }
 
 /* ===== Образ, который она выращивает: 12 архетипов, 5 ступеней, 3 навыка ===== */
 const archOf = (id = G.st.arch) => AR.archetypes.find(x => x.id === id);
@@ -557,9 +588,12 @@ function renderArch(id){
     <div class="row">${mine ? '<button class="btn" disabled>Ты растёшь в неё ✦</button>' : `<button class="btn gold" data-arch-pick="${a.id}">Выбираю её</button>`}<button class="btn" data-arch-see="">Все образы</button></div>`;
 }
 function stageUp(a){ const s = AR.stages[stageOf()]; setTimeout(() => fxCelebrate({icon: a.e, c1: a.c1, c2: a.c2, kicker: a.name + ' · новая ступень', title: s.name, sub: s.about}), 700); }
-function pickArch(id){
-  const was = G.st.arch; G.st.arch = id;
-  if (was && was !== id){ G.st.archSteps = 0; }  // новый образ растёт с Пробуждения, навыки старого сохраняются
+function askConfirm(msg, yes){ if (TG?.showConfirm && TG.isVersionAtLeast?.('6.2')) TG.showConfirm(msg, ok => ok && yes()); else if (confirm(msg)) yes(); }
+function pickArch(id, sure){
+  const was = G.st.arch; if (was === id) return showView('vWay');
+  if (was && !sure) return askConfirm(`Сменить образ на «${archOf(id).name}»? Ступень «${archOf(was).name}» сохранится — сможешь вернуться к ней.`, () => pickArch(id, true));
+  G.st.archBy = G.st.archBy || {}; if (was) G.st.archBy[was] = G.st.archSteps;  // у каждого образа своя ступень
+  G.st.arch = id; G.st.archSteps = G.st.archBy[id] || 0;
   G.save(); showView('vWay'); const a = archOf(id);
   fxCelebrate({icon: a.e, c1: a.c1, c2: a.c2, kicker: 'Ты выбрала её', title: a.name, sub: a.essence, btn: 'Начать путь ✦'});
 }
@@ -585,13 +619,16 @@ function renderMe(){
   $('meStat').innerHTML = `<div><b>${s.days.length}</b><small>карт открыто</small></div><div><b>${s.steps}</b><small>шагов сделано</small></div><div><b>${streak(s)}</b><small>дней подряд</small></div>`;
   $('meDid').textContent = s.steps ? `Ты сделала ${s.steps} ${s.steps === 1 ? 'шаг' : s.steps < 5 ? 'шага' : 'шагов'}, которые обычно откладывают. Это смелость, а не мелочь.` : 'Здесь будут твои победы: каждый сделанный шаг из карты дня.';
   $('meLadder').innerHTML = LADDER.map((x, i) => `<span class="${i === l ? 'on' : ''}">${x}</span>`).join('');
+  $('meLadder').closest('.block').hidden = !!archOf();  // одна главная шкала: если выбран образ — растёт ступень образа
   $('meBadges').innerHTML = BADGES.map(b => `<span class="${b.ok(s) ? 'on' : ''}">${b.n}</span>`).join('');
   $('shopCoins').textContent = G.coins() + ' монет';
   const cats = [...new Set(SHOP.map(i => i.cat))];
   $('shop').innerHTML = cats.map(c => `<div class="shopcat">${c}</div><div class="sgrid">${SHOP.filter(i => i.cat === c).map(i => { const own = s.owned.includes(i.id), on = s.wear[i.slot] === i.id;
     return `<button class="si${on ? ' on' : ''}${!own && i.p > G.coins() ? ' no' : ''}" data-buy="${i.id}">${avatar({...s.wear, [i.slot]: i.id}, '')}${esc(i.n)}<span class="pr">${own ? (on ? 'надето' : 'надеть') : '● ' + i.p}</span></button>`; }).join('')}</div>`).join('');
 }
+let buyLock = 0;
 function buy(id){
+  if (Date.now() < buyLock) return; buyLock = Date.now() + 700;  // двойное касание не снимает только что купленное
   const i = SHOP.find(x => x.id === id), s = G.st;
   let bought = false;
   if (!s.owned.includes(id)){ if (i.p > G.coins()){ toast(`Нужно ещё ${i.p - G.coins()} монет — открой карту или сделай шаг`); return; }
@@ -604,7 +641,7 @@ function buy(id){
 
 /* ===== Тесты самопознания (ориентир, не диагноз) ===== */
 const TESTS = [
-  {id:'love', e:'💞', n:'Как ты чувствуешь любовь', d:'5 языков любви', cats:{W:'Слова', T:'Время вместе', G:'Подарки', S:'Помощь делом', P:'Прикосновения'},
+  {id:'love', e:'💞', n:'Как ты чувствуешь любовь', d:'5 языков любви', src:'вдохновение · по идее Гэри Чепмена', cats:{W:'Слова', T:'Время вместе', G:'Подарки', S:'Помощь делом', P:'Прикосновения'},
     about:{W:'Тебе важно слышать: «горжусь тобой», «ты у меня лучшая». Резкие слова ранят сильнее, чем других.', T:'Любовь для тебя — внимание без телефона: вечер вдвоём, разговор, общие планы.', G:'Для тебя важны знаки внимания: продуманный подарок значит «обо мне думали».', S:'Любовь — когда за тебя сделали: решили задачу, приготовили, помогли в трудный момент.', P:'Тебе нужна близость: объятия, рука в руке — без этого холодно.'},
     q:[['Чтобы почувствовать, что тебя любят, важнее всего…', ['услышать «я тобой горжусь»','W'],['вечер вдвоём без телефонов','T'],['продуманный подарок','G'],['когда за тебя решили задачу','S'],['крепко обнять','P']],
        ['После тяжёлого дня лучше всего помогает…', ['тёплые слова поддержки','W'],['просто побыть рядом и поговорить','T'],['маленький сюрприз','G'],['ужин уже готов','S'],['объятия','P']],
@@ -614,7 +651,7 @@ const TESTS = [
        ['В отношениях не хватает, когда…', ['тебя не хвалят','W'],['мало времени вместе','T'],['нет знаков внимания','G'],['всё на тебе','S'],['мало нежности','P']],
        ['Сильнее запоминается…', ['сообщение с признанием','W'],['совместная поездка','T'],['вещь со смыслом','G'],['помощь в трудный момент','S'],['рука в руке','P']],
        ['Ссора быстрее закончится, если…', ['скажут «прости, ты мне важна»','W'],['сядете и спокойно поговорите','T'],['принесут что-то в знак мира','G'],['исправят то, из-за чего поссорились','S'],['обнимут','P']]]},
-  {id:'conflict', e:'⚔️', n:'Какая ты в конфликте', d:'5 стилей: где ты сильна', cats:{C:'Соперничество', K:'Сотрудничество', M:'Компромисс', A:'Избегание', P:'Уступчивость'},
+  {id:'conflict', e:'⚔️', n:'Какая ты в конфликте', d:'5 стилей: где ты сильна', src:'наука · модель Томаса — Килманна', cats:{C:'Соперничество', K:'Сотрудничество', M:'Компромисс', A:'Избегание', P:'Уступчивость'},
     about:{C:'Ты идёшь на победу: быстро и твёрдо. Сила — в кризисе. Риск — выигрываешь спор, теряешь людей.', K:'Ты ищешь решение, где выигрывают оба. Сила — прочные договорённости. Риск — долго, когда нужно быстро.', M:'Ты быстро встречаешься посередине. Сила — скорость. Риск — обе стороны получают половину.', A:'Ты уходишь от напряжения. Сила — не тратишь силы на мелочи. Риск — важное копится и взрывается.', P:'Ты уступаешь ради отношений. Сила — тебя любят. Риск — твои желания остаются на потом.'},
     q:[['С решением коллеги ты не согласна. Ты…', ['доказываешь свою правоту','C'],['ищете вместе вариант для обоих','K'],['предлагаешь встретиться посередине','M'],['откладываешь разговор','A'],['соглашаешься, чтобы не ссориться','P']],
        ['Спорите с близким, куда поехать…', ['настаиваешь на своём','C'],['выясняешь, что важно каждому','K'],['раз по-твоему, раз по-моему','M'],['«решай сам»','A'],['едешь, куда хочет он','P']],
@@ -622,12 +659,12 @@ const TESTS = [
        ['Когда напряжение растёт, хочется…', ['победить','C'],['разобраться до конца','K'],['быстрее договориться','M'],['уйти','A'],['сгладить','P']],
        ['В споре для тебя главное…', ['результат','C'],['чтобы обе стороны были довольны','K'],['быстро закончить','M'],['сохранить спокойствие','A'],['сохранить отношения','P']],
        ['После конфликта ты обычно…', ['чувствуешь, что права','C'],['рада, что договорились','K'],['довольна, что разошлись честно','M'],['рада, что обошлось без ругани','A'],['переживаешь, не обидела ли','P']]]},
-  {id:'money', e:'💰', n:'Твои отношения с деньгами', d:'какие убеждения ими управляют', cats:{AV:'Избегание денег', WO:'Деньги решат всё', ST:'Деньги = статус', VI:'Осторожность'},
+  {id:'money', e:'💰', n:'Твои отношения с деньгами', d:'какие убеждения ими управляют', src:'наука · денежные убеждения (Брэд Клонц)', cats:{AV:'Избегание денег', WO:'Деньги решат всё', ST:'Деньги = статус', VI:'Осторожность'},
     about:{AV:'Где-то внутри деньги кажутся чем-то неудобным. Из-за этого трудно просить свою цену и считать деньги.', WO:'Кажется, что больше денег — и все проблемы уйдут. Риск — не замечать, что важно ещё.', ST:'Деньги для тебя — способ показать, кто ты. Риск — тратить на «выглядеть», а не на себя.', VI:'Ты бережёшь деньги. Сила — подушка и контроль. Риск — боишься вкладывать в себя.'},
     agree:[['Богатые люди часто жадные','AV'],['Не люблю думать о деньгах и считать их','AV'],['Будь у меня больше денег, почти все проблемы решились бы','WO'],['Деньги — главный путь к счастью','WO'],['О человеке многое говорит его одежда и сумка','ST'],['Мне важно выглядеть успешнее, чем я есть','ST'],['Стараюсь откладывать часть денег','VI'],['Не рассказываю другим, сколько зарабатываю','VI']]}
 ];
 /* тест «Какая женщина хочет проснуться в тебе» — первым в списке */
-TESTS.unshift(Object.assign({}, AR.test, {cats: Object.fromEntries(AR.archetypes.map(a => [a.id, a.e + ' ' + a.name])), about: Object.fromEntries(AR.archetypes.map(a => [a.id, a.essence]))}));
+TESTS.unshift(Object.assign({}, AR.test, {src: 'вдохновение · архетипы Юнга и Джин Шинода Болен', cats: Object.fromEntries(AR.archetypes.map(a => [a.id, a.e + ' ' + a.name])), about: Object.fromEntries(AR.archetypes.map(a => [a.id, a.essence]))}));
 let T = null;
 function renderTests(){
   $('testList').innerHTML = TESTS.map(t => { const r = G.st.tests[t.id];
@@ -640,7 +677,7 @@ function renderTest(){
     const r = G.st.tests[t.id], c0 = r.order[0], c1 = r.order[1];
     $('vTest').innerHTML = `<div><div class="date">${t.e} ${esc(t.n)}</div><h1>${esc(t.cats[c0])}</h1><p class="note" style="margin:4px 0 0">и ещё: ${esc(t.cats[c1])}</p></div>
       <div class="block"><p style="margin:0">${esc(t.about[c0])}</p><p style="margin:0;opacity:.8">${esc(t.about[c1])}</p></div>
-      <p class="note">Это ориентир для самопознания, а не диагноз.</p>
+      <p class="note">Это ориентир для самопознания, а не диагноз.${t.src ? `<span class="tag">${esc(t.src)}</span>` : ''}</p>
       ${t.id === 'arch' ? `<div class="row">${r.order.slice(0, 3).map(c => `<button class="btn gold" data-arch-pick="${c}">${archOf(c).e} ${esc(archOf(c).name)}</button>`).join('')}</div>` : ''}
       <div class="row"><button class="btn${t.id === 'arch' ? '' : ' gold'}" data-go="vSelf">Все тесты</button><button class="btn" data-retest="${t.id}">Пройти заново</button></div>`; return; }
   const seg = `<div class="tseg">${qs.map((_, j) => `<i class="${j < T.i ? 'on' : j === T.i ? 'now' : ''}"></i>`).join('')}</div>`;
@@ -675,7 +712,7 @@ document.addEventListener('click', e => {
   const c = e.target.closest('[data-copy]');
   if (c){ const t = $(c.dataset.copy).textContent; navigator.clipboard?.writeText(t).then(() => toast('Скопировано'), () => { const r = document.createRange(); r.selectNodeContents($(c.dataset.copy)); getSelection().removeAllRanges(); getSelection().addRange(r); toast('Текст выделен, скопируй'); }); return; }
   const g = e.target.closest('[data-go],.tab'); if (g){ buzz(); return showView(g.dataset.go || g.dataset.view); }
-  const s = e.target.closest('#stepBtn'); if (s){ G.st.steps++; G.st.stepDay = today;
+  const s = e.target.closest('#stepBtn'); if (s){ if (G.st.stepDay === today) return; G.st.steps++; G.st.stepDay = today;
     SFX.step(); const r = s.getBoundingClientRect(); fxBurst(r.left + r.width / 2, r.top + r.height / 2, 22);
     const g = growStep(); if (g){ const st0 = stageOf(); G.st.skills[g.s.id] = (G.st.skills[g.s.id] || 0) + 1; G.st.archSteps++; if (stageOf() > st0) stageUp(g.a); }
     G.add(20, g ? 'навык «' + g.s.name + '» растёт' : 'шаг сделан'); const sv = store.get('asya-day'); if (sv) showDay(sv.n); return; }
@@ -688,12 +725,16 @@ document.addEventListener('click', e => {
   const a = e.target.closest('[data-ans]'); if (a){ SFX.tap(); return answer(a.dataset.ans); }
   if (e.target.closest('#breathOk')){ SFX.chime(); G.st.breath++; G.add(5, 'выдохнула'); return showView('vHelp'); }
   if (e.target.closest('#soundBtn')){ SFX.toggle(); soundBtn(); SFX.chime(); return; }
-  if (e.target.closest('#talkBtn')){
-    const link = 'https://t.me/Asya_app_bot?start=talk';
-    if (TG?.openTelegramLink){ TG.openTelegramLink(link); setTimeout(() => TG.close(), 300); } else window.open(link, '_blank');
+  if (e.target.closest('[data-quiet]')){ QUIET = !QUIET; try { localStorage.setItem('asya-quiet', JSON.stringify(QUIET)); } catch {} if (QUIET && SFX.on){ SFX.toggle(); soundBtn(); } applyQuiet(); hud(); toast(QUIET ? 'Тихий режим включён' : 'Тихий режим выключен'); return; }
+  const tl = e.target.closest('[data-tglink]');
+  if (e.target.closest('#talkBtn') || tl){
+    const link = 'https://t.me/Asya_app_bot?start=' + (tl ? tl.dataset.tglink : 'talk');
+    if (TG?.openTelegramLink) TG.openTelegramLink(link); else window.open(link, '_blank');  // приложение не закрываем — Ася остаётся рядом
   }
 });
-hud(); renderTests(); soundBtn();
+hud(); renderTests(); soundBtn(); applyQuiet();
+/* первая минута по ФУНДАМЕНТу: сначала подарок — её аркан по дате, потом карта дня */
+if (FIRST_RUN && !G.st.me){ showView('vSelf'); $('vSelf').querySelector('.date').textContent = 'Подарок для начала'; }
 { const saved = store.get('asya-day'); if (saved && saved.date === today && byN(saved.n)) showDay(saved.n); else shuffle(); }
 </script>
 </body></html>
