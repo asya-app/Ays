@@ -971,13 +971,24 @@ function gameBuy(id){
 /* Дневник — только в её телефоне; Ася задаёт один вопрос после записи */
 const diary = { get(){ return store.get('asya-diary') || []; }, add(e){ const d = diary.get(); d.unshift(e); store.set('asya-diary', d.slice(0, 400)); } };
 let dMood = null, dQ = dayN, dDraft = '';
+/* вечером замыкаем утреннюю карту: её вопрос + «сделала / не сегодня»; доля сделанных шагов — только в телефоне
+   (предложение методолога Таро, сужено HR 05.11) */
+const eveStat = () => store.get('asya-eve') || {days: {}};
+function eveCard(){
+  const sv = store.get('asya-day'); if (!sv || sv.date !== today || !byN(sv.n)) return '';
+  const a = byN(sv.n), st = eveStat(), ans = st.days[today], all = Object.values(st.days), yes = all.filter(v => v === 'yes').length;
+  return `<div class="grow"><span class="eyebrow">Утренняя карта · ${esc(a.name)}</span><p style="margin:0">${esc(a.day.evening)}</p><span class="note">Шаг утра: ${esc(a.day.step)}</span>
+    ${ans ? `<p class="note" style="margin:0">${ans === 'yes' ? 'Шаг сделан ✦ Это засчитывается.' : 'Не сегодня — тоже честный ответ. Завтра новая карта.'}</p>`
+      : `<div class="row"><button class="btn gold" data-eve="yes">Сделала</button><button class="btn" data-eve="no">Не сегодня</button></div>`}
+    ${all.length >= 3 ? `<span class="note">Шаги карты за всё время: сделано ${yes} из ${all.length} вечеров</span>` : ''}</div>`;
+}
 function renderDiary(){
   const D = diary.get(), eve = hour >= 18, todayE = D.filter(e => e.d === today);
   const days = Array.from({length: 30}, (_, i) => { const x = new Date(now); x.setDate(x.getDate() - 29 + i); const k = dayKey(x), e = D.find(z => z.d === k && z.mood); return e ? C.moods.find(m => m.id === e.mood)?.e : ''; });
   const words = Object.entries(D.slice(0, 40).flatMap(e => (e.text + ' ' + Object.values(e.parts || {}).join(' ')).toLowerCase().match(/[а-яё]{5,}/g) || []).filter(w => !['которые', 'потому', 'сегодня', 'только', 'просто', 'чтобы', 'очень', 'когда', 'хочется'].includes(w)).reduce((m, w) => (m[w] = (m[w] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1]).slice(0, 6).filter(x => x[1] > 1);
   $('vDiary').innerHTML = `<div><div class="date">Дневник · только в твоём телефоне</div><h1>${eve ? 'Как прошёл день?' : 'Что у тебя внутри?'}</h1></div>
     <div class="moods">${C.moods.map(m => `<button class="${dMood === m.id ? 'on' : ''}" data-mood="${m.id}"><b>${m.e}</b>${m.name}</button>`).join('')}</div>
-    ${eve ? C.evening.map(x => `<label>${x.e} ${esc(x.q)}<textarea data-part="${x.k}" style="min-height:64px"></textarea></label>`).join('')
+    ${eve ? eveCard() + C.evening.map(x => `<label>${x.e} ${esc(x.q)}<textarea data-part="${x.k}" style="min-height:64px"></textarea></label>`).join('')
       : `<div class="block"><span class="eyebrow">Вопрос дня</span><p style="margin:0;font:400 20px/1.3 var(--display)">${esc(C.diary[dQ % C.diary.length])}</p><button class="back-link" data-dq="1">Другой вопрос ↻</button>${opened('deep_q') ? `<details class="more"><summary>Глубже ✦</summary><p style="margin:6px 0 0">${esc(C.game.deep[dQ % C.game.deep.length])}</p></details>` : ''}</div><textarea id="dText" placeholder="Пиши как есть — это видишь только ты">${esc(dDraft)}</textarea>`}
     <button class="btn gold" id="dSave">Сохранить запись</button>
     ${todayE[0]?.follow ? `<div class="grow"><span class="eyebrow">Ася спрашивает</span><p style="margin:0">${esc(todayE[0].follow)}</p></div>` : ''}
@@ -1049,6 +1060,9 @@ document.addEventListener('click', e => {
   if (e.target.closest('#balSave')){ const vals = [...document.querySelectorAll('[data-bal]')].map(x => +x.value); store.set('asya-balance', {date: today, vals}); G.st.balance = true; G.save(); SFX.chime(); toast('Колесо сохранено ✦'); return renderBalance(); }
   const md = e.target.closest('[data-mood]'); if (md){ dMood = md.dataset.mood; SFX.tap(); document.querySelectorAll('[data-mood]').forEach(b => b.classList.toggle('on', b === md)); return; }
   if (e.target.closest('[data-dq]')){ dDraft = $('dText')?.value || dDraft; dQ++; return renderDiary(); }
+  const ev = e.target.closest('[data-eve]'); if (ev){ const st = eveStat(); if (st.days[today]) return; st.days[today] = ev.dataset.eve; store.set('asya-eve', st);
+    if (ev.dataset.eve === 'yes'){ SFX.step(); if (G.st.stepDay !== today){ G.st.steps++; G.st.stepDay = today; done('step'); G.add(20, 'шаг дня сделан'); } else SFX.chime(); } else SFX.tap();
+    const keep = [...document.querySelectorAll('[data-part]')].map(x => [x.dataset.part, x.value]); renderDiary(); keep.forEach(([k, v]) => { const t = document.querySelector(`[data-part="${k}"]`); if (t) t.value = v; }); return; }
   if (e.target.closest('#dSave')){
     const parts = Object.fromEntries([...document.querySelectorAll('[data-part]')].map(x => [x.dataset.part, x.value.trim()]).filter(x => x[1]));
     const text = $('dText')?.value.trim() || '';
