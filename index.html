@@ -85,6 +85,10 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 .hud{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px;color:var(--text);font:600 12px var(--body);cursor:pointer}
 .hud svg{width:30px;height:30px;border-radius:50%;display:block}
 .hud .c{color:var(--gold)}
+/* шапка не вылезает за край на узких телефонах в Telegram */
+.top{min-width:0;max-width:100%}.top>*{flex-shrink:0}.hud{flex-shrink:1;min-width:0;overflow:hidden;white-space:nowrap}.hud>span{overflow:hidden;text-overflow:ellipsis;min-width:0}.hud>span:nth-child(2){flex-shrink:1}
+@media (max-width:400px){.top{gap:6px}.sound{padding:4px 7px;margin-right:4px}.brand{font-size:22px}.hud{gap:5px;padding-right:7px}.hud svg,.hud .hp{width:26px;height:26px}.hud>span:nth-child(4){display:none}}
+@media (max-width:340px){.hud>span:nth-child(2){max-width:64px}}
 .me{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:center}
 .ava svg{width:100%;border-radius:22px;display:block;border:1px solid var(--line)}
 .bar{height:8px;border-radius:99px;background:var(--ink);overflow:hidden;margin:8px 0 4px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--rose),var(--gold));border-radius:99px;transition:width .6s}
@@ -909,6 +913,7 @@ function renderTest(){
     $('vTest').innerHTML = `<div><div class="date">${t.e} ${esc(t.n)}</div><h1>${esc(t.cats[c0])}</h1><p class="note" style="margin:4px 0 0">и ещё: ${esc(t.cats[c1])}</p></div>
       <div class="block"><p style="margin:0">${esc(t.about[c0])}</p><p style="margin:0;opacity:.8">${esc(t.about[c1])}</p></div>
       ${r.prev ? `<div class="grow"><span class="eyebrow">Было — стало</span><p style="margin:0">${esc(new Date(r.prev.date + 'T12:00').toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'}))}: ${esc(r.prev.top[0])} → сейчас: ${esc(r.top[0])}</p><span class="note">${r.prev.top[0] === r.top[0] ? 'Рост не всегда виден в одном ответе — и это нормально.' : 'Что-то сдвинулось. Заметь, что именно ✦'}</span></div>` : ''}
+      ${aiBox('t-' + t.id, 'test', {test: t.n, result: r.top.join(', '), prev: r.prev ? r.prev.top.join(', ') : '', about: t.about[c0], hero: archOf()?.name || ''}, 'Разобрать с Асей ✨', 'Ася объяснит результат по-человечески и подскажет шаг.')}
       ${t.step?.[c0] ? `<div class="grow"><span class="eyebrow">Шаг на неделю</span><p style="margin:0">${esc(t.step[c0])}</p></div>` : ''}
       ${t.hero?.[c0] && archOf(t.hero[c0]) ? `<button class="opt" data-hero-go="${t.hero[c0]}"><span class="oi">${archOf(t.hero[c0]).e}</span><span>Пойти с героиней: ${esc(archOf(t.hero[c0]).name)}<small>она поможет с этим шагом</small></span><span class="go">›</span></button>` : ''}
       ${r.date === today ? reflectBox('test', {test: t.n, step: t.step?.[c0] || ''}) : ''}
@@ -1035,6 +1040,7 @@ function renderSpread(cards){
       <div class="block"><span class="eyebrow">Ситуация · ${esc(cards[0].name)}</span><p style="margin:0">${esc(cards[0].self.title)}. ${esc(cards[0].self.strength)}</p></div>
       <div class="block"><span class="eyebrow">Что мешает · ${esc(cards[1].name)}</span><p style="margin:0">${esc(cards[1].self.trap)}</p></div>
       <div class="grow"><span class="eyebrow">Твой шаг · ${esc(cards[2].name)}</span><p style="margin:0">${esc(cards[2].day.step)}</p></div>
+      ${aiBox('sp-' + cards.map(c => c.n).join('-'), 'spread', {kind: 'spread', theme: spreadTheme, cards: cards.map(c => c.name).join('; '), intent: intentToday('spread') || intentToday('card'), hero: archOf()?.name || ''}, 'Разбор от Аси ✨', 'Ася свяжет три карты с твоей темой.')}
       <details class="more"><summary>Вопрос к себе</summary><p>Где в теме «${esc(spreadTheme)}» ты узнаёшь эти три карты? Что из этого ты можешь сделать уже сегодня?</p></details>
       ${reflectBox('spread', {theme: spreadTheme, step: cards[2].day.step})}
       <button class="btn" data-spread="1">Разложить ещё раз</button>`
@@ -1248,6 +1254,16 @@ async function aiReading(){ const box = $('aiRead'), d = store.get('asya-day'); 
   const r = await aiAsk('reading', {card: a.name, meaning: a.day.meaning, intent: intentToday('card'), hero: g ? g.a.name : '', stage: g?.s?.name || '', goal: G.st.goal ? goalName(G.st.goal) : '', battery: (G.st.bat || {})[today] || '', mood: diary.get()[0]?.d === today ? diary.get()[0]?.mood || '' : '', faith: G.st.faith || ''});
   if (r.text && !r.crisis) store.set('asya-ai', {date: today, text: r.text});
   box.innerHTML = `<span class="eyebrow">✨ Разбор от Аси</span><p style="margin:0">${aiTxt(r.text || r.error)}</p>${r.error ? '<button class="btn" id="aiReadBtn">Ещё раз</button>' : ''}`; if (r.text) SFX.chime(); }
+/* Кнопка ИИ для любого раздела: агент на сервере (prompts.json), данные — только то, что нужно разделу. Ответ кэшируется на день. */
+const AIQ = {};
+function aiBox(id, agent, body, label = 'Что скажет Ася? ✨', hint = ''){ if (!aiOn()) return ''; AIQ[id] = {agent, body};
+  const c = (store.get('asya-aibox') || {})[id]; const have = c?.date === today && c.text;
+  return `<div class="grow" id="ai-${id}"><span class="eyebrow">✨ Ася лично тебе</span>${have ? `<p style="margin:0">${aiTxt(c.text)}</p>` : `${hint ? `<p class="note" style="margin:0">${esc(hint)}</p>` : ''}<button class="btn gold" data-ai="${id}">${esc(label)}</button>`}</div>`; }
+async function aiRun(id){ const q = AIQ[id], box = $('ai-' + id); if (!q || !box) return;
+  box.innerHTML = '<span class="eyebrow">✨ Ася лично тебе</span><p class="note" style="margin:0">Ася думает…</p>';
+  const r = await aiAsk(q.agent === 'spread' ? 'reading' : 'ask', {agent: q.agent, ...q.body});
+  if (r.text && !r.crisis){ const all = store.get('asya-aibox') || {}; Object.keys(all).forEach(k => all[k].date !== today && delete all[k]); all[id] = {date: today, text: r.text}; store.set('asya-aibox', all); }
+  box.innerHTML = `<span class="eyebrow">✨ Ася лично тебе</span><p style="margin:0">${aiTxt(r.text || r.error)}</p>${r.error ? `<button class="btn" data-ai="${id}">Ещё раз</button>` : ''}`; if (r.text) SFX.chime(); }
 const CHAT = {mode: 'friend', msgs: [], busy: false};
 function renderAiChat(mode){ if (mode && mode !== CHAT.mode){ CHAT.mode = mode; CHAT.msgs = []; } const g = C.guides.find(x => x.id === CHAT.mode) || C.guides[0];
   $('vChat').innerHTML = `<div><button class="back-link" id="aiBack">‹ Все роли</button><div class="date">${g.e} ${esc(g.name)}</div><h1>Ася слушает</h1></div>
@@ -1741,7 +1757,11 @@ document.addEventListener('click', e => {
     if (!text && !Object.keys(parts).length && !dMood){ toast('Напиши хоть пару слов или выбери настроение'); return; }
     diary.add({d: today, mood: dMood, q: $('dText') ? DQB[dQ % DQB.length] : 'Итог дня', text, parts, follow: C.followups[dMood || 'ok']});
     const first = !isDone('diary'); done('diary'); if (first){ G.st.diaryN = (G.st.diaryN || 0) + 1; G.add(15, 'запись в дневнике'); } else SFX.chime();
-    dMood = null; dDraft = ''; return renderDiary(); }
+    const aiT = [text, ...Object.values(parts)].filter(Boolean).join('\n').slice(0, 1500), aiM = dMood;
+    dMood = null; dDraft = ''; renderDiary();
+    if (aiT && aiOn()) $('vDiary').insertAdjacentHTML('afterbegin', aiBox('d-' + Date.now(), 'diary', {text: aiT, mood: aiM || ''}, 'Ася, что скажешь? ✨', 'Если хочешь — Ася прочитает эту запись и ответит. Запись не сохраняется у нас.'));
+    return; }
+  { const ai = e.target.closest('[data-ai]'); if (ai){ aiRun(ai.dataset.ai); return; } }
   if (e.target.closest('#aiReadBtn')){ aiReading(); return; }
   if (e.target.closest('#aiSend')){ aiSend(); return; }
   if (e.target.closest('#aiBack')){ CHAT.msgs = []; renderChat(); return; }
