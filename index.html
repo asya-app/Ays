@@ -94,6 +94,15 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 .hud>span:nth-child(2){flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 .hud>span{white-space:nowrap}
 .tag{display:none!important}.src{color:var(--muted);font-size:12px}
+/* «Как ты сейчас?» — мягкая диагностика на главной */
+.check{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:22px;background:linear-gradient(160deg,rgba(232,204,140,.16),rgba(233,166,184,.10));border:1px solid rgba(232,204,140,.45)}
+.ckhead{display:flex;gap:12px;align-items:flex-start}.ckav{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:rgba(232,204,140,.18);border:1px solid rgba(232,204,140,.5);color:var(--gold)}
+.ckgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ckopt{display:flex;align-items:center;gap:8px;padding:12px;border-radius:14px;background:var(--panel);border:1px solid var(--line);color:var(--text);font:500 14px var(--body);text-align:left;cursor:pointer;min-height:48px}
+.ckopt span{font-size:18px}.ckopt:active{transform:scale(.97);border-color:var(--gold)}
+.homemore>summary{font:600 14px var(--body);color:var(--gold);padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);cursor:pointer;list-style:none;text-align:center}
+.homemore>summary::-webkit-details-marker{display:none}.homemore[open]>summary{margin-bottom:4px}
+.allhero{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:14px;border:1px dashed rgba(232,204,140,.7);background:rgba(232,204,140,.08);color:var(--gold);font:600 15px var(--body);cursor:pointer;width:100%}
 .hud .lv{color:var(--muted);font-weight:500}
 .hud::after{content:'›';color:var(--muted);font-size:16px;margin-left:2px}
 .me{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:center}
@@ -339,10 +348,14 @@ body[data-deck="d_back_aurora"] .deck .back{background:linear-gradient(160deg,#1
   <!-- Главная: хаб выбора -->
   <section class="view" id="vHome">
     <div><div class="date" id="homeDate"></div><h1 id="homeHello">Привет</h1></div>
+    <div id="homeCheck"></div>
     <div id="homePath" style="display:flex;flex-direction:column;gap:10px"></div>
     <div id="homeRitual"></div>
-    <div><span class="eyebrow">Что хочешь сегодня?</span><div class="tiles" id="homeTiles" style="margin-top:10px"></div></div>
-    <div id="homeSelf"></div>
+    <details class="more homemore" id="homeMoreBox"><summary>Ещё для тебя сегодня</summary>
+      <div id="homeMore" style="display:flex;flex-direction:column;gap:10px;margin-top:10px"></div>
+      <div style="margin-top:14px"><span class="eyebrow">Что хочешь сегодня?</span><div class="tiles" id="homeTiles" style="margin-top:10px"></div></div>
+      <div id="homeSelf" style="margin-top:12px"></div>
+    </details>
   </section>
 
   <!-- Познай себя: библиотека -->
@@ -851,7 +864,7 @@ function renderArchMe(){
       return `<div class="skill"><span>${esc(s.name)}</span><span class="dots">${[0, 1, 2, 3, 4].map(i => `<i class="${i < v ? 'on' : ''}"></i>`).join('')}</span></div><p class="note" style="margin:-2px 0 6px">${tx ? esc(tx) : 'Первый шаг в этом навыке — и я скажу, что у тебя уже получается.'}</p>`; }).join('')}</div>
     <div class="block"><span class="eyebrow">Испытание недели</span><p style="margin:0">${esc(a.challenge)}</p><div class="row">${done ? '<button class="btn" disabled>Выполнено ✦</button>' : '<button class="btn gold" id="chalBtn">Сделала · +40 света</button>'}</div></div>
     <div class="block"><span class="eyebrow">Её тень</span><p style="margin:0">${esc(a.shadow)}</p><p style="margin:0">Шаг из тени: ${esc(a.shadowStep)}</p></div>
-    <div class="row"><button class="btn" data-go="vArch">Хоровод героинь</button></div>`;
+    <button class="allhero" data-go="vArch">👑 Хоровод: все 12 героинь ›</button>`;
 }
 function renderMe(){
   renderArchMe(); renderGame(); renderWorld();
@@ -1325,7 +1338,7 @@ function renderStart(){
   else if (F.step === 4){ const ids = F.trio || GOALS[G.st.goal]?.[4] || ['queen', 'muse', 'healer'], arc = G.st.me?.arc;
     v.innerHTML = `${ftDots(4)}<div><div class="date">Шаг 4 из 6</div><h1>Кем ты растёшь?</h1></div><p class="lead">${G.st.goal ? `Для цели «${esc(goalName(G.st.goal))}» я вижу трёх героинь.` : 'Вот три героини, которые тебе созвучны.'} Выбери ту, на которую хочется быть похожей: каждый твой шаг будет растить в тебе её навыки.</p>
     ${ids.map(id => archOf(id)).filter(Boolean).map(a => { const h = HERO?.heroines?.[a.id]; return `<div class="block"><div style="display:flex;gap:14px;align-items:center"><div class="aport" style="width:68px;height:68px;font-size:34px;flex:none;--c1:${esc(a.c1)};--c2:${esc(a.c2)};--st:2">${a.e}</div><div style="flex:1"><h2 style="margin:0">${esc(a.name)}</h2>${arc && a.arcana.includes(arc) ? '<span class="dayok">✦ созвучна твоему аркану</span>' : ''}<p class="note" style="margin:4px 0 0">${h?.facet ? esc('Грань: ' + h.facet + '. ') : ''}${esc(a.essence)}</p></div></div><div class="chips">${a.skills.map(s => `<span class="chip">${esc(s.name)}</span>`).join('')}</div><button class="btn gold" data-arch-pick="${a.id}">Расту в неё</button></div>`; }).join('')}
-    <button class="back-link" data-ft-all="1" style="align-self:center">Посмотреть все 12</button>`; }
+    <button class="allhero" data-ft-all="1">👑 Посмотреть всех 12 героинь ›</button><span class="note" style="text-align:center">Выбор можно поменять в любой момент</span>`; }
   else if (F.step === 5) v.innerHTML = `<div class="ft">${ftDots(5)}<div class="ftspark">🂠</div><h1>Вытяни свою первую карту</h1><p class="lead">Карта не предсказывает — она задаёт вопрос. И подсказывает, с какого шага начать сегодня.</p><button class="btn gold" data-go="vToday">К колоде ✦</button></div>`;
   else { const a = archOf(), st = stageOf();
     v.innerHTML = `${ftDots(6)}<div><div class="date">Шаг 6 из 6</div><h1>Вот как ты будешь расти</h1></div>
@@ -1624,8 +1637,29 @@ function renderPath(){
   if (G.st.stepDay === today && G.st.invWeek !== weekKey()) h += `<div class="tip"><button class="x" data-inv-x="1" aria-label="Закрыть">×</button><span class="eyebrow">💌 Подари подруге</span><p style="margin:0">Ты сделала шаг — это уже больше, чем вчера. Есть подруга, которой сейчас тоже нужен маленький пинок? Подари ей её личную карту — Ася узнает, что подарок от тебя.</p><div class="row"><button class="btn gold" data-tglink="invite" data-inv-x="1">Подарить карту подруге ✦</button></div></div>`;
   const cw = CH && G.st.chw && CH.chakras.find(x => x.id === G.st.chw.id), cwd = cw ? Math.floor((Date.parse(today) - Date.parse(G.st.chw.start)) / 864e5) : -1;
   if (cw && cwd < 7 && !G.st.chw.done?.[cwd]) h = `<button class="opt" data-go="vChakra"><span class="oi">◉</span><span>Неделя с центром «${esc(cw.ru)}» · день ${cwd + 1}<small>${esc(cw.week[cwd])}</small></span><span class="go">›</span></button>` + h;
-  box.innerHTML = myDayCard() + adviceCard() + laterBox() + triCard() + dayQCard() + h;
+  box.innerHTML = h;
+  const more = $('homeMore'); if (more) more.innerHTML = myDayCard() + adviceCard() + laterBox() + triCard() + dayQCard();
+  renderCheck();
 }
+/* Мягкая диагностика (07.11): Ася первой спрашивает «Как ты сейчас?» и бережно ведёт к ОДНОМУ действию.
+   Ответ живёт только в телефоне; заодно отмечает силы дня (батарейка) и настроение для разборов Аси. */
+const CHECK = [
+  {id: 'tired', e: '🌧', t: 'Нет сил', bat: 1, mood: 'устала', say: 'Слышу тебя. Когда сил мало, лучшее, что можно сделать, — перестать требовать от себя. Одна минута медленного дыхания вернёт немного опоры, а всё остальное подождёт.', go: ['vBreath', 'Подышать со мной минуту'], alt: ['friend', 'Просто поговорить с Асей']},
+  {id: 'anx', e: '🌀', t: 'Тревожно', bat: 2, mood: 'тревога', say: 'Тревога — это твоё тело, которое пытается тебя защитить. Сначала успокоим его, а потом спокойно посмотрим, что тебя тревожит.', go: ['vBreath', 'Успокоиться за минуту'], alt: ['friend', 'Рассказать Асе, что тревожит']},
+  {id: 'sad', e: '💧', t: 'Грустно, обидно', bat: 2, mood: 'грусть', say: 'Если грустно или обидно — значит, задето что-то важное для тебя. Это не нужно держать в себе: выговорись, а я буду рядом.', go: ['vDiary', 'Выговориться в дневнике'], alt: ['friend', 'Поговорить с Асей']},
+  {id: 'him', e: '💞', t: 'Думаю о нём', bat: 3, mood: 'отношения', say: 'Давай разберёмся спокойно: что ты чувствуешь, чего хочешь ты сама — и какими словами это сказать, чтобы тебя услышали.', go: ['vHim', 'Разобраться: что у нас с ним'], alt: ['love', 'Обсудить с Асей']},
+  {id: 'ok', e: '🌤', t: 'Ровно', bat: 3, mood: 'спокойно', say: 'Ровный день — лучшее время для одного маленького шага к себе. Начнём с карты: она подскажет, на что посмотреть сегодня.', go: ['vToday', 'Вытянуть карту дня'], alt: ['vTests', 'Узнать себя: тест за 2 минуты']},
+  {id: 'good', e: '☀️', t: 'Хорошо, есть силы', bat: 5, mood: 'радость', say: 'Ты в силе — и это прекрасный момент для шага, который давно откладывала. Вытяни карту: она даст смелый шаг на сегодня.', go: ['vToday', 'Вытянуть карту дня'], alt: ['vSpread', 'Расклад на ситуацию']}];
+function renderCheck(){ const box = $('homeCheck'); if (!box) return; if (ftueOn()){ box.innerHTML = ''; return; }
+  const ck = (G.st.chk || {})[today], c = ck && CHECK.find(x => x.id === ck), nm = G.st.name ? ', ' + esc(G.st.name) : '';
+  const btn = ([go, label], gold) => C.guides.some(g => g.id === go) ? `<button class="btn${gold ? ' gold' : ''}" data-guide="${go}">${esc(label)}</button>` : `<button class="btn${gold ? ' gold' : ''}" data-go="${go === 'vToday' && isDone('card') ? 'vToday' : go}">${esc(go === 'vToday' && isDone('card') ? 'Открыть мою карту и шаг' : label)}</button>`;
+  box.innerHTML = !c
+    ? `<div class="check"><div class="ckhead"><span class="ckav">✦</span><div><span class="eyebrow">Ася рядом</span><p style="margin:0;font:400 21px/1.3 var(--display)">Как ты сейчас${nm}?</p></div></div>
+       <p class="note" style="margin:0">Выбери то, что ближе, — я подскажу, с чего начать именно сегодня.</p>
+       <div class="ckgrid">${CHECK.map(x => `<button class="ckopt" data-chk="${x.id}"><span>${x.e}</span>${esc(x.t)}</button>`).join('')}</div>
+       <button class="back-link" data-go="vHelp" style="align-self:flex-start;color:var(--rose)">Мне очень плохо — нужна помощь сейчас</button></div>`
+    : `<div class="check"><div class="ckhead"><span class="ckav">${c.e}</span><div><span class="eyebrow">Ася · ты сегодня: ${esc(c.t.toLowerCase())}</span><p style="margin:0">${esc(c.say)}</p></div></div>
+       ${btn(c.go, true)}${btn(c.alt, false)}<button class="back-link" data-chk-again="1" style="align-self:center">Ответить иначе</button></div>`; }
 document.addEventListener('input', e => { const r = e.target.closest('[data-rng]'); if (r) $(r.dataset.rng).textContent = r.value; });
 
 function showView(id, isBack){
@@ -1771,6 +1805,9 @@ document.addEventListener('click', e => {
     const first = !isDone('diary'); done('diary'); if (first){ G.st.diaryN = (G.st.diaryN || 0) + 1; G.add(15, 'запись в дневнике'); } else SFX.chime();
     dMood = null; dDraft = ''; return renderDiary(); }
   { const ai = e.target.closest('[data-ai]'); if (ai){ aiRun(ai.dataset.ai); return; } }
+  { const ck = e.target.closest('[data-chk]'); if (ck){ const c = CHECK.find(x => x.id === ck.dataset.chk); (G.st.chk = G.st.chk || {})[today] = c.id;
+      const b = G.st.bat = G.st.bat || {}; if (!b[today]) b[today] = c.bat; G.save(); SFX.chime(); buzz('light'); renderCheck(); $('homeCheck').scrollIntoView({block: 'nearest', behavior: 'smooth'}); return; } }
+  if (e.target.closest('[data-chk-again]')){ delete (G.st.chk || {})[today]; G.save(); SFX.tap(); renderCheck(); return; }
   if (e.target.closest('#aiReadBtn')){ aiReading(); return; }
   if (e.target.closest('#aiSend')){ aiSend(); return; }
   if (e.target.closest('#aiBack')){ CHAT.msgs = []; renderChat(); return; }
