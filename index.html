@@ -629,6 +629,7 @@ function showDay(n){
   if (ftueOn()) return showDayFt(a, d);
   $('cardArea').innerHTML = `<div class="reveal">${face(a)}<div class="meaning"><span class="eyebrow">Карта дня</span><h2>${esc(a.name)}</h2><p style="margin:0">${esc(d.meaning)}</p></div></div>
     ${asyaSays(n)}
+    ${aiReadBox()}
     ${coincide(n)}
     ${reflectBox('card', {card: a.name})}
     ${nameAsk()}
@@ -1228,8 +1229,37 @@ function renderChat(){
     <div class="tlist">${C.guides.map((g, i) => `<button class="guide" data-guide="${g.id}"${g.id === 'love' ? ' data-rel="1"' : ''} style="--g1:${['#8B6CFF', '#F28DB2', '#E8CC8C', '#7AA7E8'][i]};--g2:${['#2C1F7A', '#4A1630', '#4A3410', '#14234A'][i]}"><span class="gi">${g.e}</span><span>${esc(g.name)}<small>${esc(g.about)}</small></span></button>`).join('')}</div>
     <div class="tiles"><button class="tile" data-go="vBreath" style="--g1:#3EE6E0;--g2:#0F4A63"><span class="ti">🌬️</span><span>Дыши со мной<small style="display:block">минута тишины</small></span></button>
       <button class="tile" data-go="vHelp" style="--g1:#E98FA8;--g2:#4A1630"><span class="ti">❋</span><span>Мне плохо<small style="display:block">помощь прямо сейчас</small></span></button></div>
-    <p class="note">Ася — не врач и не психотерапевт. Разговор идёт в чате бота: Ася его не хранит, но он остаётся в твоём Telegram — можно включить автоудаление.</p>`;
+    <p class="note">Ася — не врач и не психотерапевт. ${aiOn() ? 'Разговор идёт прямо здесь и не сохраняется: закроешь приложение — он исчезнет.' : 'Разговор идёт в чате бота: Ася его не хранит, но он остаётся в твоём Telegram — можно включить автоудаление.'}</p>`;
 }
+/* ИИ Аси (GigaChat на нашем сервере в РФ): разбор карты и разговор прямо в приложении. Только внутри Telegram (подпись), без интернета — прячется.
+   Переписка живёт только в памяти этой страницы и не сохраняется. */
+const API = 'https://asya-app.ru/api', aiOn = () => !!TG?.initData && navigator.onLine;
+async function aiAsk(path, body){
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 70000);
+  try { const r = await fetch(API + '/' + path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({initData: TG.initData, ...body}), signal: ctl.signal});
+    const j = await r.json().catch(() => ({})); return j.text ? j : {error: j.error || 'Я на минутку задумалась и не смогла ответить. Попробуй ещё раз чуть позже ✦'}; }
+  catch { return {error: 'Не получилось дозвониться до Аси — проверь интернет и попробуй ещё раз ✦'}; } finally { clearTimeout(t); }
+}
+const aiTxt = t => esc(t).replace(/\n/g, '<br>');
+function aiReadBox(){ if (!aiOn()) return ''; const c = store.get('asya-ai'); const have = c?.date === today && c.text;
+  return `<div class="grow" id="aiRead"><span class="eyebrow">✨ Разбор от Аси</span>${have ? `<p style="margin:0">${aiTxt(c.text)}</p>` : '<p class="note" style="margin:0">Ася посмотрит на карту через твой запрос, героиню и силы сегодня — и скажет лично тебе.</p><button class="btn gold" id="aiReadBtn">Попросить разбор ✨</button>'}</div>`; }
+async function aiReading(){ const box = $('aiRead'), d = store.get('asya-day'); if (!box || !d) return; const a = byN(d.n), g = growStep();
+  box.innerHTML = '<span class="eyebrow">✨ Разбор от Аси</span><p class="note" style="margin:0">Ася смотрит на твою карту…</p>';
+  const r = await aiAsk('reading', {card: a.name, meaning: a.day.meaning, intent: intentToday('card'), hero: g ? g.a.name : '', stage: g?.s?.name || '', goal: G.st.goal ? goalName(G.st.goal) : '', battery: (G.st.bat || {})[today] || '', mood: diary.get()[0]?.d === today ? diary.get()[0]?.mood || '' : '', faith: G.st.faith || ''});
+  if (r.text && !r.crisis) store.set('asya-ai', {date: today, text: r.text});
+  box.innerHTML = `<span class="eyebrow">✨ Разбор от Аси</span><p style="margin:0">${aiTxt(r.text || r.error)}</p>${r.error ? '<button class="btn" id="aiReadBtn">Ещё раз</button>' : ''}`; if (r.text) SFX.chime(); }
+const CHAT = {mode: 'friend', msgs: [], busy: false};
+function renderAiChat(mode){ if (mode && mode !== CHAT.mode){ CHAT.mode = mode; CHAT.msgs = []; } const g = C.guides.find(x => x.id === CHAT.mode) || C.guides[0];
+  $('vChat').innerHTML = `<div><button class="back-link" id="aiBack">‹ Все роли</button><div class="date">${g.e} ${esc(g.name)}</div><h1>Ася слушает</h1></div>
+    <div id="aiLog">${CHAT.msgs.length ? '' : `<div class="block"><p style="margin:0">${esc(g.about)}. Расскажи, что у тебя сейчас — как подруге 🤍</p></div>`}${CHAT.msgs.map(m => `<div class="${m.role === 'user' ? 'block' : 'grow'}" style="${m.role === 'user' ? 'margin-left:18%' : 'margin-right:8%'}"><p style="margin:0">${aiTxt(m.content)}</p></div>`).join('')}${CHAT.busy ? '<p class="note">Ася пишет…</p>' : ''}</div>
+    <textarea id="aiIn" placeholder="Напиши Асе…" style="min-height:64px" maxlength="1000"></textarea><div class="row"><button class="btn gold" id="aiSend"${CHAT.busy ? ' disabled' : ''}>Отправить</button><button class="btn" data-go="vHelp">Мне плохо</button></div>
+    <p class="note">Ася — не врач и не психотерапевт. Переписка не сохраняется: закроешь приложение — она исчезнет. Не пиши фамилии, адреса и данные о здоровье.</p>`;
+  $('aiLog').lastElementChild?.scrollIntoView({block: 'end'}); }
+async function aiSend(){ const ta = $('aiIn'), tx = (ta?.value || '').trim(); if (!tx || CHAT.busy) return;
+  CHAT.msgs.push({role: 'user', content: tx.slice(0, 1000)}); CHAT.busy = true; renderAiChat(); SFX.tap();
+  const r = await aiAsk('chat', {mode: CHAT.mode, messages: CHAT.msgs.slice(-10)}); CHAT.busy = false;
+  if (r.text) CHAT.msgs.push({role: 'assistant', content: r.text}); else CHAT.msgs.push({role: 'assistant', content: r.error});
+  if (!$('vChat').hidden) renderAiChat(); }
 const HIST = [];
 function goBack(fallback){ const prev = HIST.pop(); showView(prev || fallback || 'vHome', true); }
 try { TG?.BackButton?.onClick(() => goBack()); } catch {}
@@ -1712,7 +1742,11 @@ document.addEventListener('click', e => {
     diary.add({d: today, mood: dMood, q: $('dText') ? DQB[dQ % DQB.length] : 'Итог дня', text, parts, follow: C.followups[dMood || 'ok']});
     const first = !isDone('diary'); done('diary'); if (first){ G.st.diaryN = (G.st.diaryN || 0) + 1; G.add(15, 'запись в дневнике'); } else SFX.chime();
     dMood = null; dDraft = ''; return renderDiary(); }
-  const gd = e.target.closest('[data-guide]'); if (gd){ SFX.tap(); const link = 'https://t.me/Asya_app_bot?start=talk_' + gd.dataset.guide; if (TG?.openTelegramLink) TG.openTelegramLink(link); else window.open(link, '_blank'); return; }
+  if (e.target.closest('#aiReadBtn')){ aiReading(); return; }
+  if (e.target.closest('#aiSend')){ aiSend(); return; }
+  if (e.target.closest('#aiBack')){ CHAT.msgs = []; renderChat(); return; }
+  const gd = e.target.closest('[data-guide]'); if (gd && aiOn()){ SFX.tap(); if ($('vChat').hidden) showView('vChat'); return renderAiChat(gd.dataset.guide); }
+  if (gd){ SFX.tap(); const link = 'https://t.me/Asya_app_bot?start=talk_' + gd.dataset.guide; if (TG?.openTelegramLink) TG.openTelegramLink(link); else window.open(link, '_blank'); return; }
   if (e.target.closest('#signBtn')){ const me = G.st.me; if (!me?.sign){ toast('Сначала узнай свой знак — в «Моя дата»'); return showView('vSelf'); }
     const a = signEl(me.sign), b = signEl($('hisSign').value), key = [a[0], b[0]].sort((x, y) => ['fire', 'earth', 'air', 'water'].indexOf(x) - ['fire', 'earth', 'air', 'water'].indexOf(y)).join('-'), p = C.pairs[key] || C.pairs[key.split('-').reverse().join('-')];
     SFX.chime(); $('signOut').innerHTML = `<p style="margin:8px 0 0">${a[1].e} ${esc(me.sign)} + ${b[1].e} ${esc($('hisSign').value)}</p><p style="margin:0">💞 ${esc(p.match)}</p><p style="margin:0">⚡ ${esc(p.friction)}</p><div class="grow" style="margin-top:6px"><span class="eyebrow">Шаг для вас</span><p style="margin:0">${esc(p.step)}</p></div>`; return; }
