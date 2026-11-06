@@ -518,7 +518,7 @@ function showDay(n){
     ${(() => { const g = growStep(); return g
       ? `<div class="grow"><span class="eyebrow">Шаг роста · ${g.a.e} ${esc(g.a.name)} · навык «${esc(g.s.name)}» · сфера «${esc(C.balance[skillSphere(g.a, g.s)].split(' ')[0])}»</span><p style="margin:0">${esc(g.text)}</p><span class="note">Или шаг от карты${d.sphere ? ' (' + esc(d.sphere) + ')' : ''}: ${esc(d.step)}</span><span class="note">Если шаг сейчас небезопасен или не подходит — пропусти, это тоже выбор.</span></div>`
       : `<div class="block"><span class="eyebrow">Шаг на сегодня${d.sphere ? ' · ' + esc(d.sphere) : ''}</span><p style="margin:0">${esc(d.step)}</p><span class="note">Хочешь шаги со смыслом? <a href="#" data-go="vArch" style="color:var(--gold)">Выбери, кем ты растёшь</a>.</span></div>`; })()}
-    <div class="block"><span class="eyebrow">Сделай за меня</span><div class="ready" id="dayText">${esc(d.text)}</div><div class="row">${copyBtn('dayText')}</div><span class="note">Отправляешь сама, когда будешь готова.</span></div>
+    <div class="block"><span class="eyebrow">Сделай за меня</span><div class="ready" id="dayText">${esc(d.text)}</div><div class="row">${copyBtn('dayText')}${G.st.sentDay === today ? '<button class="btn" disabled>Отправила ✦</button>' : '<button class="btn" id="sentBtn">Я отправила · +30</button>'}</div><span class="note">Отправляешь сама, когда будешь готова. Можно своими словами.</span></div>
     <div class="row">${G.st.stepDay === today ? '<button class="btn" disabled>Шаг сделан ✦</button>' : '<button class="btn gold" id="stepBtn">Сделала шаг · +20</button>'}</div>
     <div class="block"><span class="eyebrow">Вечером спрошу</span><p style="margin:0">${esc(d.evening)}</p></div>
     <p class="note">Новая карта будет завтра.</p>`;
@@ -531,10 +531,11 @@ document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click'
   const n = three[+b.dataset.pick]; buzz('medium');
   store.set('asya-day', {date: today, n});
   store.set('asya-recent', [n, ...(store.get('asya-recent') || [])].slice(0, 7));
-  const first = !G.st.days.includes(today); if (first){ G.st.days.push(today); G.save(); }  // день записан, даже если закроет во время анимации
+  const first = !G.st.days.includes(today), last = G.st.days[G.st.days.length - 1], back = first && last && (Date.parse(today) - Date.parse(last)) / 864e5 >= 2;
+  if (first){ G.st.days.push(today); G.save(); }  // день записан, даже если закроет во время анимации
   await fxReveal(b);
   showDay(n); SFX.chime(); picking = false;
-  if (first) G.add(10, 'карта дня'); done('card');
+  if (first) G.add(back ? 20 : 10, back ? 'с возвращением ✦' : 'карта дня'); done('card');
 }));
 $('shuffleBtn').addEventListener('click', () => { if (!shuffling && !picking) shuffle(); });
 
@@ -602,16 +603,17 @@ const BADGES = [
   {id:'first', n:'✦ Первая карта', ok: s => s.days.length >= 1},
   {id:'step3', n:'👣 3 шага', ok: s => s.steps >= 3},
   {id:'test1', n:'🧠 Узнала себя', ok: s => Object.keys(s.tests).length >= 1},
-  {id:'streak3', n:'🔥 3 дня подряд', ok: s => streak(s) >= 3},
+  {id:'streak3', n:'🌙 3 дня с Асей', ok: s => s.days.length >= 3},
   {id:'calm', n:'🌬️ Выдохнула', ok: s => s.breath >= 1},
   {id:'style', n:'👗 Свой образ', ok: s => s.owned.length >= 1},
-  {id:'week', n:'🌟 Неделя со мной', ok: s => streak(s) >= 7}
+  {id:'week', n:'🌟 7 дней с Асей', ok: s => s.days.length >= 7},
+  {id:'sent1', n:'💌 Отправила', ok: s => (s.sent || 0) >= 1}
 ];
 function streak(s){ let n = 0; const d = new Date(); if (!s.days.includes(dayKey(d))) d.setDate(d.getDate() - 1);  // утром до карты серия ещё жива
   for (;;){ if (!s.days.includes(dayKey(d))) break; n++; d.setDate(d.getDate() - 1); } return n; }
 const G = {
   st: Object.assign({xp: 0, spent: 0, owned: [], wear: {}, tests: {}, steps: 0, stepDay: '', days: [], breath: 0, arch: null, skills: {}, archSteps: 0, chal: '', me: null}, store.get('asya-game') || {}),
-  save(){ store.set('asya-game', G.st); if (G.cloudReady) try { G.st.days = G.st.days.slice(-120); TG?.CloudStorage?.setItem('game', JSON.stringify(G.st)); } catch {} hud();
+  save(){ store.set('asya-game', G.st); hud();
     if (G.st.got){ BADGES.filter(b => b.ok(G.st) && !G.st.got.includes(b.id)).forEach((b, i) => { G.st.got.push(b.id); store.set('asya-game', G.st); setTimeout(() => fxBadge(b.n.split(' ')[0], b.n.split(' ').slice(1).join(' ')), 600 + i * 1400); }); } },
   lvl(){ let l = 0; while (l < LVL.length - 1 && G.st.xp >= LVL[l + 1]) l++; return l; },
   coins(){ return Math.floor(G.st.xp / 2) - G.st.spent; },
@@ -623,9 +625,7 @@ const G = {
 if (!G.st.got) G.st.got = BADGES.filter(b => b.ok(G.st)).map(b => b.id);  // старые награды без салюта
 /* облако Telegram: если там прогресс больше — берём его (новый телефон) */
 /* в облако пишем только после того, как прочитали его, — иначе новый телефон затрёт старый прогресс */
-try { if (!TG?.CloudStorage?.getItem || !TG.isVersionAtLeast?.('6.9')) throw 0;
-  TG.CloudStorage.getItem('game', (err, v) => { G.cloudReady = !err;
-    if (!err && v){ const c = JSON.parse(v); if ((c.xp || 0) > G.st.xp){ G.st = Object.assign(G.st, c, {days: [...new Set([...(c.days || []), ...G.st.days])].sort()}); store.set('asya-game', G.st); hud(); renderMe(); } } }); } catch {}
+/* облако Telegram выключено с 06.11 (trust-dpo): прогресс хранится только в телефоне; вернуть — после решения юриста */
 
 function avatar(w = G.st.wear, lvl = G.lvl() + 1){
   const it = id => SHOP.find(x => x.id === id) || {};
@@ -650,7 +650,7 @@ function avatar(w = G.st.wear, lvl = G.lvl() + 1){
     <rect x="2" y="2" width="24" height="13" rx="6.5" fill="rgba(0,0,0,.5)"/><text x="14" y="11.5" text-anchor="middle" font-size="8" font-weight="700" fill="#E8CC8C" font-family="system-ui">✦${lvl}</text>
   </svg>`;
 }
-function hud(){ const a = archOf(); $('hud').innerHTML = avatar() + `<span>${a ? a.e + ' ' + esc(AR.stages[stageOf()].name) : esc(LADDER[G.lvl()])}</span><span class="c">● ${G.coins()}</span>${streak(G.st) && !QUIET ? `<span>🔥${streak(G.st)}</span>` : ''}`; }
+function hud(){ const a = archOf(); $('hud').innerHTML = avatar() + `<span>${a ? a.e + ' ' + esc(AR.stages[stageOf()].name) : esc(LADDER[G.lvl()])}</span><span class="c">● ${G.coins()}</span>${G.st.days.length && !QUIET ? `<span>🌙${G.st.days.length}</span>` : ''}`; }
 
 /* ===== Образ, который она выращивает: 12 архетипов, 5 ступеней, 3 навыка ===== */
 const archOf = (id = G.st.arch) => AR.archetypes.find(x => x.id === id);
@@ -709,7 +709,7 @@ function renderMe(){
   $('meAva').innerHTML = avatar(); $('meLvl').textContent = 'Статус ' + (l + 1) + ' из ' + LADDER.length; $('meName').textContent = LADDER[l];
   $('meBar').style.width = (nx ? Math.round((s.xp - LVL[l]) / (nx - LVL[l]) * 100) : 100) + '%';
   $('meNext').textContent = nx ? `${s.xp} опыта · до «${LADDER[l + 1]}» ещё ${nx - s.xp}` : `${s.xp} опыта · высший статус`;
-  $('meStat').innerHTML = `<div><b>${s.days.length}</b><small>карт открыто</small></div><div><b>${s.steps}</b><small>шагов сделано</small></div><div><b>${streak(s)}</b><small>дней подряд</small></div>`;
+  $('meStat').innerHTML = `<div><b>${s.days.length}</b><small>дней с Асей</small></div><div><b>${s.steps}</b><small>шагов сделано</small></div><div><b>${s.sent || 0}</b><small>отправила</small></div>`;
   $('meDid').textContent = s.steps ? `Ты сделала ${s.steps} ${s.steps === 1 ? 'шаг' : s.steps < 5 ? 'шага' : 'шагов'}, которые обычно откладывают. Это смелость, а не мелочь.` : 'Здесь будут твои победы: каждый сделанный шаг из карты дня.';
   $('meLadder').innerHTML = LADDER.map((x, i) => `<span class="${i === l ? 'on' : ''}">${x}</span>`).join('');
   $('meLadder').closest('.block').hidden = !!archOf();  // одна главная шкала: если выбран образ — растёт ступень образа
@@ -1052,6 +1052,10 @@ document.addEventListener('click', e => {
   if (c){ const t = $(c.dataset.copy).textContent; navigator.clipboard?.writeText(t).then(() => toast('Скопировано'), () => { const r = document.createRange(); r.selectNodeContents($(c.dataset.copy)); getSelection().removeAllRanges(); getSelection().addRange(r); toast('Текст выделен, скопируй'); }); return; }
   const bk = e.target.closest('[data-back]'); if (bk){ buzz(); return goBack(bk.dataset.back); }
   const g = e.target.closest('[data-go],.tab'); if (g){ buzz(); return showView(g.dataset.go || g.dataset.view); }
+  const sb = e.target.closest('#sentBtn'); if (sb){ if (G.st.sentDay === today) return; G.st.sentDay = today; G.st.sent = (G.st.sent || 0) + 1; SFX.step();
+    const r = sb.getBoundingClientRect(); fxBurst(r.left + r.width / 2, r.top + r.height / 2, 22); G.add(30, 'смелость засчитана');
+    fxCelebrate({icon: '💌', kicker: 'Смелость', title: 'Ты отправила', sub: 'Это и есть шаг: не идеально, а по-настоящему. Что бы ни ответили — ты уже сделала своё.'});
+    const sv = store.get('asya-day'); if (sv) showDay(sv.n); return; }
   const s = e.target.closest('#stepBtn'); if (s){ if (G.st.stepDay === today) return; G.st.steps++; G.st.stepDay = today;
     SFX.step(); const r = s.getBoundingClientRect(); fxBurst(r.left + r.width / 2, r.top + r.height / 2, 22);
     const g = growStep(); if (g){ const st0 = stageOf(); G.st.skills[g.s.id] = (G.st.skills[g.s.id] || 0) + 1; G.st.archSteps++; if (stageOf() > st0) stageUp(g.a); }
