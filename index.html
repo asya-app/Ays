@@ -301,7 +301,7 @@ body[data-deck="d_back_aurora"] .deck .back{background:linear-gradient(160deg,#1
 </style>
 
 <div class="app">
-  <div class="top"><span class="brand" id="brand">Ася</span><button class="sound" data-go="vHelp" aria-label="Мне плохо — помощь">❋ SOS</button><button class="sound" id="soundBtn" aria-label="Звук" style="margin-left:0"></button><button class="hud" id="hud" data-go="vWay" aria-label="Мой профиль"></button></div>
+  <div class="top"><span class="brand" id="brand">Ася</span><button class="sound" data-go="vHelp" aria-label="Мне плохо — помощь">❋ SOS</button><button class="sound" data-fb="1" aria-label="Сказать Асе — отзыв">💌</button><button class="sound" id="soundBtn" aria-label="Звук" style="margin-left:0"></button><button class="hud" id="hud" data-go="vWay" aria-label="Мой профиль"></button></div>
 
   <!-- Помощь прямо сейчас -->
   <section class="view" id="vHim" hidden></section>
@@ -309,6 +309,9 @@ body[data-deck="d_back_aurora"] .deck .back{background:linear-gradient(160deg,#1
 
   <!-- Чакры -->
   <section class="view" id="vChakra" hidden></section>
+
+  <!-- Сказать Асе -->
+  <section class="view" id="vFb" hidden></section>
 
   <!-- Душа -->
   <section class="view" id="vSoul" hidden></section>
@@ -437,7 +440,7 @@ body[data-deck="d_back_aurora"] .deck .back{background:linear-gradient(160deg,#1
     <div class="block"><span class="eyebrow">Награды</span><div class="badges" id="meBadges"></div></div>
     <div id="gameBox"></div>
     <div id="myWorld"></div>
-    <div class="block"><span class="eyebrow">Помоги сделать Асю лучше</span><p style="margin:0">Что понравилось, что мешает, где что-то сломалось — напиши мне. Отзыв анонимный, команда читает каждый.</p><div class="row"><button class="btn" data-tglink="feedback">💌 Написать отзыв</button></div></div>
+    <div class="block"><span class="eyebrow">Помоги сделать Асю лучше</span><p style="margin:0">Что понравилось, что мешает, где что-то сломалось — напиши мне. Отзыв анонимный, команда читает каждый.</p><div class="row"><button class="btn" data-fb="1">💌 Сказать Асе — текстом или голосом</button></div></div>
     <div class="block"><span class="eyebrow">💌 Помоги Асе расти</span><p style="margin:0">Подари подруге её личную карту — Ася узнает, что подарок от тебя, и откроет ей карту. Когда она придёт, я скажу тебе спасибо ✦</p><div class="row"><button class="btn gold" data-tglink="invite">Подарить карту подруге ✦</button></div></div>
   </section>
   <p class="note" style="text-align:center">18+ · Ася — развлекательно-мотивационный формат, не гадание и не предсказание, не медицинская и не психологическая помощь.</p>
@@ -1512,6 +1515,14 @@ function renderSoul(){ if (!SOUL) return; const v = $('vSoul'), p = SP.id && SOU
 function spGo(i){ const p = SOUL.practices.find(x => x.id === SP.id); SP.i = i; SP.t = 0; const s = p.steps[i]; if (!s){ spStop(); (G.st.soulLog = G.st.soulLog || []).push([today, p.id]); G.add(15, 'разговор с собой'); return renderSoul(); }
   sayIt(soulFill(s.say)); renderSoul(); }
 function spTick(){ const p = SOUL.practices.find(x => x.id === SP.id); if (!p) return spStop(); SP.t++; if (SP.t >= (p.steps[SP.i]?.sec || 10)) return spGo(SP.i + 1); const bar = document.querySelector('.spbar i'); if (bar){ const total = p.steps.reduce((a, x) => a + x.sec, 0), done = p.steps.slice(0, SP.i).reduce((a, x) => a + x.sec, 0) + SP.t; bar.style.width = Math.round(done / total * 100) + '%'; } }
+/* ===== «Сказать Асе» (06.11): отзыв с любого экрана; до сервера — через бота (текст или голос), сразу команде, анонимно ===== */
+const FBQ = ['Что сегодня откликнулось в Асе?', 'Что мешало или было непонятно?', 'Чего тебе не хватает?', 'Что ты почувствовала, пока была с Асей?', 'Нашла ошибку или опечатку?', 'Всё, что хочется сказать'];
+let fbFrom = 'vHome', fbQ = 0;
+function renderFb(){ $('vFb').innerHTML = `<button class="back-link" data-back="${fbFrom}">‹ Назад</button><div><div class="date">Сказать Асе</div><h1>Мне правда важно</h1></div>
+  <p class="lead" style="margin:0">Ася растёт из того, что ты скажешь. Выбери вопрос — или говори о своём. Анонимно: команда не видит твоего имени.</p>
+  <div class="tlist">${FBQ.map((q, i) => `<button class="opt${i === fbQ ? '' : ''}" data-fbq="${i}" style="${i === fbQ ? 'border-color:var(--gold)' : ''}"><span class="oi">${['✨', '🧩', '🌱', '🤍', '🔧', '💬'][i]}</span><span>${esc(q)}</span><span class="go">${i === fbQ ? '✓' : ''}</span></button>`).join('')}</div>
+  <div class="row"><button class="btn gold" data-fbgo="vfb">🎙 Сказать голосом</button><button class="btn" data-fbgo="fb">✍️ Написать</button></div>
+  <span class="note">Откроется чат с Асей: запиши голосовое или напиши — и вернись сюда. Отзыв сразу приходит команде. Скоро всё будет прямо здесь, без перехода.</span>`; }
 function myDayCard(){ if (!DY) return ''; const pd = personalDay(), P = pd && DY.personalDay[pd], m = moonToday(), sv = store.get('asya-day'), card = sv && sv.date === today && byN(sv.n), wt = DY.weekThemes[wkN() % DY.weekThemes.length];
   return `<div class="myday"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span class="eyebrow">Мой день${P ? ' · ' + esc(P.name) : ''}</span><span class="note">${m.e} ${esc(m.name)}${pd ? ' · день ' + pd : ''}</span></div>
     <p class="mdt">${esc(P ? P.tone : C.phrases[dayN % C.phrases.length])}</p>
@@ -1570,7 +1581,7 @@ function showView(id, isBack){
   document.documentElement.style.setProperty('--sec1', SEC_TINT[id] || '#3B2440');
   const PARENT = {vToday: 'vHome', vTarot: 'vKnow', vSpread: 'vKnow', vDeck: 'vKnow', vAstro: 'vKnow', vNumero: 'vKnow', vTests: 'vKnow', vTest: 'vKnow', vPair: 'vKnow', vArch: 'vKnow', vSelf: 'vKnow', vBalance: 'vKnow', vHelp: 'vChat', vBreath: 'vChat', vShop: 'vWay', vHim: 'vHome', vReady: 'vHome', vWeek: 'vHome', vChakra: 'vKnow', vSoul: 'vKnow'};
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-current', b.dataset.view === (PARENT[id] || id)));
-  ({vSoul: () => { if (!isBack){ spStop(); SP.id = null; } renderSoul(); }, vChakra: () => { if (!isBack){ chSel = G.st.chw?.id || null; chQuiz = null; } renderChakra(); }, vWeek: renderWeek, vHim: () => { if (!isBack) himSel = null; renderHim(); }, vReady: () => { if (!isBack) readySel = null; renderReady(); }, vHelp: () => { stateSel = null; renderHelp(); }, vShop: renderShop, vStart: renderStart, vWay: renderMe, vTests: renderTests, vArch: () => renderArch(), vHome: renderHome, vKnow: renderKnow, vTarot: renderTarot, vSpread: () => renderSpread(), vDeck: () => renderDeck(),
+  ({vFb: renderFb, vSoul: () => { if (!isBack){ spStop(); SP.id = null; } renderSoul(); }, vChakra: () => { if (!isBack){ chSel = G.st.chw?.id || null; chQuiz = null; } renderChakra(); }, vWeek: renderWeek, vHim: () => { if (!isBack) himSel = null; renderHim(); }, vReady: () => { if (!isBack) readySel = null; renderReady(); }, vHelp: () => { stateSel = null; renderHelp(); }, vShop: renderShop, vStart: renderStart, vWay: renderMe, vTests: renderTests, vArch: () => renderArch(), vHome: renderHome, vKnow: renderKnow, vTarot: renderTarot, vSpread: () => renderSpread(), vDeck: () => renderDeck(),
     vAstro: renderAstro, vNumero: renderNumero, vBalance: renderBalance, vDiary: renderDiary, vChat: renderChat})[id]?.();
   try { const top = ['vHome', 'vKnow', 'vDiary', 'vChat', 'vWay', 'vStart'].includes(id); if (top) HIST.length = 0; TG?.BackButton && (top ? TG.BackButton.hide() : TG.BackButton.show()); } catch {}
   applyQuiet(); soulLine(id); window.scrollTo(0, 0);
@@ -1579,6 +1590,9 @@ function showView(id, isBack){
 document.addEventListener('input', e => { const s = e.target.closest('[data-bal]'); if (!s) return; s.parentNode.querySelector('b').textContent = s.value; });
 document.addEventListener('click', e => {
   /* первый вход, подсказки, итог недели */
+  if (e.target.closest('[data-fb]')){ const cur = document.querySelector('.view:not([hidden])')?.id || 'vHome'; if (cur !== 'vFb') fbFrom = cur; SFX.tap(); return showView('vFb'); }
+  const fq = e.target.closest('[data-fbq]'); if (fq){ fbQ = +fq.dataset.fbq; SFX.tap(); return renderFb(); }
+  const fg = e.target.closest('[data-fbgo]'); if (fg){ const link = 'https://t.me/Asya_app_bot?start=' + fg.dataset.fbgo + '_' + fbQ + '_' + fbFrom; (G.st.fbN = (G.st.fbN || 0) + 1); G.save(); if (TG?.openTelegramLink) TG.openTelegramLink(link); else window.open(link, '_blank'); return; }
   const fth = e.target.closest('[data-faith]'); if (fth){ G.st.faith = fth.dataset.faith; G.save(); SFX.chime(); toast('Запомнила ✦ Буду говорить твоими словами'); return !$('vWay').hidden ? renderMe() : $('vToday').hidden ? renderHome() : intentGate(); }
   const itn = e.target.closest('[data-intent]'); if (itn){ const [kind, k] = itn.dataset.intent.split(':'); const ta = $('intentText-' + kind); if (ta) ta.value = soulFill(SOUL.intent[kind].chips[+k]); SFX.tap(); return; }
   const itg = e.target.closest('[data-intent-go]'); if (itg){ const kind = itg.dataset.intentGo, tx = ($('intentText-' + kind)?.value || '').trim().slice(0, 200); if (!tx){ toast('Выбери запрос или напиши свой — хотя бы пару слов'); return; }
