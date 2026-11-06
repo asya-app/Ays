@@ -1,13 +1,13 @@
 <!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>Ася — карта дня</title></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Forum&family=Golos+Text:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Forum&family=Golos+Text:wght@400;500;600&display=swap">
 <style>
 /* Layout: одна колонка-телефон под ночным небом; карта — главный объект, нижнее меню плавает над краем */
 :root{
-  --night:#0E0B1F; --ink:#1A1533; --panel:#221B40; --line:rgba(232,204,140,.22);
-  --gold:#E8CC8C; --rose:#E9A6B8; --text:#F3EEF9; --muted:#B4AACB;
-  --display:"Forum","Cormorant",Georgia,serif; --body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --night:#17111F; --ink:#241A2E; --panel:#2F2238; --line:rgba(232,204,140,.20); --sage:#A8C49E;
+  --gold:#E8CC8C; --rose:#E9A6B8; --text:#F6EFE7; --muted:#B8ADC4;
+  --display:"Cormorant Garamond","Forum",Georgia,serif; --body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:dark;
 }
 html,body{height:100%;margin:0}
@@ -116,7 +116,11 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 @keyframes xpUp{from{opacity:0;transform:translate(-50%,20px) scale(.8)}20%{opacity:1}to{opacity:0;transform:translate(-50%,-60px) scale(1.1)}}
 @media (prefers-reduced-motion:reduce){.face,.deck.shuffle .back,.sball,.stext span,.xp,.topt{animation:none}.stext .s1{opacity:1}.back{transition:none}}
 /* ===== v2: хаб выбора, порталы, дневник, Ася ===== */
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.55;
+body{background:radial-gradient(60% 40% at 80% 0%,var(--sec1,#3B2440) 0%,transparent 70%),radial-gradient(50% 35% at 10% 30%,rgba(233,166,184,.10),transparent 70%),var(--night) !important}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.035;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.symb{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round}.portal .symb{width:66px;height:66px;stroke-width:2;position:absolute;top:16px;left:50%;transform:translateX(-50%);color:var(--gold);filter:drop-shadow(0 0 10px rgba(255,220,170,.35))}
+.phrase{font-style:italic}.brand{display:inline-flex;align-items:center;gap:6px}.brand .symb{width:22px;height:22px;color:var(--gold)}
+body::before{content:none;
   background-image:radial-gradient(1px 1px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 72% 12%,#fff,transparent),radial-gradient(1.5px 1.5px at 38% 62%,#FFF2C9,transparent),radial-gradient(1px 1px at 86% 48%,#fff,transparent),radial-gradient(1px 1px at 22% 82%,#fff,transparent),radial-gradient(1.2px 1.2px at 58% 34%,#E9A6B8,transparent),radial-gradient(1px 1px at 92% 86%,#fff,transparent),radial-gradient(1px 1px at 6% 52%,#FFF2C9,transparent);
   animation:twinkle 6s ease-in-out infinite alternate}
 @keyframes twinkle{to{opacity:.25}}
@@ -213,7 +217,7 @@ body[data-place="p_peaks"] .aport,body[data-place="p_peaks"] .cicon{background:l
 </style>
 
 <div class="app">
-  <div class="top"><span class="brand">Ася</span><button class="sound" data-go="vHelp" aria-label="Мне плохо — помощь">❋ SOS</button><button class="sound" id="soundBtn" aria-label="Звук" style="margin-left:0"></button><button class="hud" id="hud" data-go="vWay" aria-label="Мой профиль"></button></div>
+  <div class="top"><span class="brand" id="brand">Ася</span><button class="sound" data-go="vHelp" aria-label="Мне плохо — помощь">❋ SOS</button><button class="sound" id="soundBtn" aria-label="Звук" style="margin-left:0"></button><button class="hud" id="hud" data-go="vWay" aria-label="Мой профиль"></button></div>
 
   <!-- Главная: хаб выбора -->
   <section class="view" id="vHome">
@@ -810,11 +814,11 @@ function renderHome(){
     : `<div class="ritual"><svg class="ring" viewBox="0 0 64 64"><defs><linearGradient id="rg"><stop offset="0" stop-color="#E9A6B8"/><stop offset="1" stop-color="#E8CC8C"/></linearGradient></defs><circle class="bg" cx="32" cy="32" r="26"/><circle class="fg" cx="32" cy="32" r="26" stroke-dasharray="${L}" stroke-dashoffset="${L * (1 - n / mine.length)}"/><text x="32" y="37" text-anchor="middle" fill="#E8CC8C" font-size="15" font-family="Forum,serif">${n}/${mine.length}</text></svg>
       <div class="rlist"><span class="eyebrow">${a ? a.e + ' Мой день · ' + esc(a.name) : 'Мой день'}</span>${mine.map(k => `<button class="${isDone(k) ? 'done' : ''}" data-go="${RITUALS[k][2]}">${RITUALS[k][0]} ${esc(RITUALS[k][1])}</button>`).join('')}<button style="color:var(--muted);font-size:12px" data-rit-edit="1">Изменить ритуалы ›</button></div></div>`;
   const m = moonToday();
-  const tiles = [['🂠', 'Карта дня', isDone('card') ? 'открыта ✦' : 'вытяни 1 из 3', 'vToday', '#7B5CC9', '#2A1E5C'], ['🔮', 'Расклад на ситуацию', 'ситуация · что мешает · шаг', 'vSpread', '#B06AD6', '#3A1654'],
-    [m.e, 'Луна сегодня', m.name, 'vAstro', '#7AA7E8', '#14234A'], ['∞', 'Число дня', 'энергия дня ' + dayNumber(), 'vNumero', '#E8B86B', '#4A2E10'],
-    ['🧠', 'Тест', 'узнай себя за 2 минуты', 'vTests', '#6BD6B5', '#0E3A33'], ['📖', 'Дневник', hour >= 18 ? 'итог дня: роза, бутон, шип' : 'запиши, что чувствуешь', 'vDiary', '#E98FA8', '#4A1630'],
-    ['💬', 'Поговорить с Асей', 'подруга, наставница, о душе', 'vChat', '#9C8CFF', '#241B5C'], ['🌬️', 'Подышать', 'минута, чтобы выдохнуть', 'vBreath', '#3EE6E0', '#0F4A63']];
-  $('homeTiles').innerHTML = tiles.map(([i, t, s, go, g1, g2]) => `<button class="tile" data-go="${go}" style="--g1:${g1};--g2:${g2}"><span class="ti">${i}</span><span>${esc(t)}<small style="display:block">${esc(s)}</small></span></button>`).join('');
+  const tiles = [['tarot', 'Карта дня', isDone('card') ? 'открыта ✦' : 'вытяни 1 из 3', 'vToday', '#5B3A73', '#2A1F4D'], ['tarot', 'Расклад на ситуацию', 'ситуация · что мешает · шаг', 'vSpread', '#6A3A73', '#2A1F4D'],
+    ['moon', 'Луна сегодня', m.name, 'vAstro', '#3E5A86', '#1E2A4D'], ['numero', 'Число дня', 'энергия дня ' + dayNumber(), 'vNumero', '#7A5A2E', '#3A2A1A'],
+    ['tests', 'Тест', 'узнай себя за 2 минуты', 'vTests', '#6A5A8E', '#2E2547'], ['diary', 'Дневник', hour >= 18 ? 'итог дня: роза, бутон, шип' : 'запиши, что чувствуешь', 'vDiary', '#7A5A44', '#33241E'],
+    ['asya', 'Поговорить с Асей', 'подруга, наставница, о душе', 'vChat', '#A0644E', '#3E2430'], ['breath', 'Подышать', 'минута, чтобы выдохнуть', 'vBreath', '#3E7A86', '#0F3A44']];
+  $('homeTiles').innerHTML = tiles.map(([i, t, s, go, g1, g2]) => `<button class="tile" data-go="${go}" style="--g1:${g1};--g2:${g2}"><span class="ti" style="color:var(--gold)">${sym(i, t)}</span><span>${esc(t)}<small style="display:block">${esc(s)}</small></span></button>`).join('');
   const wk = sphereWeek();
   $('homeSelf').innerHTML = (wk !== null
     ? `<button class="opt" data-go="vBalance"><span class="oi">◎</span><span>Сфера недели: ${esc(C.balance[wk])}<small>${isDone('sphere') ? 'шаг сегодня сделан ✦' : 'твой шаг недели ждёт'}</small></span><span class="go">›</span></button>`
@@ -834,13 +838,33 @@ const cover = seed => { let s = seed * 9301 + 49297, r = () => (s = (s * 9301 + 
   return `<svg class="cv" viewBox="0 0 100 100" preserveAspectRatio="none">${pts.map((p, i) => i ? `<line x1="${pts[i - 1][0]}" y1="${pts[i - 1][1]}" x2="${p[0]}" y2="${p[1]}" stroke="#E8CC8C" stroke-width=".3" opacity=".6"/>` : '').join('')}${pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="${.6 + r()}" fill="#FFF2C9"/>`).join('')}</svg>`; };
 function renderKnow(){
   $('knowSelf').innerHTML = selfCard(false);
-  const P = [['🂡', 'Таро', '22 аркана, расклады, колода', 'vTarot', '#9B6CFF', '#2A1460'], ['☉', 'Астрология', 'знак, луна, совместимость', 'vAstro', '#6C9BFF', '#122A5C'],
-    ['∞', 'Нумерология', 'число пути, личный год', 'vNumero', '#E8B86B', '#4A2E10'], ['🧠', 'Тесты', 'любовь, конфликт, деньги', 'vTests', '#6BD6B5', '#0E3A33'],
-    ['♡', 'Отношения', 'ты и он, ваши знаки', 'vPair', '#F28DB2', '#4A1630', 1], ['👑', 'Образы', 'кем ты растёшь', 'vArch', '#E8CC8C', '#4A3410'],
-    ['◎', 'Колесо баланса', '8 сфер жизни', 'vBalance', '#A8E6B8', '#123A22'], ['✧', 'Моя дата', 'аркан · знак · число', 'vSelf', '#B9A7E8', '#24183F']];
-  $('knowPortals').innerHTML = P.map(([i, t, s, go, g1, g2, rel], k) => `<button class="portal" data-go="${go}"${rel ? ' data-rel="1"' : ''} style="--g1:${g1};--g2:${g2}">${cover(k + 3)}<span class="pi">${i}</span>${esc(t)}<small>${esc(s)}</small></button>`).join('');
+  const P = [['tarot', 'Таро', '22 аркана, расклады, колода', 'vTarot', '#5B3A73', '#2A1F4D'], ['astro', 'Астрология', 'знак, луна, совместимость', 'vAstro', '#3E5A86', '#1E2A4D'],
+    ['numero', 'Нумерология', 'число пути, личный год', 'vNumero', '#7A5A2E', '#3A2A1A'], ['tests', 'Тесты', 'любовь, конфликт, деньги', 'vTests', '#6A5A8E', '#2E2547'],
+    ['rel', 'Отношения', 'ты и он, ваши знаки', 'vPair', '#8A4A5E', '#3D1F2E', 1], ['arch', 'Образы', 'кем ты растёшь', 'vArch', '#8C6A3E', '#3A2340'],
+    ['balance', 'Колесо баланса', '8 сфер жизни', 'vBalance', '#4F7A6A', '#1F3330'], ['date', 'Моя дата', 'аркан · знак · число', 'vSelf', '#5E5A78', '#2A2838']];
+  $('knowPortals').innerHTML = P.map(([i, t, s, go, g1, g2, rel]) => `<button class="portal" data-go="${go}"${rel ? ' data-rel="1"' : ''} style="--g1:${g1};--g2:${g2}">${sym(i, t)}${esc(t)}<small>${esc(s)}</small></button>`).join('');
   applyQuiet();
 }
+
+/* символы разделов — концепция «Тёплый свет» (design-art 06.11): один предмет из жизни, тонкая линия, без случайных созвездий */
+const SYM = {
+  home: '<path d="M15 70H85"/><path d="M30 70A20 20 0 0 1 70 70"/><path d="M50 42V32M31 53L24 46M69 53L76 46"/>',
+  tarot: '<path d="M30 85V38A20 20 0 0 1 70 38V85Z"/><circle cx="50" cy="56" r="6"/><path d="M40 74H60"/>',
+  astro: '<circle cx="36" cy="50" r="11"/><path d="M36 33V29M36 67V71M19 50H15M53 50H57"/><path d="M70 30A20 20 0 1 0 70 70A15 15 0 1 1 70 30Z"/>',
+  numero: '<path d="M50 50A5 5 0 0 1 60 50A10 10 0 0 1 40 50A15 15 0 0 1 70 50A20 20 0 0 1 30 50A25 25 0 0 1 80 50"/>',
+  tests: '<ellipse cx="50" cy="42" rx="20" ry="26"/><path d="M50 68V86M40 86H60"/><path d="M40 36A12 14 0 0 1 47 24"/>',
+  rel: '<path d="M15 50C35 25 65 75 85 50"/><path d="M15 50C35 75 65 25 85 50"/>',
+  arch: '<path d="M25 70V40L40 55L50 32L60 55L75 40V70Z"/><path d="M25 78H75"/><circle cx="25" cy="40" r="3"/><circle cx="50" cy="32" r="3"/><circle cx="75" cy="40" r="3"/>',
+  balance: '<circle cx="50" cy="50" r="6"/>' + [0,1,2,3,4,5,6,7].map(k => `<ellipse cx="50" cy="27" rx="7" ry="14" transform="rotate(${k * 45} 50 50)"/>`).join(''),
+  date: '<rect x="25" y="28" width="50" height="55" rx="6"/><path d="M25 42H75M38 22V32M62 22V32"/><circle cx="50" cy="62" r="6"/>',
+  diary: '<path d="M50 36C40 29 26 29 16 33V75C26 71 40 71 50 78C60 71 74 71 84 75V33C74 29 60 29 50 36Z"/><path d="M50 36V78"/><path d="M80 14C70 18 62 30 60 44"/>',
+  asya: '<path d="M50 22C62 38 62 50 50 56C38 50 38 38 50 22Z"/><rect x="42" y="60" width="16" height="24" rx="3"/><path d="M30 46A22 22 0 0 1 70 46"/>',
+  breath: '<circle cx="50" cy="50" r="10"/><circle cx="50" cy="50" r="22"/><circle cx="50" cy="50" r="34" opacity=".5"/>',
+  moon: '<path d="M62 22A30 30 0 1 0 62 78A24 24 0 1 1 62 22Z"/>'
+};
+const sym = (k, label) => `<svg class="symb" viewBox="0 0 100 100" role="img" aria-label="${esc(label || k)}">${SYM[k] || SYM.asya}</svg>`;
+const SEC_TINT = {vHome: '#3B2440', vKnow: '#2E2547', vTarot: '#2A1F4D', vSpread: '#2A1F4D', vDeck: '#2A1F4D', vToday: '#2A1F4D', vAstro: '#1E2A4D', vNumero: '#3A2A1A', vTests: '#2E2547', vTest: '#2E2547',
+  vPair: '#3D1F2E', vArch: '#3A2340', vWay: '#3A2340', vBalance: '#1F3330', vSelf: '#2A2838', vDiary: '#33241E', vChat: '#3E2430', vHelp: '#3E2430', vBreath: '#0F3A44'};
 const backTo = (v, t) => `<button class="back-link" data-back="${v}">‹ Назад</button>`;
 const needDate = (what, why = 'Нужна твоя дата рождения — один раз') => `<div class="opt" data-go="vSelf"><span class="oi">✧</span><span>${what}<small>${why}</small></span><span class="go">›</span></div>`;
 function renderTarot(){
@@ -1013,6 +1037,7 @@ function showView(id, isBack){
   document.querySelectorAll('.view').forEach(v => v.hidden = v.id !== id);
   const v = $(id); if (v && was !== v){ v.classList.remove('enter'); void v.offsetWidth; v.classList.add('enter'); SFX.whoosh(); }
   if (id === 'vToday' && !$('pickArea').hidden) setTimeout(fxShuffle, 60);
+  document.documentElement.style.setProperty('--sec1', SEC_TINT[id] || '#3B2440');
   const PARENT = {vToday: 'vHome', vTarot: 'vKnow', vSpread: 'vKnow', vDeck: 'vKnow', vAstro: 'vKnow', vNumero: 'vKnow', vTests: 'vKnow', vTest: 'vKnow', vPair: 'vKnow', vArch: 'vKnow', vSelf: 'vKnow', vBalance: 'vKnow', vHelp: 'vChat', vBreath: 'vChat'};
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-current', b.dataset.view === (PARENT[id] || id)));
   ({vWay: renderMe, vTests: renderTests, vArch: () => renderArch(), vHome: renderHome, vKnow: renderKnow, vTarot: renderTarot, vSpread: () => renderSpread(), vDeck: () => renderDeck(),
@@ -1082,6 +1107,7 @@ document.addEventListener('click', e => {
 });
 $('hisSign').innerHTML = AR.zodiac.map(z => `<option>${z.name}</option>`).join('');
 grantUnlocks(C.game.unlocks.filter(u => u.lv <= G.lvl())); applyLook();
+$('brand').innerHTML = sym('asya', 'Ася') + 'Ася';
 hud(); renderTests(); soundBtn(); renderHome(); applyQuiet();
 { const saved = store.get('asya-day'); if (saved && saved.date === today && byN(saved.n)) showDay(saved.n); else shuffle(); }
 /* первая минута по ФУНДАМЕНТу: сначала подарок — её аркан по дате, потом всё остальное */
