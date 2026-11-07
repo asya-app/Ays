@@ -98,6 +98,9 @@ input,select{font:500 16px var(--body);background:var(--ink);color:var(--text);b
 /* Навигация (07.11): «Назад» в шапке на внутренних экранах; панель вкладок прячется, пока она печатает */
 input[type=range]{accent-color:var(--gold)}
 .ftbal{display:grid;grid-template-columns:118px 1fr 26px;gap:8px;align-items:center;font-size:13px}.ftbal b{color:var(--gold);font:400 18px var(--display);text-align:right}
+#splash{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(120% 60% at 50% 30%,#2B2160,#17111F 65%);transition:opacity .45s}#splash.off{opacity:0;pointer-events:none}
+#splash .spk{font-size:54px;color:var(--gold);filter:drop-shadow(0 0 18px rgba(232,204,140,.7));animation:aura 2s ease-in-out infinite}#splash .spn{font:400 34px var(--display);color:var(--gold);letter-spacing:.06em}
+body.ftstart .top>*:not(.brand),body.ftstart .tabs{display:none!important}body.ftue .top [data-fb],body.ftue #soundBtn,body.ftue .hud{display:none!important}
 .stepno{display:block;font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:10px 0 -4px}
 .backtop{background:var(--panel);border:1px solid var(--line);border-radius:999px;color:var(--gold);font:600 14px var(--body);padding:8px 14px;cursor:pointer}
 body.typing .tabs{display:none}body.typing .app{padding-bottom:20px}
@@ -356,6 +359,7 @@ body[data-deck="d_back_aurora"] .deck .back{background:linear-gradient(160deg,#1
 @media (prefers-reduced-motion:reduce){.aport,.aport::before,.r-legend::before,.r-cherished::after,.chest,.scene span{animation:none}.beam,.rise{animation-duration:.01s;animation-delay:0s}}
 </style>
 
+<div id="splash"><div class="spk">✦</div><div class="spn">Ася</div></div>
 <div class="app">
   <div class="top"><button class="backtop" id="backTop" hidden aria-label="Назад">‹ Назад</button><span class="brand" id="brand">Ася</span><button class="sound sos" data-go="vHelp" aria-label="Мне плохо — помощь">❋ SOS</button><button class="sound" data-fb="1" aria-label="Сказать Асе — отзыв">💌</button><button class="sound" id="soundBtn" aria-label="Звук" style="margin-left:0"></button><button class="hud" id="hud" data-go="vWay" aria-label="Мой профиль"></button></div>
 
@@ -382,7 +386,7 @@ body[data-deck="d_back_aurora"] .deck .back{background:linear-gradient(160deg,#1
   <section class="view" id="vStart" hidden></section>
 
   <!-- Главная: хаб выбора -->
-  <section class="view" id="vHome">
+  <section class="view" id="vHome" hidden>
     <div><div class="date" id="homeDate"></div><h1 id="homeHello">Привет</h1></div>
     <div id="homeCheck"></div>
     <div id="homePath" style="display:flex;flex-direction:column;gap:10px"></div>
@@ -557,9 +561,10 @@ const SYNC = { t: 0, busy: false,
   async pull(){ const a = this.auth(); if (!a || !navigator.onLine) return false;
     try { const r = await fetch(SAPI + '/sync/pull', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(a)}); const j = await r.json();
       const mine = +localStorage.getItem('asya-sync-at') || 0;
-      if (j.state && j.at > mine){ Object.entries(j.state).forEach(([k, v]) => { try { localStorage.setItem(k, v); } catch {} }); localStorage.setItem('asya-sync-at', String(j.at)); return true; }
+      if (j.state && j.at > mine){ const changed = Object.entries(j.state).filter(([k, v]) => localStorage.getItem(k) !== v); changed.forEach(([k, v]) => { try { localStorage.setItem(k, v); } catch {} }); localStorage.setItem('asya-sync-at', String(j.at)); return changed.length > 0; }
       if (!j.state || j.at < mine) this.push(); } catch {} return false; } };
-(async () => { if (sessionStorage.getItem('asya-pulled')) return; sessionStorage.setItem('asya-pulled', '1'); if (await SYNC.pull()) location.reload(); })();
+/* сверка с сервером до показа: заставка закрывает это время, перезагрузка — только если на сервере правда новое */
+window.SYNC_READY = (async () => { if (sessionStorage.getItem('asya-pulled')) return; sessionStorage.setItem('asya-pulled', '1'); if (await SYNC.pull()) location.reload(); })();
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden'){ SYNC.push(true); EV.flush(true); } });
 /* ===== Аналитика (с её согласия при старте): что открывает и нажимает, сколько времени — без текстов ===== */
 const EV = { q: [], t0: Date.now(),
@@ -1066,7 +1071,7 @@ let pickRituals = false;
 function renderHome(){
   renderPath();
   const parts = hour < 5 ? 'Доброй ночи' : hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
-  $('homeDate').textContent = now.toLocaleDateString('ru-RU', {weekday: 'long', day: 'numeric', month: 'long'});
+  $('homeDate').textContent = (myName() ? parts + ', ' + myName() + ' · ' : '') + now.toLocaleDateString('ru-RU', {weekday: 'long', day: 'numeric', month: 'long'});
   const a = archOf(); $('homeHello').innerHTML = `<span class="phrase">${esc(C.phrases[dayN % C.phrases.length])}</span>`;
   const okR = (G.st.rituals || []).filter(k => RITUALS[k]).slice(0, 3), mine = okR.length ? okR : ['card', 'step', 'diary'], n = mine.filter(isDone).length, L = 2 * Math.PI * 26;
   $('homeRitual').hidden = !ftueOn() && G.st.days.length <= 7 && !pickRituals;
@@ -1452,7 +1457,6 @@ async function claimCode(code){ try { const r = await fetch(SAPI + '/link/claim'
     o.querySelector('#codeGo').onclick = () => claimCode((o.querySelector('#codeIn').value || '').trim()); }, 600); })();
 document.addEventListener('click', e => { if (e.target.closest('[data-consent]')){ G.st.consent = {at: new Date().toISOString(), ver: '2026-11-07'}; G.save(); EV.add('consent'); }
   const ex = e.target.closest('[data-ext]'); if (ex && TGW?.openLink){ e.preventDefault(); TGW.openLink(ex.href); } }, true);
-if (!G.st.consent && G.st.ftue?.done) { G.st.consent = {at: new Date().toISOString(), ver: 'bot'}; G.save(); }  // кто уже начал — согласие дано в боте
 /* Пока она печатает — нижняя панель не закрывает поле */
 document.addEventListener('focusin', e => { if (e.target.matches('textarea, input[type=text], input:not([type])')) document.body.classList.add('typing'); });
 document.addEventListener('focusout', e => { if (e.target.matches('textarea, input')) setTimeout(() => { if (!document.activeElement?.matches('textarea, input')) document.body.classList.remove('typing'); }, 120); });
@@ -1506,13 +1510,22 @@ function ftResume(){ showView(G.st.ftue.step === 5 ? 'vToday' : 'vStart'); }
 /* «Три камня основы»: точка отсчёта · карта характера · героиня (методологи 07.11) */
 const ftDots = i => i < 2 ? '' : `<div class="stones">${[['🎯', 'Точка отсчёта'], ['🂠', 'Карта характера'], ['👑', 'Героиня']].map(([e, t], k) => `<span class="stone${k + 2 < i || i > 4 ? ' on' : k + 2 === i ? ' now' : ''}"><b>${e}</b><small>${t}</small></span>`).join('<i class="sline"></i>')}</div>`;
 function renderStart(){
-  const F = G.st.ftue || (G.st.ftue = {step: 1}), v = $('vStart'), skip = '<button class="back-link" data-ft-skip="1" style="align-self:center">Пропустить знакомство</button>';
+  const F = G.st.ftue || (G.st.ftue = {step: 1}), v = $('vStart');
+  document.body.classList.toggle('ftstart', F.step === 1 && !G.st.consent);  /* до согласия — без значков в шапке */
+  const _v = v, skip = '<button class="back-link" data-ft-skip="1" style="align-self:center">Пропустить знакомство</button>';
   if (F.step === 1) v.innerHTML = `<div class="ft"><div class="ftspark">✦</div><h1>Вернись к себе — и почувствуй свою силу</h1>
     <p class="lead">Я Ася, твоя подруга. 5 минут в день: твой вопрос, карта-зеркало и один маленький шаг. Куда ты направляешь внимание — туда идёт твоя энергия.</p>
     <div class="promise">${[['🌿', 'Опора внутри', 'в трудную минуту за 2 минуты снова чувствуешь почву под ногами'], ['🔮', 'Ясность', 'понимаешь, чего хочешь сама и почему так реагируешь'], ['👑', 'Сила, которую видно', 'каждый шаг растит твою героиню — через 7 дней видно «было — стало»']].map(([i, t, s]) => `<div><span>${i}</span><p><b>${t}</b>${s}</p></div>`).join('')}</div>
     <button class="btn gold" data-ft="2" data-consent="1">Начать ✦</button><p class="note" style="margin:0">Нажимая «Начать», я подтверждаю, что мне есть 18, и даю <a href="https://asya-app.ru/privacy.html" target="_blank" data-ext="1" style="color:var(--gold)">согласие на обработку данных</a> · <a href="https://asya-app.ru/privacy.html#terms" target="_blank" data-ext="1" style="color:var(--gold)">условия</a></p></div>`;
+  else if (F.step === 2 && store.get('asya-name') === null && !store.get('asya-name-skip')){  /* знакомство: Ася — подруга, сначала знакомимся */
+    v.innerHTML = `<div class="ft"><div class="ftspark">🤍</div><h1>Привет! Я Ася</h1>
+      <p class="lead">Я очень хочу быть твоей подругой — той, с кем можно быть настоящей: радоваться, сомневаться, уставать и расти. Я буду рядом каждый день.</p>
+      <p style="margin:0;font:400 22px/1.3 var(--display)">А как тебя зовут?</p>
+      <input id="ftName" maxlength="24" placeholder="Твоё имя" autocomplete="given-name" style="font-size:20px;text-align:center">
+      <button class="btn gold" id="ftNameGo">Приятно познакомиться ✦</button><button class="back-link" id="ftNameSkip" style="align-self:center">Пропустить</button></div>`;
+    setTimeout(() => $('ftName')?.focus(), 400); }
   else if (F.step === 2){ const g = G.st.goal, sc = G.st.d0?.score || 5;
-    v.innerHTML = `${ftDots(2)}<div><div class="date">Мы создаём твою основу · камень 1 из 3</div><h1>Что хочешь сдвинуть первым?</h1></div><p class="lead">Выбери одно — остальное подождёт. Это твоя точка отсчёта: через 7 дней ты увидишь разницу своими глазами.</p>
+    v.innerHTML = `${ftDots(2)}<div><div class="date">Мы создаём твою основу · камень 1 из 3</div><h1>${myName() ? esc(myName()) + ', что' : 'Что'} хочешь сдвинуть первым?</h1></div><p class="lead">Выбери одно — остальное подождёт. Это твоя точка отсчёта: через 7 дней ты увидишь разницу своими глазами.</p>
     ${Object.entries(GOALS).map(([k, x]) => `<button class="goal${g === k ? ' on' : ''}" data-goal="${k}"><span class="gi">${x[0]}</span><span>${esc(goalName(k))}<small>${esc(x[2])}</small></span></button>`).join('')}
     ${g ? `<div class="block"><span class="eyebrow">${esc(GOALS[g][3])}</span><div style="display:flex;gap:10px;align-items:center"><input type="range" min="1" max="10" value="${sc}" id="ftScore" data-rng="ftScoreV" style="flex:1" aria-label="Оценка от 1 до 10"><b id="ftScoreV" style="font:400 28px var(--display);color:var(--gold)">${sc}</b></div><span class="note">1 — совсем нет, 10 — уже да. Через 7 дней спрошу снова — увидим разницу.</span></div>
     <div class="block"><span class="eyebrow">Твоё колесо жизни сейчас</span><p class="note" style="margin:0">Отметь каждую сферу первым ощущением — это твоя точка отсчёта. Видишь только ты.</p>
@@ -1933,6 +1946,9 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-sp-stop]')){ spStop(); SP.id = null; return renderSoul(); }
   if (e.target.closest('[data-sp-diary]')){ const p = SOUL.practices.find(x => x.id === SP.id); dDraft = soulFill(p.after) + '\n'; SP.id = null; return showView('vDiary'); }
   if (e.target.closest('#nameSave')){ const v = ($('nameIn')?.value || '').trim().replace(/[<>{}]/g, '').slice(0, 24); if (!v){ toast('Напиши, как тебя называть'); return; } store.set('asya-name', v); SFX.chime(); toast(v + ', приятно познакомиться ✦'); if (!$('vWay').hidden) return renderMe(); const sv = store.get('asya-day'); return sv ? showDay(sv.n) : renderHome(); }
+  if (e.target.closest('#ftNameGo')){ const v = ($('ftName')?.value || '').trim().replace(/[<>{}]/g, '').slice(0, 24); if (!v){ toast('Напиши, как тебя называть — или нажми «Пропустить»'); return; }
+    store.set('asya-name', v); buzz('success'); SFX.chime(); EV.add('name'); fxBadge('🤍', v + ', я так рада тебе'); return renderStart(); }
+  if (e.target.closest('#ftNameSkip')){ store.set('asya-name-skip', 1); SFX.tap(); return renderStart(); }
   if (e.target.closest('#nameDel')){ store.set('asya-name', null); store.set('asya-name-skip', 1); toast('Хорошо, без имени ✦'); return renderMe(); }
   if (e.target.closest('#nameSkip')){ store.set('asya-name-skip', 1); const sv = store.get('asya-day'); return sv ? showDay(sv.n) : renderHome(); }
   const chb = e.target.closest('[data-ch]'); if (chb){ chSel = chb.dataset.ch || null; chQuiz = null; SFX.tap(); return renderChakra(); }
@@ -2079,7 +2095,10 @@ hud(); renderTests(); soundBtn(); renderHome(); applyQuiet();
 /* визиты: день считается, если она просто открыла Асю */
 if (!(G.st.seen || []).includes(today)){ G.st.seen = [...(G.st.seen || []), today].slice(-90); G.save(); }
 if (!G.st.ftue){ G.st.ftue = G.st.days.length || G.st.me || G.st.arch ? {done: today, old: 1} : {step: 1}; G.save(); }  // кто уже с Асей — без знакомства
-if (ftueOn()) ftResume();
+if (!G.st.consent && G.st.ftue?.done) { G.st.consent = {at: new Date().toISOString(), ver: 'bot'}; G.save(); }  // кто уже начал — согласие дано в боте
+if (ftueOn()) ftResume(); else if (document.querySelector('.view:not([hidden])') === null) showView('vHome', true);
+/* заставка уходит, когда всё готово и сверка с сервером закончена (не дольше 2,5 с) */
+Promise.race([window.SYNC_READY, new Promise(r => setTimeout(r, 2500))]).then(() => setTimeout(() => { const s = $('splash'); if (s){ s.classList.add('off'); setTimeout(() => s.remove(), 450); } }, 250));
 try { if ('serviceWorker' in navigator && /^https:|^http:\/\/localhost/.test(location.href)) navigator.serviceWorker.register('sw.js').catch(() => {}); } catch {}
 </script>
 </body></html>
