@@ -118,7 +118,7 @@ body.typing .tabs{display:none}body.typing .app{padding-bottom:20px}
 @keyframes pulse{50%{box-shadow:0 0 0 8px rgba(232,204,140,.12)}}
 .beads{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:6px 0}.beads span{display:flex;flex-direction:column;align-items:center;gap:4px}.beads b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 12px var(--body);border:1px solid var(--line);color:var(--muted)}
 .beads .on b{background:var(--gold);color:#2A1F2E;border-color:var(--gold)}.beads small{font-size:9.5px;line-height:1.15;color:var(--muted);text-align:center}
-.hold{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none}.holdfill{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(255,255,255,.35)}
+.hold{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;-webkit-tap-highlight-color:transparent}.holdfill{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(255,255,255,.35)}
 .guide7{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:20px;background:linear-gradient(160deg,rgba(139,108,255,.16),rgba(232,204,140,.08));border:1px solid rgba(232,204,140,.4)}
 .g7head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.g7beads{display:flex;gap:6px}.g7beads i{flex:1;height:6px;border-radius:3px;background:var(--line)}.g7beads i.on{background:var(--gold)}.g7beads i.now{background:linear-gradient(90deg,var(--gold) 40%,var(--line) 40%)}
 .g7list{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}.g7list .ok{color:var(--text)}
@@ -1953,18 +1953,24 @@ function g7go(to){ if (to === 'chk'){ $('homeCheck')?.scrollIntoView({behavior: 
 document.addEventListener('click', e => { const fb = e.target.closest('[data-ft]'); if (!fb || fb.dataset.noscore) return; const sl = [...document.querySelectorAll('[data-ftbal]')]; if (!sl.length) return;
   const vals = sl.map(x => +x.value); store.set('asya-balance', {date: today, vals}); store.set('asya-balance-hist', [{date: today, vals}]); G.st.balance = true; G.st.bal0 = {date: today, vals}; G.save(); }, true);
 document.addEventListener('click', e => { const g = e.target.closest('[data-g7]'); if (g){ e.stopPropagation(); g7go(g.dataset.g7); } }, true);
-/* Обещание себе: удерживай 2 секунды — кольцо заполняется, вибрация нарастает */
-(() => { let tm = null, t0 = 0, raf = 0;
-  const stop = () => { clearTimeout(tm); cancelAnimationFrame(raf); const f = document.querySelector('.hold .holdfill'); if (f) f.style.width = '0'; };
-  document.addEventListener('pointerdown', e => { const b = e.target.closest('[data-ft-hold]'); if (!b) return; t0 = Date.now(); buzz('light');
-    const f = b.querySelector('.holdfill'), tick = () => { const p = Math.min(1, (Date.now() - t0) / 2000); f.style.width = p * 100 + '%'; if (p < 1) raf = requestAnimationFrame(tick); }; tick();
-    let n = 0; const pulse = () => { n++; buzz(n < 3 ? 'light' : 'medium'); if (n < 4) tm = setTimeout(pulse, 500); }; tm = setTimeout(pulse, 500);
-    setTimeout(() => { if (Date.now() - t0 >= 1990 && b.isConnected && f.style.width === '100%'){ stop(); G.st.ftue.done = today; G.st.ftue.promise = today; G.save(); buzz('success'); SFX.chime();
-      G.st.bonus = (G.st.bonus || 0) + 10; G.save(); hud();
-      showView('vHome'); fxCelebrate({icon: '🤍', kicker: 'Обещание себе', title: 'Вот. Теперь и тебя есть кому держать ✦', sub: '+10 монеток — первый подарок от меня.', btn: 'Спасибо ✦'}); setTimeout(() => tour(0), 3800); } }, 2010); });
-  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest?.('[data-ft-hold]') && Date.now() - t0 < 1990) stop(); }));
-})();
-/* Ася живёт: делится своим днём, как подруга (friend-voice) */
+/* Обещание себе: удерживай ~1,6 с — кнопка заполняется, вибрация нарастает. На телефоне: сдвиг пальца не сбивает,
+   системное меню не всплывает; отпустила рано — подсказка; после 2 попыток засчитываем и обычное нажатие (07.11, баг с телефона) */
+(() => { let tm = null, done = null, t0 = 0, raf = 0, holding = false, early = 0; const HOLD = 1600;
+  const fill = () => document.querySelector('.hold .holdfill');
+  const stop = () => { holding = false; clearTimeout(tm); clearTimeout(done); cancelAnimationFrame(raf); const f = fill(); if (f) f.style.width = '0'; };
+  const finish = () => { stop(); if (!ftueOn()) return; G.st.ftue.done = today; G.st.ftue.promise = today; G.st.bonus = (G.st.bonus || 0) + 10; G.save(); hud(); buzz('success'); SFX.chime(); EV.add('promise');
+    showView('vHome'); fxCelebrate({icon: '🤍', kicker: 'Обещание себе', title: 'Вот. Теперь и тебя есть кому держать ✦', sub: '+10 монеток — первый подарок от меня.', btn: 'Спасибо ✦'}); setTimeout(() => tour(0), 3800); };
+  const start = b => { if (holding) return; holding = true; t0 = Date.now(); buzz('light'); const f = b.querySelector('.holdfill');
+    const tick = () => { if (!holding) return; const p = Math.min(1, (Date.now() - t0) / HOLD); if (f) f.style.width = p * 100 + '%'; if (p < 1) raf = requestAnimationFrame(tick); }; tick();
+    let n = 0; const pulse = () => { if (!holding) return; n++; buzz(n < 2 ? 'light' : 'medium'); if (n < 3) tm = setTimeout(pulse, 450); }; tm = setTimeout(pulse, 450);
+    done = setTimeout(() => { if (holding) finish(); }, HOLD); };
+  const release = () => { if (!holding) return; if (Date.now() - t0 < HOLD - 20){ stop(); early++; toast(early >= 2 ? 'Можно просто нажать — я поняла ✦' : 'Подержи, пока кнопка не заполнится ✦'); } };
+  document.addEventListener('pointerdown', e => { const b = e.target.closest('[data-ft-hold]'); if (b){ e.preventDefault(); start(b); } });
+  document.addEventListener('touchstart', e => { const b = e.target.closest?.('[data-ft-hold]'); if (b) start(b); }, {passive: true});
+  ['pointerup', 'pointercancel', 'touchend', 'touchcancel'].forEach(ev => document.addEventListener(ev, release));
+  document.addEventListener('contextmenu', e => { if (e.target.closest?.('[data-ft-hold]')) e.preventDefault(); });
+  document.addEventListener('click', e => { if (e.target.closest('[data-ft-hold]') && early >= 2 && !holding) finish(); });
+})();/* Ася живёт: делится своим днём, как подруга (friend-voice) */
 const ASYA_LIFE = ['А у меня сегодня утро началось с тишины — я поймала себя на том, что просто смотрю в окно. Это было хорошо.', 'Я сегодня думала о том, как часто мы откладываем себя на потом. Давай сегодня — не будем.', 'Знаешь, я тоже иногда устаю. Тогда я разрешаю себе ничего не делать полчаса — и мир не рушится.', 'У меня сегодня маленькая радость: кто-то написал мне «спасибо». Пусть и у тебя будет своя.', 'Я сегодня перечитывала любимую строчку: «всему своё время». Мне она очень помогает.', 'Сегодня я училась говорить «нет» мягко. Получается не сразу — и это нормально.', 'Я заварила бы тебе чай, если бы могла. Представь, что он рядом — тёплый.'];
 function renderCheck(){ const box = $('homeCheck'); if (!box) return; if (ftueOn()){ box.innerHTML = ''; return; }
   const ck = (G.st.chk || {})[today], c = ck && CHECK.find(x => x.id === ck), nm = myName() ? ', ' + esc(myName()) : '';
