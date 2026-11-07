@@ -104,6 +104,8 @@ body.ftstart .top>*:not(.brand),body.ftstart .tabs{display:none!important}body.f
 body.touring::before{content:'';position:fixed;inset:0;background:rgba(10,6,20,.62);z-index:89}body.touring .tabs{z-index:97}
 .tab.spot{position:relative;border-radius:14px;color:#FFD08A!important;box-shadow:0 0 0 3px #F5A623,0 0 26px 8px rgba(245,166,35,.65);animation:spotP 1.2s ease-in-out infinite;z-index:98}@keyframes spotP{50%{box-shadow:0 0 0 3px #F5A623,0 0 38px 14px rgba(245,166,35,.85)}}
 .tourbox{position:fixed;left:16px;right:16px;bottom:calc(112px + env(safe-area-inset-bottom));z-index:99;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:20px;background:#2A1F33;border:1px solid rgba(245,166,35,.7);box-shadow:0 10px 40px rgba(0,0,0,.5);animation:spIn .35s ease both}
+.isteps{display:flex;flex-direction:column;gap:8px}.isteps>div{display:flex;gap:10px;align-items:flex-start;font-size:14px}.isteps>div>b{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:#2A1F2E;font-size:13px}.ishare{display:inline-grid;place-items:center;width:24px;height:24px;border:1.5px solid var(--gold);border-radius:6px;color:var(--gold);font-weight:700}
+.iarrow{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:120;font-size:42px;color:#F5A623;text-shadow:0 0 18px rgba(245,166,35,.8);animation:iarr 1s ease-in-out infinite;pointer-events:none}@keyframes iarr{50%{transform:translate(-50%,10px)}}
 .stepno{display:block;font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:10px 0 -4px}
 .backtop{background:var(--panel);border:1px solid var(--line);border-radius:999px;color:var(--gold);font:600 14px var(--body);padding:8px 14px;cursor:pointer}
 body.typing .tabs{display:none}body.typing .app{padding-bottom:20px}
@@ -569,7 +571,7 @@ const SYNC = { t: 0, busy: false,
       if (!j.state || j.at < mine) this.push(); } catch {} return false; } };
 /* сверка с сервером до показа: заставка закрывает это время, перезагрузка — только если на сервере правда новое */
 /* «сердцебиение» при входе: Ася проснулась */
-try { const H = window.Telegram?.WebApp?.HapticFeedback; if (H){ setTimeout(() => H.impactOccurred('heavy'), 300); setTimeout(() => H.impactOccurred('heavy'), 470); setTimeout(() => H.impactOccurred('medium'), 1000); setTimeout(() => H.notificationOccurred('success'), 1350); } else if (navigator.vibrate) navigator.vibrate([40, 110, 60, 400, 30]); } catch {}
+try { const H = window.Telegram?.WebApp?.HapticFeedback; if (H){ [[250, 'heavy'], [380, 'rigid'], [900, 'heavy'], [1030, 'rigid'], [1500, 'medium'], [1600, 'light']].forEach(([ms, k]) => setTimeout(() => { try { H.impactOccurred(k); } catch {} }, ms)); setTimeout(() => H.notificationOccurred('success'), 1950); } else if (navigator.vibrate) navigator.vibrate([55, 90, 70, 380, 55, 90, 70, 300, 30]); } catch {}
 window.SYNC_READY = (async () => { if (sessionStorage.getItem('asya-pulled')) return; sessionStorage.setItem('asya-pulled', '1'); if (await SYNC.pull()) location.reload(); })();
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden'){ SYNC.push(true); EV.flush(true); } });
 /* ===== Аналитика (с её согласия при старте): что открывает и нажимает, сколько времени — без текстов ===== */
@@ -1467,10 +1469,11 @@ setTimeout(refBonus, 4000);
 document.addEventListener('click', e => { if (e.target.closest('[data-gift]')){ SFX.tap(); giftOpen(); } });
 function overlay(html){ const o = document.createElement('div'); o.className = 'coach on'; o.innerHTML = `<div class="coachbox">${html}</div>`; document.body.appendChild(o); o.addEventListener('click', e => { if (e.target.closest('[data-x]')) o.remove(); }); return o; }
 function showInstall(code){ if (standalone) return; EV.add('install_hint', isIOS ? 'ios' : 'android');
+  if (isIOS && !TGW?.initData){ const ar = document.createElement('div'); ar.className = 'iarrow'; ar.textContent = '⬇︎'; document.body.appendChild(ar); setTimeout(() => ar.remove(), 20000); }
   overlay(`<div class="ckhead"><span class="ckav">📲</span><div><span class="eyebrow">Ася значком на телефоне</span><p style="margin:0">Открывается в одно касание, без Telegram и VPN. Твой путь и героиня — те же.</p></div></div>
     ${deferredInstall ? '<button class="btn gold" id="pwaGo">Установить Асю ✦</button>' : isIOS
-      ? '<p style="margin:0"><b>1.</b> Нажми внизу <b>«Поделиться»</b> ⬆️<br><b>2.</b> Выбери <b>«На экран „Домой“»</b> — готово ✦</p><span class="note">Если ты не в Safari — открой эту страницу в Safari.</span>'
-      : '<p style="margin:0"><b>1.</b> Нажми <b>⋮</b> вверху справа<br><b>2.</b> Выбери <b>«Установить приложение»</b> или «Добавить на главный экран» ✦</p>'}
+      ? '<div class="isteps"><div><b>1</b><span>Если страница открылась внутри Telegram — нажми <b>⋯</b> или 🧭 и выбери <b>«Открыть в Safari»</b></span></div><div><b>2</b><span>Внизу нажми <b>«Поделиться»</b> <span class="ishare">⬆︎</span></span></div><div><b>3</b><span>Прокрути и выбери <b>«На экран „Домой“»</b> ➕ — готово ✦</span></div></div>'
+      : '<div class="isteps"><div><b>1</b><span>Если страница открылась внутри Telegram — нажми <b>⋮</b> → <b>«Открыть в Chrome»</b></span></div><div><b>2</b><span>В Chrome нажми <b>⋮</b> вверху справа</span></div><div><b>3</b><span>Выбери <b>«Установить приложение»</b> или «Добавить на главный экран» — готово ✦</span></div></div>'}
     ${code ? `<span class="note">Если значок попросит войти — твой код: <b style="color:var(--gold);font-size:18px">${esc(code)}</b> (действует 15 минут)</span>` : ''}
     <button class="back-link" data-x="1" style="align-self:center">Понятно</button>`); }
 document.addEventListener('click', async e => { if (e.target.closest('#pwaGo') && deferredInstall){ deferredInstall.prompt(); const r = await deferredInstall.userChoice; EV.add('install', r.outcome); deferredInstall = null; e.target.closest('.coach')?.remove(); }
@@ -1574,19 +1577,22 @@ function renderStart(){
   const F = G.st.ftue || (G.st.ftue = {step: 1}), v = $('vStart');
   document.body.classList.toggle('ftstart', F.step === 1 && !G.st.consent);  /* до согласия — без значков в шапке */
   const _v = v, skip = '<button class="back-link" data-ft-skip="1" style="align-self:center">Пропустить знакомство</button>';
-  if (F.step === 1) v.innerHTML = `<div class="ft"><div class="ftspark">✦</div><h1>Ты всё держишь на себе. А кто держит тебя?</h1>
-    <p class="lead">Ты помнишь, что нужно всем. А что нужно тебе — сразу и не вспомнишь?<br><b style="color:var(--text)">Я Ася.</b> Здесь можно не быть сильной — и просто побыть с собой.</p><p class="note" style="margin:0;font-style:italic;font-size:14px">Сделай вдох. Плечи можно опустить.</p>
-    <div class="promise">${[['🌿', 'Тело выдыхает', 'плечи опускаются, внутри становится тепло'], ['🌙', 'Душа звучит громче', 'ты слышишь, чего хочешь именно ты'], ['✨', 'В голове тише', 'мысли перестают бегать по кругу']].map(([i, t, s]) => `<div><span>${i}</span><p><b>${t}</b>${s}</p></div>`).join('')}</div>
-    <button class="btn gold" data-ft="2" data-consent="1">Хочу выдохнуть ✦</button><p class="note" style="margin:0">Нажимая на кнопку, я подтверждаю, что мне есть 18, и даю <a href="https://asya-app.ru/privacy.html" target="_blank" data-ext="1" style="color:var(--gold)">согласие на обработку данных</a> · <a href="https://asya-app.ru/privacy.html#terms" target="_blank" data-ext="1" style="color:var(--gold)">условия</a></p></div>`;
-  else if (F.step === 2 && store.get('asya-name') === null && !store.get('asya-name-skip')){  /* знакомство: Ася — подруга, сначала знакомимся */
-    v.innerHTML = `<div class="ft"><div class="date">Давай знакомиться</div><div class="ftspark">🤍</div><h1>Привет! Я Ася</h1>
-      <p class="lead">Вот ты и здесь — я так рада. Я умею слушать и знаю старинные карты и звёзды. А ещё мне правда интересно, какая ты.</p>
+  if (F.step === 1){  /* знакомство — первым (07.11, Максим): без экрана-лозунга */
+    v.innerHTML = `<div class="ft"><div class="date">Давай знакомиться</div><div class="ftspark">🤍</div><h1>Привет! Я Ася.</h1>
+      <p class="lead">Вот ты и здесь — я так рада. Мне правда интересно, какая ты.</p>
       <p style="margin:0;font:400 22px/1.3 var(--display)">Как тебя называют близкие?</p>
       <input id="ftName" maxlength="24" placeholder="Имя — или как тебе приятно" autocomplete="given-name" style="font-size:20px;text-align:center">
-      <button class="btn gold" id="ftNameGo">Приятно познакомиться ✦</button><button class="back-link" id="ftNameSkip" style="align-self:center">Пока без имени</button></div>`;
-    setTimeout(() => $('ftName')?.focus(), 400); }
+      <button class="btn gold" id="ftNameGo" data-consent="1">Приятно познакомиться ✦</button><button class="back-link" id="ftNameSkip" data-consent="1" style="align-self:center">Пока без имени</button>
+      <p class="note" style="margin:0">Нажимая «Приятно познакомиться», я подтверждаю, что мне есть 18, и даю <a href="https://asya-app.ru/privacy.html" target="_blank" data-ext="1" style="color:var(--gold)">согласие на обработку данных</a> · <a href="https://asya-app.ru/privacy.html#terms" target="_blank" data-ext="1" style="color:var(--gold)">условия</a></p></div>`; }
+  else if (F.step === 8){  /* Ася о себе */
+    v.innerHTML = `<div class="ft"><div class="ftspark">✦</div><p class="lead" style="color:var(--text)">${nm1('{name}, очень приятно — запомнила.', 'Очень приятно.')} Я умею слушать, знаю старинные карты и звёзды и никого не тороплю. Ты ведь столько держишь на себе — а со мной можно так:</p>
+      <div class="promise">${[['🌿', 'Не быть сильной', 'выдохнуть, опустить плечи и просто побыть'], ['🌙', 'Слушать себя', 'услышать, чего хочется именно тебе'], ['✨', 'Подумать вслух', 'когда мысли бегают по кругу']].map(([i, x, s]) => `<div><span>${i}</span><p><b>${x}</b>${s}</p></div>`).join('')}</div>
+      <button class="btn gold" data-ft="9">Хочу так ✦</button></div>`; }
+  else if (F.step === 9){  /* можно задам пару вопросов? */
+    v.innerHTML = `<div class="ft"><div class="ftspark">💬</div><p class="lead" style="color:var(--text)">Хочу узнать тебя лучше — чтобы понимать и чувствовать тебя, и чтобы наша дружба была настоящей. Можно задам пару вопросов? Правильных ответов нет — отвечай как есть.</p>
+      <button class="btn gold" data-ft="2">Давай ✦</button><button class="back-link" data-ft-later="1" style="align-self:center">Давай позже</button></div>`; }
   else if (F.step === 2){ const g = G.st.goal;
-    v.innerHTML = `${ftDots(2)}<div><div class="date">Знакомимся · 1 из 3</div><p class="lead" style="margin:6px 0">${nm1('{name}, очень приятно — запомнила. Начнём с главного.', 'Очень приятно. Начнём с главного.')}</p><h1>А чего хочется тебе — для себя, не для всех?</h1></div>
+    v.innerHTML = `${ftDots(2)}<div><div class="date">Знакомимся · 1 из 3</div><p class="lead" style="margin:6px 0">Спасибо, что доверяешь. Начнём с главного.</p><h1>А чего хочется тебе — для себя, не для всех?</h1></div>
     <p class="note" style="margin:0">Выбери, что откликается сильнее. До остального тоже дойдём.</p>
     ${Object.entries(GOALS).map(([k, x]) => `<button class="goal${g === k ? ' on' : ''}" data-goal="${k}"><span class="gi">${x[0]}</span><span>${esc(goalName(k))}<small>${esc(x[2])}</small></span></button>`).join('')}
     ${g ? `<div class="grow"><span class="eyebrow">Ася</span><p style="margin:0">${esc(GOAL_ECHO[g])}</p></div><button class="btn gold" data-ft="3" id="ftGoalOk">Да, это про меня ✦</button>` : ''}
@@ -2023,8 +2029,9 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-sp-diary]')){ const p = SOUL.practices.find(x => x.id === SP.id); dDraft = soulFill(p.after) + '\n'; SP.id = null; return showView('vDiary'); }
   if (e.target.closest('#nameSave')){ const v = ($('nameIn')?.value || '').trim().replace(/[<>{}]/g, '').slice(0, 24); if (!v){ toast('Напиши, как тебя называть'); return; } store.set('asya-name', v); SFX.chime(); toast(v + ', приятно познакомиться ✦'); if (!$('vWay').hidden) return renderMe(); const sv = store.get('asya-day'); return sv ? showDay(sv.n) : renderHome(); }
   if (e.target.closest('#ftNameGo')){ const v = ($('ftName')?.value || '').trim().replace(/[<>{}]/g, '').slice(0, 24); if (!v){ toast('Напиши, как тебя называть — или нажми «Пропустить»'); return; }
-    store.set('asya-name', v); buzz('success'); SFX.chime(); EV.add('name'); fxBadge('🤍', v + ', я так рада тебе'); return renderStart(); }
-  if (e.target.closest('#ftNameSkip')){ store.set('asya-name-skip', 1); SFX.tap(); return renderStart(); }
+    store.set('asya-name', v); buzz('success'); SFX.chime(); EV.add('name'); fxBadge('🤍', v + ', я так рада тебе'); G.st.ftue.step = 8; G.save(); return renderStart(); }
+  if (e.target.closest('#ftNameSkip')){ store.set('asya-name-skip', 1); SFX.tap(); G.st.ftue.step = 8; G.save(); return renderStart(); }
+  if (e.target.closest('[data-ft-later]')){ SFX.tap(); EV.add('ftue_later'); return showView('vHome'); }
   if (e.target.closest('#nameDel')){ store.set('asya-name', null); store.set('asya-name-skip', 1); toast('Хорошо, без имени ✦'); return renderMe(); }
   if (e.target.closest('#nameSkip')){ store.set('asya-name-skip', 1); const sv = store.get('asya-day'); return sv ? showDay(sv.n) : renderHome(); }
   const chb = e.target.closest('[data-ch]'); if (chb){ chSel = chb.dataset.ch || null; chQuiz = null; SFX.tap(); return renderChakra(); }
