@@ -106,6 +106,7 @@ body.touring::before{content:'';position:fixed;inset:0;background:rgba(10,6,20,.
 .tourbox{position:fixed;left:16px;right:16px;bottom:calc(112px + env(safe-area-inset-bottom));z-index:99;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:20px;background:#2A1F33;border:1px solid rgba(245,166,35,.7);box-shadow:0 10px 40px rgba(0,0,0,.5);animation:spIn .35s ease both}
 .isteps{display:flex;flex-direction:column;gap:8px}.isteps>div{display:flex;gap:10px;align-items:flex-start;font-size:14px}.isteps>div>b{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:#2A1F2E;font-size:13px}.ishare{display:inline-grid;place-items:center;width:24px;height:24px;border:1.5px solid var(--gold);border-radius:6px;color:var(--gold);font-weight:700}
 .iarrow{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:120;font-size:42px;color:#F5A623;text-shadow:0 0 18px rgba(245,166,35,.8);animation:iarr 1s ease-in-out infinite;pointer-events:none}@keyframes iarr{50%{transform:translate(-50%,10px)}}
+.spotel{position:relative;z-index:98;border-radius:16px;box-shadow:0 0 0 3px #F5A623,0 0 26px 8px rgba(245,166,35,.6)!important;animation:spotP 1.2s ease-in-out infinite}.tourbox.top{top:calc(70px + env(safe-area-inset-top));bottom:auto}
 .stepno{display:block;font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:10px 0 -4px}
 .backtop{background:var(--panel);border:1px solid var(--line);border-radius:999px;color:var(--gold);font:600 14px var(--body);padding:8px 14px;cursor:pointer}
 body.typing .tabs{display:none}body.typing .app{padding-bottom:20px}
@@ -949,7 +950,7 @@ function renderArchMe(){
   box.innerHTML = `<div class="petstage ${mood[0]}" style="--c1:${esc(a.c1)};--c2:${esc(a.c2)}" data-pet="1">
       <div class="petaura"></div>${Array.from({length: 6 + st * 3}, (_, i) => `<i class="petdot" style="--i:${i};left:${(i * 37) % 100}%;animation-delay:${(i * .7) % 4}s"></i>`).join('')}
       <div class="petfig">${heroPortrait(a, 150)}</div>
-      <div class="petname"><span class="eyebrow">${H ? esc(H.facet) : 'Ты растёшь в'} · она ${mood[1]}</span><h1 style="font-size:28px;margin:2px 0">${esc(a.name)}</h1><div class="note">Ступень ${st + 1} из 5 · ${esc(stageName(a, st))}</div></div>
+      <div class="petname"><span class="eyebrow">${H ? esc(H.facet) : 'Ты растёшь в'} · она ${mood[1]}</span><h1 style="font-size:28px;margin:2px 0">${esc(herTitle() || a.name)}</h1><div class="note">Ступень ${st + 1} из 5 · ${esc(stageName(a, st))}</div></div>
       <div class="petsay" id="petSay">${esc(mood[2])}</div></div>
     <div><div class="bar"><i style="width:${pct}%"></i></div><div class="note" style="margin-top:4px">${deed ? 'Свет набран — для «' + esc(stageName(a, 4)) + '» нужен твой большой поступок' : nx ? `До «${esc(stageName(a, st + 1))}» ещё ${nx - L} света ✦` : '«' + esc(H?.title || 'Вершина') + '»'}</div></div>
     ${done ? '<button class="btn" disabled>✓ Испытание недели выполнено</button>' : `<button class="btn gold" id="chalBtn">Испытание недели · +40 света</button><span class="note" style="margin-top:-6px">${esc(a.challenge)}</span>`}
@@ -1353,7 +1354,7 @@ function renderDiary(){
   const days = Array.from({length: 30}, (_, i) => { const x = new Date(now); x.setDate(x.getDate() - 29 + i); const k = dayKey(x), e = D.find(z => z.d === k && z.mood); return e ? C.moods.find(m => m.id === e.mood)?.e : ''; });
   const words = Object.entries(D.slice(0, 40).flatMap(e => (e.text + ' ' + Object.values(e.parts || {}).join(' ')).toLowerCase().match(/[а-яё]{5,}/g) || []).filter(w => !['которые', 'потому', 'сегодня', 'только', 'просто', 'чтобы', 'очень', 'когда', 'хочется'].includes(w)).reduce((m, w) => (m[w] = (m[w] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1]).slice(0, 6).filter(x => x[1] > 1);
   const K = dKind || (eve ? 'emo' : hour < 12 ? 'intent' : 'thought'), KQ = DQ_KIND[K];
-  $('vDiary').innerHTML = `<div><div class="date">Дневник · только в твоём телефоне</div><h1>${esc(KQ.h)}</h1></div>
+  $('vDiary').innerHTML = `<div><div class="date">Дневник · только для тебя</div><h1>${myName() ? esc(myName()) + ', ' + esc(KQ.h.charAt(0).toLowerCase() + KQ.h.slice(1)) : esc(KQ.h)}</h1></div>
     <div class="chips dkinds">${Object.entries(DKIND).map(([k, [e, n]]) => `<button class="chip${k === K ? ' on' : ''}" data-dkind="${k}">${e} ${n}</button>`).join('')}</div>
     <p class="note" style="margin:0">${esc(KQ.why)}</p>
     ${K === 'emo' ? `<div class="moods">${C.moods.map(m => `<button class="${dMood === m.id ? 'on' : ''}" data-mood="${m.id}"><b>${m.e}</b>${m.name}</button>`).join('')}</div>` : ''}
@@ -1502,13 +1503,56 @@ let tourI = -1;
 function tour(i = 0){ tourI = i; document.querySelectorAll('.tab.spot').forEach(b => b.classList.remove('spot')); $('tourBox')?.remove(); document.body.classList.toggle('touring', i < TOUR.length);
   if (i >= TOUR.length){ G.st.toured = today; G.save(); EV.add('tour_done'); showView('vHome');
     return overlay(`<div class="ckhead"><span class="ckav">🤍</span><div><span class="eyebrow">Вот и вся наша квартира</span><p style="margin:0">${nm1('Ключ теперь есть и у тебя 🤍 {name}, с чего начнём? Мне правда интересно, как ты сегодня.', 'Ключ теперь есть и у тебя 🤍 С чего начнём? Мне правда интересно, как ты сегодня.')}</p></div></div>
-      <button class="btn gold" data-x="1" onclick="setTimeout(()=>document.getElementById('homeCheck')?.scrollIntoView({behavior:'smooth',block:'center'}),200)">Рассказать, как я ✦</button><button class="btn" data-x="1" data-go="vToday">Сначала вытянуть карту</button>`); }
+      <button class="btn gold" data-x="1" onclick="setTimeout(()=>walk(0),300)">Пройдёмся вместе ✦</button><button class="back-link" data-x="1" style="align-self:center">Осмотрюсь сама</button>`); }
   const [view, name, text] = TOUR[i], tab = document.querySelector(`.tab[data-view="${view}"]`); if (tab) tab.classList.add('spot'); buzz('select'); SFX.tap();
   const b = document.createElement('div'); b.id = 'tourBox'; b.className = 'tourbox';
   b.innerHTML = `<div class="ckhead"><span class="ckav">✦</span><div><span class="eyebrow">Ася показывает · ${i + 1} из ${TOUR.length}</span><p style="margin:0"><b>${name}</b> — ${esc(text.replace(/^Это «[^»]+» — /, ''))}</p></div></div><div class="row"><button class="btn gold" data-tour-next="1">${i < TOUR.length - 1 ? 'Дальше ›' : 'Понятно ✦'}</button></div><span class="note" style="text-align:center">или нажми на подсвеченную вкладку внизу</span>`;
   document.body.appendChild(b); }
 document.addEventListener('click', e => { if (e.target.closest('[data-tour-next]')){ e.stopPropagation(); return tour(tourI + 1); }
   const sp = e.target.closest('.tab.spot'); if (sp && tourI >= 0){ setTimeout(() => tour(tourI + 1), 650); } }, true);
+/* ===== «Первая прогулка с Асей» (guide-team + методологи 07.11): Ася ведёт ВНУТРЬ разделов, подсвечивает кнопку,
+   девушка сама делает первое действие, Ася радуется и ведёт дальше. Сценарий — WALK (тексты), действия — WALK_DO ===== */
+const herTitle = () => { const a = archOf(), n = myName(); return a && n ? a.name + ' ' + n : n || (a ? a.name : ''); };
+const fillT = s => String(s || '').replace(/\{title\}/g, herTitle() || 'моя дорогая').replace(/\{name\}/g, myName() || 'моя дорогая');
+const WALK_DO = {
+  D: {view: 'vWay', target: '[data-pet]', done: () => G.st.petTapped === today},
+  F: {view: 'vBalance', target: () => document.querySelector('#vBalance [data-sph]')?.closest('.block'), done: () => G.st.walkSph === today},
+  A: {view: 'vDiary', target: '#dText', prep: () => { dKind = 'intent'; if (!dDraft) dDraft = 'Сегодня я выбираю себя тем, что… '; renderDiary(); }, done: () => diary.get().some(e => e.d === today && (e.text || Object.keys(e.parts || {}).length))},
+  B: {view: 'vTests', target: '[data-test="conflict"]', done: () => G.st.tests?.conflict?.date === today},
+  C: {view: 'vChat', target: '[data-guide="friend"]', done: () => CHAT.msgs.some(m => m.role === 'assistant')}};
+let WALK = {intro: 'Это я тебе показала — а теперь пройдёмся вместе, {title}: нажимаешь ты, а я рядом на каждом шаге.', skip: 'Осмотрюсь сама',
+  skipSay: 'Конечно. Прогулка подождёт на главной — позови, когда захочешь ✦',
+  steps: [{k: 'D', before: '{title}, это твоя героиня — она уже ждёт тебя. Коснись её.', after: 'Она будет расти с каждым твоим шагом — так ты увидишь, как растёшь сама. Смотри, засияла от тебя ✦', light: 5, coins: 0},
+    {k: 'F', before: 'Вот твоё колесо — его нарисовала ты. Какой сфере подарим эту неделю?', after: 'Теперь мои подсказки и шаги дня будут про «{sphere}» — неделя станет твоей, а не общей. Хороший выбор.', light: 15, coins: 5},
+    {k: 'A', before: 'Ты пообещала себе: «Я выбираю себя». Допиши одной строкой как — видишь только ты.', after: 'Записанное легче сдержать — через неделю перечитаем вместе. Первая строчка, и сразу такая твоя.', light: 15, coins: 5, pause: true},
+    {k: 'B', before: 'А теперь игра про тебя: какая ты, когда спорят. Отвечай первым, что почувствуешь.', after: 'Теперь ты знаешь свою силу в споре — и я буду помнить её, когда придёшь поговорить. Ты честно ответила на всё — это смелость.', light: 50, coins: 25},
+    {k: 'C', before: 'А теперь просто поговорим, как подруги. Напиши мне что угодно — или нажми готовую фразу.', after: 'Помнишь «подумать вслух»? Это здесь — в любой час. Спасибо, что написала первой.', light: 10, coins: 5}],
+  pause: 'Половина пути, {title}. Дальше — самое интересное про тебя.', later: 'Остальное — завтра', laterSay: 'Завтра продолжим — героиня будет ждать ✦',
+  finale: 'Сегодня ты выбрала себя пять раз, {title} — и каждый раз сама. Вечером спрошу, как прошёл шаг дня под твоей картой. А утром тебя будет ждать новая карта — и героиня, которая уже соскучится ✦'};
+let walkI = -1, walkPoll = 0;
+const walkLeft = () => WALK.steps.filter(s => WALK_DO[s.k] && !WALK_DO[s.k].done() && !(G.st.walkDone || {})[s.k]);
+function walkClear(){ clearInterval(walkPoll); document.querySelectorAll('.spotel').forEach(x => x.classList.remove('spotel')); $('tourBox')?.remove(); }
+function walkDots(){ const n = WALK.steps.length, d = n - walkLeft().length; return `<div class="g7beads" style="margin:2px 0">${WALK.steps.map((_, i) => `<i class="${i < d ? 'on' : i === d ? 'now' : ''}"></i>`).join('')}</div>`; }
+function walk(i = 0, fromIntro){ walkClear(); walkI = i;
+  if (!fromIntro && !G.st.walkIntro){ G.st.walkIntro = today; G.save(); return walkBubble(fillT(WALK.intro), 'Пойдём ✦', () => walk(0, true)); }
+  const st = walkLeft()[0];
+  if (!st){ G.st.walked = today; G.st.bonus = (G.st.bonus || 0) + 20; G.save(); hud(); EV.add('walk_done'); showView('vHome'); return fxCelebrate({icon: '🌟', kicker: 'Первая прогулка с Асей · +20 монеток', title: 'Ты прошла её сама ✦', sub: fillT(WALK.finale), btn: 'До вечера ✦'}); }
+  const D = WALK_DO[st.k]; EV.add('walk_step', st.k); showView(D.view); if (D.prep) D.prep();
+  if (st.k === 'C') setTimeout(() => { const g = document.querySelector('[data-guide="friend"]'); if (g && aiOn()){ renderAiChat('friend'); const ta = $('aiIn'); if (ta && !ta.value) ta.value = G.st.tests?.conflict ? 'Я прочитала про себя — это правда я?' : 'Привет, Ася ✦'; const b = $('aiSend'); if (b) b.classList.add('spotel'); } }, 500);
+  setTimeout(() => { const el = typeof D.target === 'function' ? D.target() : document.querySelector(`#${D.view} ${D.target}`); if (el){ el.classList.add('spotel'); el.scrollIntoView({behavior: 'smooth', block: 'center'}); }
+    walkBubble(fillT(st.before), null, null, true); buzz('select');
+    walkPoll = setInterval(() => { if (!D.done()) return; clearInterval(walkPoll); walkClear(); (G.st.walkDone = G.st.walkDone || {})[st.k] = today;
+      G.add(st.light || 5, 'прогулка с Асей'); if (st.coins){ G.st.bonus = (G.st.bonus || 0) + st.coins; G.save(); hud(); } buzz('success'); SFX.chime();
+      const sph = sphereWeek() !== null ? C.balance[sphereWeek()] : '';
+      const after = fillT(st.after).replace('{sphere}', sph);
+      if (st.pause) walkBubble(after + ' ' + fillT(WALK.pause), 'Дальше ✦', () => walk(i + 1, true), false, WALK.later);
+      else walkBubble(after, walkLeft().length ? 'Дальше ›' : 'Завершить ✦', () => walk(i + 1, true)); }, 700); }, 500); }
+function walkBubble(text, btn, fn, top, laterTxt){ $('tourBox')?.remove(); const b = document.createElement('div'); b.id = 'tourBox'; b.className = 'tourbox' + (top ? ' top' : '');
+  b.innerHTML = `<div class="ckhead"><span class="ckav">✦</span><div><span class="eyebrow">Прогулка с Асей</span>${walkDots()}<p style="margin:0">${esc(text)}</p></div></div>${btn ? `<button class="btn gold" id="walkGo">${esc(btn)}</button>` : ''}<button class="back-link" id="walkSkip" style="align-self:center">${esc(laterTxt || WALK.skip)}</button>`;
+  document.body.appendChild(b); if (btn) b.querySelector('#walkGo').onclick = fn;
+  b.querySelector('#walkSkip').onclick = () => { walkClear(); walkI = -1; G.st.walkPause = today; G.save(); EV.add(laterTxt ? 'walk_later' : 'walk_skip'); toast(laterTxt ? WALK.laterSay : WALK.skipSay); }; }
+document.addEventListener('click', e => { if (e.target.closest('[data-sph]') && walkI >= 0){ G.st.walkSph = today; } if (e.target.closest('[data-walk]')){ SFX.tap(); walk(0, true); } }, true);
+document.addEventListener('click', e => { if (e.target.closest('[data-pet]') && walkI >= 0){ G.st.petTapped = today; } }, true);
 /* Пока она печатает — нижняя панель не закрывает поле */
 document.addEventListener('focusin', e => { if (e.target.matches('textarea, input[type=text], input:not([type])')) document.body.classList.add('typing'); });
 document.addEventListener('focusout', e => { if (e.target.matches('textarea, input')) setTimeout(() => { if (!document.activeElement?.matches('textarea, input')) document.body.classList.remove('typing'); }, 120); });
@@ -1916,7 +1960,8 @@ function renderPath(){
   if (G.st.stepDay === today && G.st.invWeek !== weekKey()) h += `<div class="tip"><button class="x" data-inv-x="1" aria-label="Закрыть">×</button><span class="eyebrow">💌 Подари подруге</span><p style="margin:0">Ты сделала шаг — это уже больше, чем вчера. Есть подруга, которой сейчас тоже нужен маленький пинок? Подари ей её карту по дню рождения — Ася узнает, что подарок от тебя.</p><div class="row"><button class="btn gold" data-tglink="invite" data-inv-x="1">Подарить карту подруге ✦</button></div></div>`;
   const cw = CH && G.st.chw && CH.chakras.find(x => x.id === G.st.chw.id), cwd = cw ? Math.floor((Date.parse(today) - Date.parse(G.st.chw.start)) / 864e5) : -1;
   if (cw && cwd < 7 && !G.st.chw.done?.[cwd]) h = `<button class="opt" data-go="vChakra"><span class="oi">◉</span><span>Неделя с центром «${esc(cw.ru)}» · день ${cwd + 1}<small>${esc(cw.week[cwd])}</small></span><span class="go">›</span></button>` + h;
-  box.innerHTML = pathCard() + h;
+  const walkCard = !ftueOn() && G.st.toured && !G.st.walked && dayNo() <= 3 && walkI < 0 ? `<div class="tip"><span class="eyebrow">🌟 Пройдёмся вместе?</span><p style="margin:0">${esc(fillT('{title}, я покажу, где что лежит, а ты попробуешь сама — пара минут, и ты как дома.'))}</p><div class="row"><button class="btn gold" data-walk="1">Пойдём ✦</button></div></div>` : '';
+  box.innerHTML = walkCard + pathCard() + h;
   const more = $('homeMore'); if (more) more.innerHTML = myDayCard() + adviceCard() + laterBox() + triCard() + dayQCard();
   renderCheck();
 }
