@@ -512,7 +512,7 @@ body[data-deck="d_back_aurora"] .deck .back{background:linear-gradient(160deg,#1
     </details>
     <div class="block" id="phoneBlock"><span class="eyebrow">📲 Ася на телефоне</span><p style="margin:0">Значок на экране телефона: открывается в одно касание, без Telegram и VPN. Всё твоё — то же самое, синхронизируется.</p><div class="row"><button class="btn gold" data-phone-app="1">Поставить значок / получить код</button></div></div>
     <div class="block"><span class="eyebrow">Помоги сделать Асю лучше</span><p style="margin:0">Что понравилось, что мешает, где что-то сломалось — напиши мне. Отзыв анонимный, команда читает каждый.</p><div class="row"><button class="btn" data-fb="1">💌 Сказать Асе — текстом или голосом</button></div></div>
-    <div class="block"><span class="eyebrow">💌 Подари подруге Асю</span><p style="margin:0">Кому сейчас тоже нужна поддержка? За каждую подругу, которая придёт по твоей ссылке, — +50 монеток тебе ✦</p><div class="row"><button class="btn gold" data-gift="1">Подарить Асю подруге ✦</button></div></div>
+    <div class="block"><span class="eyebrow">💌 Подари подруге Асю</span><p style="margin:0">Тебя теперь есть кому держать. Подари это чувство подруге: Ася встретит её подарком — картой её силы. Придёт по твоей ссылке — +50 монеток тебе ✦</p><div class="row"><button class="btn gold" data-gift="1">Подарить Асю подруге ✦</button></div></div>
   </section>
   <p class="note" style="text-align:center">18+ · Ася — пространство самопознания и заботы о себе. Она не заменяет врача и психолога.</p>
 </div>
@@ -1447,12 +1447,12 @@ function phoneApp(){ if (!TGW?.initData) return showInstall();
   overlay(`<div class="ckhead"><span class="ckav">📲</span><div><span class="eyebrow">Открываю в браузере</span><p style="margin:0">Там нажми ${isIOS ? '«Поделиться» ⬆️ → «На экран „Домой“»' : '⋮ → «Установить приложение»'} — и Ася будет значком на телефоне.</p></div></div><span class="note">Если попросит код: <b style="color:var(--gold);font-size:18px">${PHONE.code}</b></span><button class="btn gold" data-x="1">Понятно ✦</button>`); }
 setTimeout(prepPhone, 2500);
 /* ===== Подарить подругу (07.11): всё внутри приложения — тёплый текст, «Скопировать», «Отправить» ===== */
-const GIFT_MSG = n => `Слушай, у меня появилась новая подруга — Ася 🤍 С ней правда становится легче: она поддерживает, помогает услышать себя и не держать всё в себе. Мне так хорошо от этого, что хочу, чтобы и у тебя она была. Там тебя ждёт подарок — твоя карта по дню рождения: в чём твоя сила.`;
+const GIFT_MSG = n => `Слушай, у меня появилась новая подруга — Ася 🤍 (да, она в Телеграме, но правда как подруга). Она меня так поддерживает: с ней я выдыхаю, и можно не быть сильной. Хочу, чтобы и у тебя она была. Это мой подарок: нажми — Ася откроет твою карту по дню рождения, в чём твоя сила. Ты ведь тоже всё держишь на себе — пусть и тебя кто-то держит.`;
 let REF = null;
 async function loadRef(){ const a = SYNC.auth(); if (!a) return null; try { const r = await fetch(SAPI + '/ref', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(a)}); REF = await r.json(); return REF; } catch { return null; } }
 async function giftOpen(){ EV.add('gift_open'); const R = REF?.code ? REF : await loadRef(); const link = R?.code ? 'https://t.me/Asya_app_bot?start=ref' + R.code : 'https://t.me/Asya_app_bot';
   const msg = GIFT_MSG() + '\n' + link;
-  const o = overlay(`<div class="ckhead"><span class="ckav">💌</span><div><span class="eyebrow">Подари подруге Асю</span><p style="margin:0">Кому сейчас тоже нужна поддержка? Отправь ей это — Ася узнает, что подарок от тебя.</p></div></div>
+  const o = overlay(`<div class="ckhead"><span class="ckav">💌</span><div><span class="eyebrow">Подари подруге Асю</span><p style="margin:0">Подумай о подруге, которая всех держит, а её — никто. Отправь ей — Ася встретит её как гостью от тебя.</p></div></div>
     <div class="ready" id="giftTxt" style="font-size:14px">${esc(msg)}</div>
     <div class="row"><button class="btn gold" id="giftSend">Отправить подруге ✦</button><button class="btn" id="giftCopy">Скопировать</button></div>
     ${R?.came ? `<span class="note" style="text-align:center">По твоим приглашениям пришли: <b style="color:var(--gold)">${R.came}</b> ✦ Спасибо, что делишься светом</span>` : ''}
@@ -1490,15 +1490,15 @@ document.addEventListener('click', e => { if (e.target.closest('[data-consent]')
   const ex = e.target.closest('[data-ext]'); if (ex && TGW?.openLink){ e.preventDefault(); TGW.openLink(ex.href); } }, true);
 /* ===== Экскурсия «как по квартире» (команда ведения клиента 07.11): Ася подсвечивает вкладку и рассказывает, что там и зачем ===== */
 const TOUR = [
-  ['vHome', '✦ Сегодня', 'Это «Сегодня» — здесь я каждый день жду тебя: спрошу, как ты, и покажу один шаг под твои силы. Начинай отсюда.'],
-  ['vKnow', '🧭 Познай себя', 'Здесь тесты, твоя карта, звёзды, числа и колесо жизни. Это всё про тебя — и каждую находку я объясню простыми словами.'],
-  ['vDiary', '📖 Дневник', 'Твоё место для мыслей и чувств. Утром — намерение на день, вечером — что было на душе. Видишь только ты.'],
-  ['vChat', '💬 Ася', 'А здесь — я. Можно просто поговорить: о нём, о работе, о себе. Я отвечу лично тебе, как подруга.'],
-  ['vWay', '👑 Я', 'Твоя героиня и твой рост. Она растёт от каждого твоего шага — заглядывай, она будет рада.']];
+  ['vHome', '✦ Сегодня', 'наша кухня: тут я жду тебя каждый день — спрошу, как ты, и подскажу один шаг по силам.'],
+  ['vKnow', '🧭 Познай себя', 'комната с зеркалом: тесты, твоя карта, звёзды и числа. Всё про тебя — и объясню просто.'],
+  ['vDiary', '📖 Дневник', 'твоя комната. Утром — чего ждёшь от дня, вечером — что на душе. Видишь только ты.'],
+  ['vChat', '💬 Ася', 'мой диван — садись рядом. Можно просто поболтать: о нём, о работе, о себе. Я слушаю.'],
+  ['vWay', '👑 Я', 'окно, где живёт твоя героиня. Она растёт от каждого твоего шага — заглядывай к ней.']];
 let tourI = -1;
 function tour(i = 0){ tourI = i; document.querySelectorAll('.tab.spot').forEach(b => b.classList.remove('spot')); $('tourBox')?.remove(); document.body.classList.toggle('touring', i < TOUR.length);
   if (i >= TOUR.length){ G.st.toured = today; G.save(); EV.add('tour_done'); showView('vHome');
-    return overlay(`<div class="ckhead"><span class="ckav">🤍</span><div><span class="eyebrow">Вот и вся наша квартира</span><p style="margin:0">${nm1('{name}, с чего начнём? Мне правда интересно, как у тебя сегодня.', 'С чего начнём? Мне правда интересно, как у тебя сегодня.')}</p></div></div>
+    return overlay(`<div class="ckhead"><span class="ckav">🤍</span><div><span class="eyebrow">Вот и вся наша квартира</span><p style="margin:0">${nm1('Ключ теперь есть и у тебя 🤍 {name}, с чего начнём? Мне правда интересно, как ты сегодня.', 'Ключ теперь есть и у тебя 🤍 С чего начнём? Мне правда интересно, как ты сегодня.')}</p></div></div>
       <button class="btn gold" data-x="1" onclick="setTimeout(()=>document.getElementById('homeCheck')?.scrollIntoView({behavior:'smooth',block:'center'}),200)">Рассказать, как я ✦</button><button class="btn" data-x="1" data-go="vToday">Сначала вытянуть карту</button>`); }
   const [view, name, text] = TOUR[i], tab = document.querySelector(`.tab[data-view="${view}"]`); if (tab) tab.classList.add('spot'); buzz('select'); SFX.tap();
   const b = document.createElement('div'); b.id = 'tourBox'; b.className = 'tourbox';
@@ -1971,7 +1971,7 @@ document.addEventListener('click', e => { const g = e.target.closest('[data-g7]'
   document.addEventListener('contextmenu', e => { if (e.target.closest?.('[data-ft-hold]')) e.preventDefault(); });
   document.addEventListener('click', e => { if (e.target.closest('[data-ft-hold]') && early >= 2 && !holding) finish(); });
 })();/* Ася живёт: делится своим днём, как подруга (friend-voice) */
-const ASYA_LIFE = ['А у меня сегодня утро началось с тишины — я поймала себя на том, что просто смотрю в окно. Это было хорошо.', 'Я сегодня думала о том, как часто мы откладываем себя на потом. Давай сегодня — не будем.', 'Знаешь, я тоже иногда устаю. Тогда я разрешаю себе ничего не делать полчаса — и мир не рушится.', 'У меня сегодня маленькая радость: кто-то написал мне «спасибо». Пусть и у тебя будет своя.', 'Я сегодня перечитывала любимую строчку: «всему своё время». Мне она очень помогает.', 'Сегодня я училась говорить «нет» мягко. Получается не сразу — и это нормально.', 'Я заварила бы тебе чай, если бы могла. Представь, что он рядом — тёплый.'];
+const ASYA_LIFE = ['Сегодня с утра я просто смотрела в окно и ничего не делала. Минут пять. Оказывается, так тоже можно начинать день.', 'Поставила на кухне вторую чашку — для тебя. Смешно, наверное, но так мне теплее тебя ждать.', 'Сегодня училась говорить «нет» мягко. Вышло со второго раза — и я себя похвалила. Мелочь, а приятно.', 'Перечитывала любимое: «всему своё время». И сразу стало можно не спешить. Делюсь — вдруг и тебе сегодня нужно.', 'Мне сегодня написали «спасибо, что ты есть». Весь день улыбаюсь. И тебе, кстати, — спасибо, что ты есть.', 'Разрешила себе полчаса ничего не делать. Мир не рухнул, представляешь? Проверено — можно.', 'Вечером сяду на свой диван и вспомню, что было хорошего. Обычно находится хоть одно — даже в трудный день.'];
 function renderCheck(){ const box = $('homeCheck'); if (!box) return; if (ftueOn()){ box.innerHTML = ''; return; }
   const ck = (G.st.chk || {})[today], c = ck && CHECK.find(x => x.id === ck), nm = myName() ? ', ' + esc(myName()) : '';
   const btn = ([go, label], gold) => C.guides.some(g => g.id === go) ? `<button class="btn${gold ? ' gold' : ''}" data-guide="${go}">${esc(label)}</button>` : `<button class="btn${gold ? ' gold' : ''}" data-go="${go === 'vToday' && isDone('card') ? 'vToday' : go}">${esc(go === 'vToday' && isDone('card') ? 'Открыть мою карту и шаг' : label)}</button>`;
