@@ -1450,7 +1450,7 @@ setTimeout(prepPhone, 2500);
 const GIFT_MSG = n => `Слушай, у меня появилась новая подруга — Ася 🤍 (да, она в Телеграме, но правда как подруга). Она меня так поддерживает: с ней я выдыхаю, и можно не быть сильной. Хочу, чтобы и у тебя она была. Это мой подарок: нажми — Ася откроет твою карту по дню рождения, в чём твоя сила. Ты ведь тоже всё держишь на себе — пусть и тебя кто-то держит.`;
 let REF = null;
 async function loadRef(){ const a = SYNC.auth(); if (!a) return null; try { const r = await fetch(SAPI + '/ref', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(a)}); REF = await r.json(); return REF; } catch { return null; } }
-async function giftOpen(){ EV.add('gift_open'); const R = REF?.code ? REF : await loadRef(); const link = R?.code ? 'https://t.me/Asya_app_bot?start=ref' + R.code : 'https://t.me/Asya_app_bot';
+async function giftOpen(){ EV.add('gift_open'); const R = REF?.code ? REF : await loadRef(); const link = R?.code ? 'https://t.me/Asya_app_bot?startapp=ref' + R.code : 'https://t.me/Asya_app_bot';
   const msg = GIFT_MSG() + '\n' + link;
   const o = overlay(`<div class="ckhead"><span class="ckav">💌</span><div><span class="eyebrow">Подари подруге Асю</span><p style="margin:0">Подумай о подруге, которая всех держит, а её — никто. Отправь ей — Ася встретит её как гостью от тебя.</p></div></div>
     <div class="ready" id="giftTxt" style="font-size:14px">${esc(msg)}</div>
@@ -2160,7 +2160,7 @@ document.addEventListener('click', e => {
     if (tl?.dataset.tglink === 'invite'){ giftOpen(); return; }
     if (false){ G.st.giftN = (G.st.giftN || 0) + 1; G.save();
       const rc = store.get('asya-ref'); if (rc){  // окно «Поделиться» Telegram поверх приложения — выходить в чат не нужно
-        const link = 'https://t.me/Asya_app_bot?start=ref' + rc, share = 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(GIFT_TEXT);
+        const link = 'https://t.me/Asya_app_bot?startapp=ref' + rc, share = 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(GIFT_TEXT);
         if (TG?.openTelegramLink) TG.openTelegramLink(share); else window.open(share, '_blank'); return; } }
     const link = 'https://t.me/Asya_app_bot?start=' + (tl ? tl.dataset.tglink : 'talk');
     if (TG?.openTelegramLink) TG.openTelegramLink(link); else window.open(link, '_blank');  // приложение не закрываем — Ася остаётся рядом
