@@ -101,6 +101,9 @@ input[type=range]{accent-color:var(--gold)}
 #splash{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(120% 60% at 50% 30%,#2B2160,#17111F 65%);transition:opacity .45s}#splash.off{opacity:0;pointer-events:none}
 #splash .spk{font-size:54px;color:var(--gold);filter:drop-shadow(0 0 18px rgba(232,204,140,.7));animation:aura 2s ease-in-out infinite}#splash .spn{font:400 38px var(--display);color:var(--gold);letter-spacing:.06em;animation:spIn .9s ease both .15s}#splash .sps{font:400 16px var(--body);color:#E9E1EE;opacity:.85;animation:spIn .9s ease both .5s}#splash .spt{margin-top:18px;animation:spIn .6s ease both .9s}#splash .spk{animation:spStar 1.1s cubic-bezier(.2,.8,.2,1) both,aura 2.4s ease-in-out 1.1s infinite}@keyframes spIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes spStar{from{opacity:0;transform:scale(.3) rotate(-30deg)}to{opacity:1;transform:none}}
 body.ftstart .top>*:not(.brand),body.ftstart .tabs{display:none!important}body.ftue .top>*:not(.brand),body.ftue .tabs,body.ftue #vToday [data-go="vHelp"]{display:none!important}
+body.touring::before{content:'';position:fixed;inset:0;background:rgba(10,6,20,.62);z-index:89}body.touring .tabs{z-index:97}
+.tab.spot{position:relative;border-radius:14px;color:#FFD08A!important;box-shadow:0 0 0 3px #F5A623,0 0 26px 8px rgba(245,166,35,.65);animation:spotP 1.2s ease-in-out infinite;z-index:98}@keyframes spotP{50%{box-shadow:0 0 0 3px #F5A623,0 0 38px 14px rgba(245,166,35,.85)}}
+.tourbox{position:fixed;left:16px;right:16px;bottom:calc(112px + env(safe-area-inset-bottom));z-index:99;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:20px;background:#2A1F33;border:1px solid rgba(245,166,35,.7);box-shadow:0 10px 40px rgba(0,0,0,.5);animation:spIn .35s ease both}
 .stepno{display:block;font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:10px 0 -4px}
 .backtop{background:var(--panel);border:1px solid var(--line);border-radius:999px;color:var(--gold);font:600 14px var(--body);padding:8px 14px;cursor:pointer}
 body.typing .tabs{display:none}body.typing .app{padding-bottom:20px}
@@ -509,7 +512,7 @@ body[data-deck="d_back_aurora"] .deck .back{background:linear-gradient(160deg,#1
     </details>
     <div class="block" id="phoneBlock"><span class="eyebrow">📲 Ася на телефоне</span><p style="margin:0">Значок на экране телефона: открывается в одно касание, без Telegram и VPN. Всё твоё — то же самое, синхронизируется.</p><div class="row"><button class="btn gold" data-phone-app="1">Поставить значок / получить код</button></div></div>
     <div class="block"><span class="eyebrow">Помоги сделать Асю лучше</span><p style="margin:0">Что понравилось, что мешает, где что-то сломалось — напиши мне. Отзыв анонимный, команда читает каждый.</p><div class="row"><button class="btn" data-fb="1">💌 Сказать Асе — текстом или голосом</button></div></div>
-    <div class="block"><span class="eyebrow">💌 Помоги Асе расти</span><p style="margin:0">Подари подруге её карту по дню рождения — Ася узнает, что подарок от тебя, и откроет ей карту. Когда она придёт, я скажу тебе спасибо ✦</p><div class="row"><button class="btn gold" data-tglink="invite">Подарить карту подруге ✦</button></div></div>
+    <div class="block"><span class="eyebrow">💌 Подари подруге Асю</span><p style="margin:0">Кому сейчас тоже нужна поддержка? За каждую подругу, которая придёт по твоей ссылке, — +50 монеток тебе ✦</p><div class="row"><button class="btn gold" data-gift="1">Подарить Асю подруге ✦</button></div></div>
   </section>
   <p class="note" style="text-align:center">18+ · Ася — пространство самопознания и заботы о себе. Она не заменяет врача и психолога.</p>
 </div>
@@ -552,6 +555,7 @@ let FIRST_RUN = false; try { FIRST_RUN = !localStorage.getItem('asya-game'); } c
 const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} SYNC.dirty(k); } };
 /* ===== Синхронизация Telegram ↔ приложение на телефоне (07.11): всё её — на нашем сервере в РФ, вход в приложении кодом ===== */
 const SAPI = 'https://asya-app.ru/api', TGW = window.Telegram?.WebApp;
+const START_S = (() => { try { const s = new URLSearchParams(location.search).get('s') || window.Telegram?.WebApp?.initDataUnsafe?.start_param || ''; if (s) sessionStorage.setItem('asya-s', s); return s || sessionStorage.getItem('asya-s') || ''; } catch { return ''; } })();
 const SYNC = { t: 0, busy: false,
   auth(){ if (TGW?.initData) return {initData: TGW.initData}; const tk = localStorage.getItem('asya-token'); return tk ? {token: tk} : null; },
   snap(){ const s = {}; for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k && k.startsWith('asya-') && !['asya-token', 'asya-sync-at'].includes(k)) s[k] = localStorage.getItem(k); } return s; },
@@ -565,7 +569,7 @@ const SYNC = { t: 0, busy: false,
       if (!j.state || j.at < mine) this.push(); } catch {} return false; } };
 /* сверка с сервером до показа: заставка закрывает это время, перезагрузка — только если на сервере правда новое */
 /* «сердцебиение» при входе: Ася проснулась */
-try { const H = window.Telegram?.WebApp?.HapticFeedback; if (H){ setTimeout(() => H.impactOccurred('light'), 350); setTimeout(() => H.impactOccurred('medium'), 520); setTimeout(() => H.notificationOccurred('success'), 1300); } else if (navigator.vibrate) navigator.vibrate([18, 120, 30]); } catch {}
+try { const H = window.Telegram?.WebApp?.HapticFeedback; if (H){ setTimeout(() => H.impactOccurred('heavy'), 300); setTimeout(() => H.impactOccurred('heavy'), 470); setTimeout(() => H.impactOccurred('medium'), 1000); setTimeout(() => H.notificationOccurred('success'), 1350); } else if (navigator.vibrate) navigator.vibrate([40, 110, 60, 400, 30]); } catch {}
 window.SYNC_READY = (async () => { if (sessionStorage.getItem('asya-pulled')) return; sessionStorage.setItem('asya-pulled', '1'); if (await SYNC.pull()) location.reload(); })();
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden'){ SYNC.push(true); EV.flush(true); } });
 /* ===== Аналитика (с её согласия при старте): что открывает и нажимает, сколько времени — без текстов ===== */
@@ -1087,7 +1091,7 @@ function renderHome(){
     ['tests', 'Тест', 'узнай себя за 2 минуты', 'vTests', '#6A5A8E', '#2E2547'], ['diary', 'Дневник', hour >= 18 ? 'итог дня: роза, бутон, шип' : 'запиши, что чувствуешь', 'vDiary', '#7A5A44', '#33241E'],
     ['asya', 'Поговорить с Асей', 'подруга, наставница, о душе', 'vChat', '#A0644E', '#3E2430'], ['breath', 'Подышать', 'минута, чтобы выдохнуть', 'vBreath', '#3E7A86', '#0F3A44']];
   const quick = tiles.filter(x => ['vHim', 'vReady', 'vSpread', 'vBreath'].includes(x[3])).map(x => x[3] === 'vSpread' ? ['tarot', 'Расклад на ситуацию', 'когда нужен ответ себе', ...x.slice(3)] : x);
-  $('homeQuick').innerHTML = ftueOn() ? '' : quick.map(([i, t, s, go, g1, g2]) => `<button class="tile" data-go="${go}"${i === 'rel' ? ' data-rel="1"' : ''} style="--g1:${g1};--g2:${g2}"><span class="ti" style="color:var(--gold)">${sym(i, t)}</span><span>${esc(t)}<small style="display:block">${esc(s)}</small></span></button>`).join('');
+  $('homeQuick').innerHTML = ftueOn() || dayNo() <= 7 ? '' : quick.map(([i, t, s, go, g1, g2]) => `<button class="tile" data-go="${go}"${i === 'rel' ? ' data-rel="1"' : ''} style="--g1:${g1};--g2:${g2}"><span class="ti" style="color:var(--gold)">${sym(i, t)}</span><span>${esc(t)}<small style="display:block">${esc(s)}</small></span></button>`).join('');
   $('homeTiles').innerHTML = tiles.filter(x => !['vHim', 'vReady', 'vSpread', 'vBreath'].includes(x[3])).map(([i, t, s, go, g1, g2]) => `<button class="tile" data-go="${go}"${i === 'rel' ? ' data-rel="1"' : ''} style="--g1:${g1};--g2:${g2}"><span class="ti" style="color:var(--gold)">${sym(i, t)}</span><span>${esc(t)}<small style="display:block">${esc(s)}</small></span></button>`).join('');
   const wk = sphereWeek();
   $('homeSelf').innerHTML = (wk !== null
@@ -1432,11 +1436,35 @@ document.addEventListener('click', e => { if (e.target.closest('#backTop')){ con
 /* ===== Ася на телефоне значком (07.11): из Telegram — код и внешний браузер; в браузере — вход кодом и установка ===== */
 const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent), standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 let deferredInstall = null; addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; });
-async function phoneApp(){ if (!TGW?.initData) return showInstall();
-  try { const r = await fetch(SAPI + '/link/code', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({initData: TGW.initData})}); const j = await r.json();
-    await SYNC.push(); EV.add('install_open'); G.st.pwaAsk = 'done'; G.save(); const url = 'https://asya-app.ru/?k=' + j.code;
-    if (TGW.openLink) TGW.openLink(url, {try_instant_view: false}); else window.open(url, '_blank'); }
-  catch { toast('Нет связи — попробуй через минуту'); } }
+/* Код для входа готовим заранее: Telegram открывает ссылку только прямо по нажатию, без ожидания сервера */
+let PHONE = {code: '', at: 0};
+async function prepPhone(){ if (!TGW?.initData || Date.now() - PHONE.at < 600000) return;
+  try { const r = await fetch(SAPI + '/link/code', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({initData: TGW.initData})}); const j = await r.json(); if (j.code) PHONE = {code: j.code, at: Date.now()}; } catch {} }
+function phoneApp(){ if (!TGW?.initData) return showInstall();
+  if (!PHONE.code){ prepPhone(); toast('Секунду — готовлю твой вход…'); return setTimeout(() => PHONE.code && phoneApp(), 1500); }
+  SYNC.push(); EV.add('install_open'); G.st.pwaAsk = 'done'; G.save(); const url = 'https://asya-app.ru/?k=' + PHONE.code;
+  buzz('success'); if (TGW.openLink) TGW.openLink(url, {try_instant_view: false}); else window.open(url, '_blank');
+  overlay(`<div class="ckhead"><span class="ckav">📲</span><div><span class="eyebrow">Открываю в браузере</span><p style="margin:0">Там нажми ${isIOS ? '«Поделиться» ⬆️ → «На экран „Домой“»' : '⋮ → «Установить приложение»'} — и Ася будет значком на телефоне.</p></div></div><span class="note">Если попросит код: <b style="color:var(--gold);font-size:18px">${PHONE.code}</b></span><button class="btn gold" data-x="1">Понятно ✦</button>`); }
+setTimeout(prepPhone, 2500);
+/* ===== Подарить подругу (07.11): всё внутри приложения — тёплый текст, «Скопировать», «Отправить» ===== */
+const GIFT_MSG = n => `Слушай, у меня появилась новая подруга — Ася 🤍 С ней правда становится легче: она поддерживает, помогает услышать себя и не держать всё в себе. Мне так хорошо от этого, что хочу, чтобы и у тебя она была. Там тебя ждёт подарок — твоя карта по дню рождения: в чём твоя сила.`;
+let REF = null;
+async function loadRef(){ const a = SYNC.auth(); if (!a) return null; try { const r = await fetch(SAPI + '/ref', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(a)}); REF = await r.json(); return REF; } catch { return null; } }
+async function giftOpen(){ EV.add('gift_open'); const R = REF?.code ? REF : await loadRef(); const link = R?.code ? 'https://t.me/Asya_app_bot?start=ref' + R.code : 'https://t.me/Asya_app_bot';
+  const msg = GIFT_MSG() + '\n' + link;
+  const o = overlay(`<div class="ckhead"><span class="ckav">💌</span><div><span class="eyebrow">Подари подруге Асю</span><p style="margin:0">Кому сейчас тоже нужна поддержка? Отправь ей это — Ася узнает, что подарок от тебя.</p></div></div>
+    <div class="ready" id="giftTxt" style="font-size:14px">${esc(msg)}</div>
+    <div class="row"><button class="btn gold" id="giftSend">Отправить подруге ✦</button><button class="btn" id="giftCopy">Скопировать</button></div>
+    ${R?.came ? `<span class="note" style="text-align:center">По твоим приглашениям пришли: <b style="color:var(--gold)">${R.came}</b> ✦ Спасибо, что делишься светом</span>` : ''}
+    <button class="back-link" data-x="1" style="align-self:center">Закрыть</button>`);
+  o.querySelector('#giftCopy').onclick = async () => { try { await navigator.clipboard.writeText(msg); } catch { const ta = document.createElement('textarea'); ta.value = msg; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); } buzz('success'); toast('Скопировано — вставь в чат с подругой ✦'); EV.add('gift_copy'); G.st.giftN = (G.st.giftN || 0) + 1; G.save(); };
+  o.querySelector('#giftSend').onclick = () => { const share = 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(GIFT_MSG()); buzz('success'); EV.add('gift_send'); G.st.giftN = (G.st.giftN || 0) + 1; G.save();
+    if (TGW?.openTelegramLink) TGW.openTelegramLink(share); else if (navigator.share) navigator.share({text: msg}).catch(() => {}); else window.open(share, '_blank'); }; }
+/* Бонусы за подруг (основа программы лояльности): пришла по твоей ссылке → +50 монеток тебе */
+async function refBonus(){ const R = await loadRef(); if (!R || !R.came) return; const paid = G.st.refPaid || 0; if (R.came > paid){ const n = R.came - paid; G.st.refPaid = R.came; G.st.bonus = (G.st.bonus || 0) + 50 * n; G.save(); hud();
+    setTimeout(() => fxCelebrate({icon: '💌', kicker: 'Подруга пришла по твоей ссылке', title: n > 1 ? `+${n} подруги рядом с Асей` : 'Ты подарила ей поддержку', sub: `+${50 * n} монеток тебе в Шкатулку — спасибо, что делишься светом ✦`, btn: 'Как хорошо ✦'}), 2500); } }
+setTimeout(refBonus, 4000);
+document.addEventListener('click', e => { if (e.target.closest('[data-gift]')){ SFX.tap(); giftOpen(); } });
 function overlay(html){ const o = document.createElement('div'); o.className = 'coach on'; o.innerHTML = `<div class="coachbox">${html}</div>`; document.body.appendChild(o); o.addEventListener('click', e => { if (e.target.closest('[data-x]')) o.remove(); }); return o; }
 function showInstall(code){ if (standalone) return; EV.add('install_hint', isIOS ? 'ios' : 'android');
   overlay(`<div class="ckhead"><span class="ckav">📲</span><div><span class="eyebrow">Ася значком на телефоне</span><p style="margin:0">Открывается в одно касание, без Telegram и VPN. Твой путь и героиня — те же.</p></div></div>
@@ -1457,8 +1485,27 @@ async function claimCode(code){ try { const r = await fetch(SAPI + '/link/claim'
   if (!TGW?.initData && !localStorage.getItem('asya-token') && standalone) setTimeout(() => { const o = overlay(`<div class="ckhead"><span class="ckav">✦</span><div><span class="eyebrow">Вход в Асю</span><p style="margin:0">Введи код из Аси в Telegram: «Я» → «Ася на телефоне». Так твой путь, героиня и дневник будут здесь.</p></div></div>
       <input id="codeIn" inputmode="numeric" maxlength="6" placeholder="6 цифр" style="font-size:24px;text-align:center;letter-spacing:.3em"><button class="btn gold" id="codeGo">Войти ✦</button><button class="back-link" data-x="1" style="align-self:center">Начать без входа</button>`);
     o.querySelector('#codeGo').onclick = () => claimCode((o.querySelector('#codeIn').value || '').trim()); }, 600); })();
-document.addEventListener('click', e => { if (e.target.closest('[data-consent]')){ G.st.consent = {at: new Date().toISOString(), ver: '2026-11-07'}; G.save(); EV.add('consent'); }
+document.addEventListener('click', e => { if (e.target.closest('[data-consent]')){ G.st.consent = {at: new Date().toISOString(), ver: '2026-11-07'}; G.save(); EV.add('consent', START_S);
+    const a = SYNC.auth(); if (a) fetch(SAPI + '/consent', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...a, s: START_S})}).then(r => r.json()).then(j => { if (j.code) store.set('asya-ref', j.code); }).catch(() => {}); }
   const ex = e.target.closest('[data-ext]'); if (ex && TGW?.openLink){ e.preventDefault(); TGW.openLink(ex.href); } }, true);
+/* ===== Экскурсия «как по квартире» (команда ведения клиента 07.11): Ася подсвечивает вкладку и рассказывает, что там и зачем ===== */
+const TOUR = [
+  ['vHome', '✦ Сегодня', 'Это «Сегодня» — здесь я каждый день жду тебя: спрошу, как ты, и покажу один шаг под твои силы. Начинай отсюда.'],
+  ['vKnow', '🧭 Познай себя', 'Здесь тесты, твоя карта, звёзды, числа и колесо жизни. Это всё про тебя — и каждую находку я объясню простыми словами.'],
+  ['vDiary', '📖 Дневник', 'Твоё место для мыслей и чувств. Утром — намерение на день, вечером — что было на душе. Видишь только ты.'],
+  ['vChat', '💬 Ася', 'А здесь — я. Можно просто поговорить: о нём, о работе, о себе. Я отвечу лично тебе, как подруга.'],
+  ['vWay', '👑 Я', 'Твоя героиня и твой рост. Она растёт от каждого твоего шага — заглядывай, она будет рада.']];
+let tourI = -1;
+function tour(i = 0){ tourI = i; document.querySelectorAll('.tab.spot').forEach(b => b.classList.remove('spot')); $('tourBox')?.remove(); document.body.classList.toggle('touring', i < TOUR.length);
+  if (i >= TOUR.length){ G.st.toured = today; G.save(); EV.add('tour_done'); showView('vHome');
+    return overlay(`<div class="ckhead"><span class="ckav">🤍</span><div><span class="eyebrow">Вот и вся наша квартира</span><p style="margin:0">${nm1('{name}, с чего начнём? Мне правда интересно, как у тебя сегодня.', 'С чего начнём? Мне правда интересно, как у тебя сегодня.')}</p></div></div>
+      <button class="btn gold" data-x="1" onclick="setTimeout(()=>document.getElementById('homeCheck')?.scrollIntoView({behavior:'smooth',block:'center'}),200)">Рассказать, как я ✦</button><button class="btn" data-x="1" data-go="vToday">Сначала вытянуть карту</button>`); }
+  const [view, name, text] = TOUR[i], tab = document.querySelector(`.tab[data-view="${view}"]`); if (tab) tab.classList.add('spot'); buzz('select'); SFX.tap();
+  const b = document.createElement('div'); b.id = 'tourBox'; b.className = 'tourbox';
+  b.innerHTML = `<div class="ckhead"><span class="ckav">✦</span><div><span class="eyebrow">Ася показывает · ${i + 1} из ${TOUR.length}</span><p style="margin:0"><b>${name}</b> — ${esc(text.replace(/^Это «[^»]+» — /, ''))}</p></div></div><div class="row"><button class="btn gold" data-tour-next="1">${i < TOUR.length - 1 ? 'Дальше ›' : 'Понятно ✦'}</button></div><span class="note" style="text-align:center">или нажми на подсвеченную вкладку внизу</span>`;
+  document.body.appendChild(b); }
+document.addEventListener('click', e => { if (e.target.closest('[data-tour-next]')){ e.stopPropagation(); return tour(tourI + 1); }
+  const sp = e.target.closest('.tab.spot'); if (sp && tourI >= 0){ setTimeout(() => tour(tourI + 1), 650); } }, true);
 /* Пока она печатает — нижняя панель не закрывает поле */
 document.addEventListener('focusin', e => { if (e.target.matches('textarea, input[type=text], input:not([type])')) document.body.classList.add('typing'); });
 document.addEventListener('focusout', e => { if (e.target.matches('textarea, input')) setTimeout(() => { if (!document.activeElement?.matches('textarea, input')) document.body.classList.remove('typing'); }, 120); });
@@ -1885,10 +1932,10 @@ function pathCard(){ if (ftueOn()) return ''; const d = pathDay(), P = PATH7[d -
   const items = [['Как ты сейчас', !!(G.st.chk || {})[today], 'chk'], ['Карта дня и шаг', isDone('card') && G.st.stepDay === today, 'vToday']];
   if (d > 1) items.push(['Новое: ' + P[1].toLowerCase(), !!nw || pathDone(P[0]), 'p7:' + P[0]]);
   const next = items.find(x => !x[1]), all = !next, tomorrow = PATH7[d] && PATH7[d][1], nm = myName();
-  const letter = d === 3 ? `<div class="tip"><span class="eyebrow">💌 Письмо от Аси · третий день</span><p style="margin:0">${nm ? esc(nm) + ', т' : 'Т'}ы уже третий день рядом с собой. Это не мелочь: большинство бросает на втором. ${G.st.steps ? 'Посмотри — у тебя уже ' + G.st.steps + ' ' + plural(G.st.steps, 'шаг', 'шага', 'шагов') : 'Даже если шагов пока нет — ты возвращаешься, и это главное'}${archOf() ? ', а ' + esc(archOf().name) + ' стала заметнее' : ''}. Сегодня я покажу тебе, как я помогаю с трудными словами. Я горжусь тобой ✦</p></div>` : '';
+  const letter = d === 3 ? `<details class="more"><summary>💌 Тебе письмо от Аси</summary><p style="margin:8px 0 0">${nm ? esc(nm) + ', т' : 'Т'}ы уже третий день рядом с собой. Это не мелочь: большинство бросает на втором. ${G.st.steps ? 'Посмотри — у тебя уже ' + G.st.steps + ' ' + plural(G.st.steps, 'шаг', 'шага', 'шагов') : 'Даже если шагов пока нет — ты возвращаешься, и это главное'}${archOf() ? ', а ' + esc(archOf().name) + ' стала заметнее' : ''}. Сегодня я покажу тебе, как я помогаю с трудными словами. Я горжусь тобой ✦</p></details>` : '';
   const pwa = TGW?.initData && dayNo() >= 2 && G.st.stepDay === today && G.st.pwaAsk !== 'done' && (!G.st.pwaAsk || (!G.st.pwaAsk2 && dayNo() >= 4 && G.st.pwaAsk !== today))
     ? `<div class="tip"><span class="eyebrow">📲 Ты вернулась ✦</span><p style="margin:0">Поставь Асю значком на телефон: открывается в одно касание, работает без Telegram и VPN, а твой путь и героиня сохранятся.</p><div class="row"><button class="btn gold" data-phone-app="1">Поставить значок</button><button class="btn" data-pwa-later="1">Позже</button></div></div>` : '';
-  return pwa + letter + `<div class="guide7"><div class="g7head"><span class="eyebrow">✦ Ася ведёт · твой путь первых 7 дней</span><span class="note">День ${d} из 7</span></div>
+  return pwa + `<div class="guide7">${letter}<div class="g7head"><span class="eyebrow">✦ Ася ведёт · твой путь первых 7 дней</span><span class="note">День ${d} из 7</span></div>
     <div class="g7beads">${PATH7.map((x, i) => `<i class="${i < d - 1 || (i === d - 1 && all) ? 'on' : i === d - 1 ? 'now' : ''}" title="${esc(x[1])}"></i>`).join('')}</div>
     <div class="g7list">${items.map(([t, ok]) => `<span class="${ok ? 'ok' : ''}">${ok ? '✓' : '○'} ${esc(t)}</span>`).join('')}</div>
     ${all ? `<p style="margin:0">Сегодня ты прошла весь путь ✦${tomorrow ? ` Завтра я покажу тебе: <b>${esc(tomorrow.toLowerCase())}</b>.` : ' Неделя пройдена — посмотри «было — стало».'}</p>`
@@ -1914,9 +1961,11 @@ document.addEventListener('click', e => { const g = e.target.closest('[data-g7]'
     let n = 0; const pulse = () => { n++; buzz(n < 3 ? 'light' : 'medium'); if (n < 4) tm = setTimeout(pulse, 500); }; tm = setTimeout(pulse, 500);
     setTimeout(() => { if (Date.now() - t0 >= 1990 && b.isConnected && f.style.width === '100%'){ stop(); G.st.ftue.done = today; G.st.ftue.promise = today; G.save(); buzz('success'); SFX.chime();
       G.st.bonus = (G.st.bonus || 0) + 10; G.save(); hud();
-      showView('vHome'); fxCelebrate({icon: '🤍', kicker: 'Обещание себе', title: 'Вот. Теперь и тебя есть кому держать ✦', sub: '+10 монеток — первый подарок от меня.', btn: 'Спасибо ✦'}); setTimeout(() => coach('Это твой путь на 7 дней. Каждый день здесь будет твой следующий шаг — просто нажимай золотую кнопку, и я поведу.', 'спокойствие: не нужно разбираться самой, я рядом', 'Веди меня ✦', () => document.querySelector('.guide7')?.scrollIntoView({behavior: 'smooth', block: 'center'})), 4200); } }, 2010); });
+      showView('vHome'); fxCelebrate({icon: '🤍', kicker: 'Обещание себе', title: 'Вот. Теперь и тебя есть кому держать ✦', sub: '+10 монеток — первый подарок от меня.', btn: 'Спасибо ✦'}); setTimeout(() => tour(0), 3800); } }, 2010); });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest?.('[data-ft-hold]') && Date.now() - t0 < 1990) stop(); }));
 })();
+/* Ася живёт: делится своим днём, как подруга (friend-voice) */
+const ASYA_LIFE = ['А у меня сегодня утро началось с тишины — я поймала себя на том, что просто смотрю в окно. Это было хорошо.', 'Я сегодня думала о том, как часто мы откладываем себя на потом. Давай сегодня — не будем.', 'Знаешь, я тоже иногда устаю. Тогда я разрешаю себе ничего не делать полчаса — и мир не рушится.', 'У меня сегодня маленькая радость: кто-то написал мне «спасибо». Пусть и у тебя будет своя.', 'Я сегодня перечитывала любимую строчку: «всему своё время». Мне она очень помогает.', 'Сегодня я училась говорить «нет» мягко. Получается не сразу — и это нормально.', 'Я заварила бы тебе чай, если бы могла. Представь, что он рядом — тёплый.'];
 function renderCheck(){ const box = $('homeCheck'); if (!box) return; if (ftueOn()){ box.innerHTML = ''; return; }
   const ck = (G.st.chk || {})[today], c = ck && CHECK.find(x => x.id === ck), nm = myName() ? ', ' + esc(myName()) : '';
   const btn = ([go, label], gold) => C.guides.some(g => g.id === go) ? `<button class="btn${gold ? ' gold' : ''}" data-guide="${go}">${esc(label)}</button>` : `<button class="btn${gold ? ' gold' : ''}" data-go="${go === 'vToday' && isDone('card') ? 'vToday' : go}">${esc(go === 'vToday' && isDone('card') ? 'Открыть мою карту и шаг' : label)}</button>`;
@@ -1925,7 +1974,7 @@ function renderCheck(){ const box = $('homeCheck'); if (!box) return; if (ftueOn
        <p class="note" style="margin:0">Нажми на то, что сейчас ближе всего. Я предложу одно дело именно под твоё состояние — без лишнего.</p>
        <div class="ckgrid">${CHECK.map(x => `<button class="ckopt" data-chk="${x.id}"><span>${x.e}</span>${esc(x.t)}</button>`).join('')}</div>
        <button class="back-link" data-go="vHelp" style="align-self:flex-start;color:var(--rose)">Если совсем тяжело — помощь и телефоны здесь ›</button></div>`
-    : `<div class="check"><div class="ckhead"><span class="ckav">${c.e}</span><div><span class="eyebrow">Ася · ты сегодня: ${esc(c.t.toLowerCase())}</span><p style="margin:0">${esc(c.say)}</p></div></div>
+    : `<div class="check"><div class="ckhead"><span class="ckav">${c.e}</span><div><span class="eyebrow">Ася · ты сегодня: ${esc(c.t.toLowerCase())}</span><p style="margin:0">${esc(c.say)}</p><p class="note" style="margin:6px 0 0;font-size:13px">${esc(ASYA_LIFE[dayN % ASYA_LIFE.length])}</p></div></div>
        ${btn(c.go, true)}${btn(c.alt, false)}<button class="back-link" data-chk-again="1" style="align-self:center">Ответить иначе</button></div>`; }
 document.addEventListener('input', e => { const r = e.target.closest('[data-rng]'); if (r) $(r.dataset.rng).textContent = r.value; });
 
@@ -2102,7 +2151,8 @@ document.addEventListener('click', e => {
     SFX.chime(); $('signOut').innerHTML = `<p style="margin:8px 0 0">${a[1].e} ${esc(me.sign)} + ${b[1].e} ${esc($('hisSign').value)}</p><p style="margin:0">💞 ${esc(p.match)}</p><p style="margin:0">⚡ ${esc(p.friction)}</p><div class="grow" style="margin-top:6px"><span class="eyebrow">Шаг для вас</span><p style="margin:0">${esc(p.step)}</p></div>`; return; }
   const tl = e.target.closest('[data-tglink]');
   if (e.target.closest('#talkBtn') || tl){
-    if (tl?.dataset.tglink === 'invite'){ G.st.giftN = (G.st.giftN || 0) + 1; G.save();
+    if (tl?.dataset.tglink === 'invite'){ giftOpen(); return; }
+    if (false){ G.st.giftN = (G.st.giftN || 0) + 1; G.save();
       const rc = store.get('asya-ref'); if (rc){  // окно «Поделиться» Telegram поверх приложения — выходить в чат не нужно
         const link = 'https://t.me/Asya_app_bot?start=ref' + rc, share = 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(GIFT_TEXT);
         if (TG?.openTelegramLink) TG.openTelegramLink(share); else window.open(share, '_blank'); return; } }
@@ -2120,6 +2170,7 @@ hud(); renderTests(); soundBtn(); renderHome(); applyQuiet();
 if (!(G.st.seen || []).includes(today)){ G.st.seen = [...(G.st.seen || []), today].slice(-90); G.save(); }
 if (!G.st.ftue){ G.st.ftue = G.st.days.length || G.st.me || G.st.arch ? {done: today, old: 1} : {step: 1}; G.save(); }  // кто уже с Асей — без знакомства
 if (!G.st.consent && G.st.ftue?.done) { G.st.consent = {at: new Date().toISOString(), ver: 'bot'}; G.save(); }  // кто уже начал — согласие дано в боте
+if (!ftueOn() && !G.st.toured && dayNo() <= 7) setTimeout(() => { if (!document.querySelector('.coach')) tour(0); }, 3200);
 if (ftueOn()) ftResume(); else if (document.querySelector('.view:not([hidden])') === null) showView('vHome', true);
 /* заставка уходит, когда всё готово и сверка с сервером закончена (не дольше 2,5 с) */
 Promise.all([Promise.race([window.SYNC_READY, new Promise(r => setTimeout(r, 2500))]), new Promise(r => setTimeout(r, 1400))]).then(() => setTimeout(() => { const s = $('splash'); if (s){ s.classList.add('off'); setTimeout(() => s.remove(), 450); } }, 250));
