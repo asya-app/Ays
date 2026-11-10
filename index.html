@@ -108,6 +108,8 @@ body.touring::before{content:'';position:fixed;inset:0;background:rgba(10,6,20,.
 .iarrow{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:120;font-size:42px;color:#F5A623;text-shadow:0 0 18px rgba(245,166,35,.8);animation:iarr 1s ease-in-out infinite;pointer-events:none}@keyframes iarr{50%{transform:translate(-50%,10px)}}
 .spotel{position:relative;z-index:98;border-radius:16px;box-shadow:0 0 0 3px #F5A623,0 0 26px 8px rgba(245,166,35,.6)!important;animation:spotP 1.2s ease-in-out infinite}.tourbox.top{top:calc(70px + env(safe-area-inset-top));bottom:auto}
 .walklamp{position:fixed;top:calc(64px + env(safe-area-inset-top));right:14px;z-index:99;width:46px;height:46px;border-radius:50%;border:1px solid rgba(245,166,35,.8);background:#2A1F33;font-size:22px;cursor:pointer;box-shadow:0 0 18px rgba(245,166,35,.6);animation:spotP 1.4s ease-in-out infinite}
+.pring{width:178px;height:178px;border-radius:50%;padding:7px;background:conic-gradient(var(--gold) calc(var(--pct)*1%),rgba(255,255,255,.08) 0);transition:background .8s}.pring-in{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:#1E1628}.pstages{display:flex;gap:8px;justify-content:center;margin-top:4px}.pstages span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:15px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--muted)}.pstages .on{border-color:rgba(232,204,140,.5)}.pstages .now{border:2px solid var(--gold);box-shadow:0 0 10px rgba(232,204,140,.5)}.petfig,.petaura{animation:none!important}.petstage.bounce .petfig{animation:hop .6s ease!important}
+.ritgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ckopt.on{border-color:var(--gold)}.walklamp.wide{width:auto;padding:0 16px;border-radius:999px;font:600 14px var(--body);color:var(--gold)}body.walking .tip:not(#ritualPick):not(#evePick),body.walking .guide7,body.walking #homeQuick,body.walking #homeMoreBox{opacity:.35;pointer-events:none}
 .stepno{display:block;font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:10px 0 -4px}
 .backtop{background:var(--panel);border:1px solid var(--line);border-radius:999px;color:var(--gold);font:600 14px var(--body);padding:8px 14px;cursor:pointer}
 body.typing .tabs{display:none}body.typing .app{padding-bottom:20px}
@@ -955,11 +957,11 @@ function renderArchMe(){
   /* Героиня-питомец (игра + дизайн 07.11): крупная сцена, состояние по её дню, отклик на касание */
   const mood = G.st.stepDay === today ? ['shine', 'сияет', 'Ты сделала шаг — и я стала ярче. Спасибо, что ты рядом с собой ✦'] : isDone('card') ? ['awake', 'проснулась', 'Карта открыта — я жду твой шаг. Он маленький, ты справишься за 5 минут.'] : ['wait', 'ждёт тебя', (hour < 12 ? 'Доброе утро. ' : hour < 18 ? 'Привет. ' : 'Добрый вечер. ') + 'Вытянешь карту? Я проснусь вместе с тобой.'];
   box.innerHTML = `<div class="petstage ${mood[0]}" style="--c1:${esc(a.c1)};--c2:${esc(a.c2)}" data-pet="1">
-      <div class="petaura"></div>${Array.from({length: 6 + st * 3}, (_, i) => `<i class="petdot" style="--i:${i};left:${(i * 37) % 100}%;animation-delay:${(i * .7) % 4}s"></i>`).join('')}
-      <div class="petfig">${heroPortrait(a, 150)}</div>
+      <div class="petaura"></div>
+      <div class="petfig"><div class="pring" style="--pct:${pct}"><div class="pring-in">${heroPortrait(a, 150)}</div></div></div><div class="pstages">${[0, 1, 2, 3, 4].map(i => `<span class="${i < st ? 'on' : i === st ? 'now' : ''}" title="${esc(stageName(a, i))}">${i <= st ? a.e : '·'}</span>`).join('')}</div>
       <div class="petname"><span class="eyebrow">${H ? esc(H.facet) : 'Ты растёшь в'} · она ${mood[1]}</span><h1 style="font-size:28px;margin:2px 0">${esc(herTitle() || a.name)}</h1><div class="note">Ступень ${st + 1} из 5 · ${esc(stageName(a, st))}</div></div>
       <div class="petsay" id="petSay">${esc(mood[2])}</div></div>
-    <div><div class="bar"><i style="width:${pct}%"></i></div><div class="note" style="margin-top:4px">${deed ? 'Свет набран — для «' + esc(stageName(a, 4)) + '» нужен твой большой поступок' : nx ? `До «${esc(stageName(a, st + 1))}» ещё ${nx - L} света ✦` : '«' + esc(H?.title || 'Вершина') + '»'}</div></div>
+    <div><div class="note" style="text-align:center;font-size:14px;color:var(--text)">${nx ? `Свет ✦ ${L - ST_L[st]} из ${nx - ST_L[st]} — до «${esc(stageName(a, st + 1))}»` : 'Свет ✦ вершина пути'}</div><div class="note" style="margin-top:4px;text-align:center">${deed ? 'Свет набран — для «' + esc(stageName(a, 4)) + '» нужен твой большой поступок' : 'Кольцо — твои дела для себя'}</div></div>
     ${done ? '<button class="btn" disabled>✓ Испытание недели выполнено</button>' : `<button class="btn gold" id="chalBtn">Испытание недели · +40 света</button><span class="note" style="margin-top:-6px">${esc(a.challenge)}</span>`}
     <details class="more"><summary>✦ Как растёт твоя героиня</summary><p style="margin:8px 0 0">Каждое твоё действие даёт <b>свет ✦</b> — он растит героиню по 5 ступеням. Монетки ● — половина света: их можно тратить в Шкатулке, свет при этом не уменьшается.</p>
       <div class="econ">${[['Карта дня', '+10'], ['Шаг дня', '+20'], ['Отправила трудное сообщение', '+30'], ['Запись в дневнике', '+15'], ['Тест', '+50'], ['Испытание недели', '+40'], ['Возвращение после перерыва', '+20']].map(([t, v]) => `<span>${t}<b>${v} ✦</b></span>`).join('')}</div><span class="note">В день можно собрать до 120 света — рост честный, без гонки. Достижения дарят монетки.</span></details>
@@ -1521,45 +1523,56 @@ document.addEventListener('click', e => { if (e.target.closest('[data-tour-next]
    девушка сама делает первое действие, Ася радуется и ведёт дальше. Сценарий — WALK (тексты), действия — WALK_DO ===== */
 const herTitle = () => { const a = archOf(), n = myName(); return a && n ? a.name + ' ' + n : n || (a ? a.name : ''); };
 const fillT = s => String(s || '').replace(/\{title\}/g, herTitle() || 'моя дорогая').replace(/\{name\}/g, myName() || 'моя дорогая');
+/* ===== Прогулка 2.0 (walk-designer, план «Лучшая подруга за 7 дней», 07.11): 4 шага, один экран — одна подсветка,
+   подсказка → лампочка, текст = экран (ушла — «Вернуться к шагу»), тишина окон, в конце один подарок «Я запомнила…» ===== */
+const RITUALS_AM = {card: ['🂠', 'Карта дня', 'vToday'], horo: ['☾', 'Гороскоп по знаку', 'vAstro'], num: ['∞', 'Число дня', 'vNumero'], question: ['✎', 'Вопрос дня', 'vDiary'], breath: ['🌬', 'Минута дыхания', 'vBreath']};
+function ritualPick(){ const r = G.st.ritualAm; if (ftueOn()) return '';
+  if (r && !(walkI >= 0 && walkLeft()[0]?.k === 'R')){ const x = RITUALS_AM[r]; return `<button class="opt" data-go="${x[2]}" data-am="${r}"><span class="oi">${x[0]}</span><span>Твоё утро: ${esc(x[1])}<small>${G.st.amDay === today ? 'сделано сегодня ✦' : 'начни день с себя'}</small></span><span class="go">›</span></button>`; }
+  return `<div class="block" id="ritualPick"><span class="eyebrow">Твоё утро со мной</span><div class="ritgrid">${Object.entries(RITUALS_AM).map(([k, x]) => `<button class="ckopt${r === k ? ' on' : ''}" data-ritual-am="${k}"><span>${x[0]}</span>${esc(x[1])}</button>`).join('')}</div></div>`; }
+function evePick(){ if (ftueOn() || (G.st.eveTime && !(walkI >= 0 && walkLeft()[0]?.k === 'V'))) return '';
+  return `<div class="block" id="evePick"><span class="eyebrow">Вечером я спрошу, как прошёл день</span><div class="chips">${[['19', '19:00'], ['21', '21:00'], ['23', '23:00'], ['off', 'не напоминай']].map(([k, x]) => `<button class="chip" data-eve-time="${k}">${x}</button>`).join('')}</div></div>`; }
+document.addEventListener('click', e => { const r = e.target.closest('[data-ritual-am]'); if (r){ G.st.ritualAm = r.dataset.ritualAm; G.save(); SFX.tap(); buzz('select'); EV.add('ritual_am', r.dataset.ritualAm); renderPath(); return; }
+  const v = e.target.closest('[data-eve-time]'); if (v){ G.st.eveTime = v.dataset.eveTime; G.save(); SFX.tap(); buzz('select'); EV.add('eve_time', v.dataset.eveTime); renderPath(); return; }
+  const am = e.target.closest('[data-am]'); if (am){ G.st.amDay = today; G.save(); if (am.dataset.am === 'question') dKind = 'thought'; } }, true);
+const PAIN = {confident: 'тебе важно говорить о своём — и не оправдываться', love: 'тебе хочется больше тепла — и к себе тоже', self: 'тебе важно понять, чего хочешь именно ты', calm: 'ты устаёшь от того, что всё на тебе'};
 const WALK_DO = {
-  D: {view: 'vWay', target: '[data-pet]', done: () => G.st.petTapped === today},
-  F: {view: 'vBalance', target: () => document.querySelector('#vBalance [data-sph]')?.closest('.block'), done: () => G.st.walkSph === today},
-  A: {view: 'vDiary', target: '#dText', prep: () => { dKind = 'intent'; if (!dDraft) dDraft = 'Сегодня я выбираю себя тем, что… '; renderDiary(); }, done: () => diary.get().some(e => e.d === today && (e.text || Object.keys(e.parts || {}).length))},
-  B: {view: 'vTests', target: '[data-test="conflict"]', done: () => G.st.tests?.conflict?.date === today},
-  C: {view: 'vChat', target: '[data-guide="friend"]', done: () => CHAT.msgs.some(m => m.role === 'assistant')}};
+  R: {view: 'vHome', target: '#ritualPick', done: () => !!G.st.ritualAm, name: 'Твоё утро'},
+  F: {view: 'vDiary', target: '#vDiary .moods', prep: () => { dKind = 'emo'; renderDiary(); }, done: () => !!dMood || diary.get().some(e => e.d === today && e.kind === 'emo'), name: 'Что ты чувствуешь'},
+  H: {view: 'vWay', target: '[data-pet]', done: () => G.st.petTapped === today, name: 'Что растёт'},
+  V: {view: 'vHome', target: '#evePick', done: () => !!G.st.eveTime, name: 'Вечером я спрошу'}};
 let WALK = {intro: 'Это я тебе показала — а теперь пройдёмся вместе, {title}: нажимаешь ты, а я рядом на каждом шаге.', skip: 'Осмотрюсь сама',
   skipSay: 'Конечно. Прогулка подождёт на главной — позови, когда захочешь ✦',
-  steps: [{k: 'D', before: '{title}, это твоя героиня — она уже ждёт тебя. Коснись её.', after: 'Она будет расти с каждым твоим шагом — так ты увидишь, как растёшь сама. Смотри, засияла от тебя ✦', light: 5, coins: 0},
-    {k: 'F', before: 'Вот твоё колесо — его нарисовала ты. Какой сфере подарим эту неделю?', after: 'Теперь мои подсказки и шаги дня будут про «{sphere}» — неделя станет твоей, а не общей. Хороший выбор.', light: 15, coins: 5},
-    {k: 'A', before: 'Ты пообещала себе: «Я выбираю себя». Допиши одной строкой как — видишь только ты.', after: 'Записанное легче сдержать — через неделю перечитаем вместе. Первая строчка, и сразу такая твоя.', light: 15, coins: 5, pause: true},
-    {k: 'B', before: 'А теперь игра про тебя: какая ты, когда спорят. Отвечай первым, что почувствуешь.', after: 'Теперь ты знаешь свою силу в споре — и я буду помнить её, когда придёшь поговорить. Ты честно ответила на всё — это смелость.', light: 50, coins: 25},
-    {k: 'C', before: 'А теперь просто поговорим, как подруги. Напиши мне что угодно — или нажми готовую фразу.', after: 'Помнишь «подумать вслух»? Это здесь — в любой час. Спасибо, что написала первой.', light: 10, coins: 5}],
-  pause: 'Половина пути, {title}. Дальше — самое интересное про тебя.', later: 'Остальное — завтра', laterSay: 'Завтра продолжим — героиня будет ждать ✦',
-  finale: 'Сегодня ты выбрала себя пять раз, {title} — и каждый раз сама. Вечером спрошу, как прошёл шаг дня под твоей картой. А утром тебя будет ждать новая карта — и героиня, которая уже соскучится ✦'};
+  steps: [{k: 'R', before: 'Каким будет твоё утро со мной? Выбери одно — завтра я встречу тебя именно так.', after: 'Запомнила: утро — {ritual}. Ты сама выбрала, как начинать день — это и есть забота о себе.', light: 10, coins: 5},
+    {k: 'F', before: 'Как ты сейчас — одним словом? Нажми чувство. Видишь только ты.', after: 'Назвать чувство — уже наполовину успокоить его. Ты сделала это честно.', light: 15, coins: 5},
+    {k: 'H', before: 'Это твоя героиня. Кольцо вокруг неё — твой свет: каждое твоё дело для себя добавляет его. Коснись её.', after: 'Видишь — кольцо подросло. Каждое твоё дело для себя — и она ближе к следующей ступени.', light: 15, coins: 5},
+    {k: 'V', before: 'Вечером я спрошу, как прошёл день. Когда тебе удобно?', after: 'Договорились. До вечера, {title} ✦', light: 5, coins: 5}],
+  finale: 'Сегодня ты выбрала себя четыре раза: утро, чувство, героиню, вечер. Я запомнила: {pain}. Завтра начнём с лёгкого.'};
 let walkI = -1, walkPoll = 0;
 const walkLeft = () => WALK.steps.filter(s => WALK_DO[s.k] && !WALK_DO[s.k].done() && !(G.st.walkDone || {})[s.k]);
 function walkClear(){ clearInterval(walkPoll); document.querySelectorAll('.spotel').forEach(x => x.classList.remove('spotel')); $('tourBox')?.remove(); $('walkLamp')?.remove(); }
-function walkDots(){ const n = WALK.steps.length, d = n - walkLeft().length; return `<div class="g7beads" style="margin:2px 0">${WALK.steps.map((_, i) => `<i class="${i < d ? 'on' : i === d ? 'now' : ''}"></i>`).join('')}</div>`; }
-function walk(i = 0, fromIntro){ walkClear(); walkI = i;
-  if (!fromIntro && !G.st.walkIntro){ G.st.walkIntro = today; G.save(); return walkBubble(fillT(WALK.intro), 'Пойдём ✦', () => walk(0, true)); }
+function walkHead(){ const n = WALK.steps.length, d = n - walkLeft().length, cur = walkLeft()[0]; return cur ? `Шаг ${Math.min(n, d + 1)} из ${n} · ${WALK_DO[cur.k].name}` : 'Прогулка с Асей'; }
+function walk(i = 0, fromIntro){ walkClear(); walkI = i; document.body.classList.add('walking');
+  if (!fromIntro && !G.st.walkIntro){ G.st.walkIntro = today; G.save(); return walkBubble('Прогулка с Асей', fillT(WALK.intro), 'Пойдём ✦', () => walk(0, true)); }
   const st = walkLeft()[0];
-  if (!st){ walkI = -1; G.st.walked = today; G.st.bonus = (G.st.bonus || 0) + 20; G.save(); hud(); EV.add('walk_done'); showView('vHome'); setTimeout(fxFlush, 400); return fxCelebrate({force: true, icon: '🌟', kicker: 'Первая прогулка с Асей · +20 монеток', title: 'Ты прошла её сама ✦', sub: fillT(WALK.finale), btn: 'До вечера ✦'}); }
-  const D = WALK_DO[st.k]; EV.add('walk_step', st.k); showView(D.view); if (D.prep) D.prep();
-  if (st.k === 'C') setTimeout(() => { const g = document.querySelector('[data-guide="friend"]'); if (g && aiOn()){ renderAiChat('friend'); const ta = $('aiIn'); if (ta && !ta.value) ta.value = G.st.tests?.conflict ? 'Я прочитала про себя — это правда я?' : 'Привет, Ася ✦'; const b = $('aiSend'); if (b) b.classList.add('spotel'); } }, 500);
-  setTimeout(() => { const el = typeof D.target === 'function' ? D.target() : document.querySelector(`#${D.view} ${D.target}`); if (el){ el.classList.add('spotel'); el.scrollIntoView({behavior: 'smooth', block: 'center'}); }
-    walkBubble(fillT(st.before), null, null, true); buzz('select');
-    walkPoll = setInterval(() => { if (!D.done()) return; clearInterval(walkPoll); walkClear(); (G.st.walkDone = G.st.walkDone || {})[st.k] = today;
+  if (!st){ walkI = -1; document.body.classList.remove('walking'); G.st.walked = today; G.st.bonus = (G.st.bonus || 0) + 20; G.save(); hud(); EV.add('walk_done'); showView('vHome');
+    const items = FXQ.splice(0), list = items.map(x => x[0] === 'b' ? x[1] + ' ' + x[2] : (x[1].icon || '✦') + ' ' + (x[1].title || '')).slice(0, 6).join(' · ');
+    return fxCelebrate({force: true, icon: '🎁', kicker: 'Подарок от Аси · +20 монеток', title: fillT('{title}, ты выбрала себя ✦'), sub: fillT(WALK.finale).replace('{pain}', PAIN[G.st.goal] || 'тебе важно, чтобы рядом был кто-то свой') + (list ? '\n\n' + list : ''), btn: 'Забрать ✦'}); }
+  const D = WALK_DO[st.k]; EV.add('walk_step', st.k); showView(D.view); if (D.prep) D.prep(); if (D.view === 'vHome') renderPath();
+  setTimeout(() => { const el = document.querySelector(D.target); if (!el){ (G.st.walkDone = G.st.walkDone || {})[st.k] = today; G.save(); return walk(i + 1, true); }  // нет кнопки — шаг пропускаем, чужой текст не показываем
+    el.classList.add('spotel'); el.scrollIntoView({behavior: 'smooth', block: 'center'});
+    const low = el.getBoundingClientRect().top > innerHeight / 2; walkBubble(walkHead(), fillT(st.before), null, null, !low); buzz('select');
+    walkPoll = setInterval(() => { const cur = document.querySelector('.view:not([hidden])')?.id;
+      if (cur !== D.view){ const b = $('tourBox'); if (b) b.hidden = true; if (!$('walkLamp')) walkLamp('💡 Вернуться к шагу ›', () => { $('walkLamp')?.remove(); walk(i, true); }); return; }
+      if (!D.done()) return; const doneHead = walkHead() + ' ✓'; clearInterval(walkPoll); walkClear(); (G.st.walkDone = G.st.walkDone || {})[st.k] = today;
       G.add(st.light || 5, 'прогулка с Асей'); if (st.coins){ G.st.bonus = (G.st.bonus || 0) + st.coins; G.save(); hud(); } buzz('success'); SFX.chime();
-      const sph = sphereWeek() !== null ? C.balance[sphereWeek()] : '';
-      const after = fillT(st.after).replace('{sphere}', sph);
-      if (st.pause) walkBubble(after + ' ' + fillT(WALK.pause), 'Дальше ✦', () => walk(i + 1, true), false, WALK.later);
-      else walkBubble(after, walkLeft().length ? 'Дальше ›' : 'Завершить ✦', () => walk(i + 1, true)); }, 700); }, 500); }
-function walkBubble(text, btn, fn, top, laterTxt){ $('tourBox')?.remove(); const b = document.createElement('div'); b.id = 'tourBox'; b.className = 'tourbox' + (top ? ' top' : '');
-  b.innerHTML = `<div class="ckhead"><span class="ckav">✦</span><div><span class="eyebrow">Прогулка с Асей</span>${walkDots()}<p style="margin:0">${esc(text)}</p></div></div>${btn ? `<button class="btn gold" id="walkGo">${esc(btn)}</button>` : '<button class="btn" id="walkOk">Понятно ✦</button>'}<button class="back-link" id="walkSkip" style="align-self:center">${esc(laterTxt || WALK.skip)}</button>`;
+      const after = fillT(st.after).replace('{ritual}', (RITUALS_AM[G.st.ritualAm] || ['', ''])[1].toLowerCase());
+      walkBubble(doneHead, after, walkLeft().length ? 'Дальше ›' : 'Забрать подарок ✦', () => walk(i + 1, true), true); }, 600); }, 500); }
+function walkLamp(label, fn){ $('walkLamp')?.remove(); const L = document.createElement('button'); L.id = 'walkLamp'; L.className = 'walklamp' + (label.length > 3 ? ' wide' : ''); L.textContent = label; L.onclick = fn; document.body.appendChild(L); }
+function walkBubble(head, text, btn, fn, top){ $('tourBox')?.remove(); const b = document.createElement('div'); b.id = 'tourBox'; b.className = 'tourbox' + (top ? ' top' : '');
+  b.innerHTML = `<div class="ckhead"><span class="ckav">✦</span><div><span class="eyebrow">${esc(head)}</span><p style="margin:0">${esc(text)}</p></div></div>${btn ? `<button class="btn gold" id="walkGo">${esc(btn)}</button>` : '<button class="btn" id="walkOk">Понятно ✦</button>'}<button class="back-link" id="walkSkip" style="align-self:center">${esc(WALK.skip)}</button>`;
   document.body.appendChild(b); if (btn) b.querySelector('#walkGo').onclick = fn;
-  else b.querySelector('#walkOk').onclick = () => { b.hidden = true; const L = document.createElement('button'); L.id = 'walkLamp'; L.className = 'walklamp'; L.textContent = '💡'; L.setAttribute('aria-label', 'Подсказка Аси');
-    L.onclick = () => { b.hidden = false; L.remove(); }; document.body.appendChild(L); buzz('light'); };
-  b.querySelector('#walkSkip').onclick = () => { walkClear(); walkI = -1; setTimeout(fxFlush, 600); G.st.walkPause = today; G.save(); EV.add(laterTxt ? 'walk_later' : 'walk_skip'); toast(laterTxt ? WALK.laterSay : WALK.skipSay); }; }
+  else b.querySelector('#walkOk').onclick = () => { b.hidden = true; walkLamp('💡', () => { b.hidden = false; $('walkLamp')?.remove(); }); buzz('light'); };
+  b.querySelector('#walkSkip').onclick = () => { walkClear(); walkI = -1; document.body.classList.remove('walking'); G.st.walkPause = today; G.save(); EV.add('walk_skip'); toast(WALK.skipSay); setTimeout(fxFlush, 600); }; }
 document.addEventListener('click', e => { if (e.target.closest('[data-restart]')){ askConfirm('Начать знакомство заново? Записи, тесты и героиня сохранятся.', () => { G.st.ftue = {step: 1}; ['toured', 'walked', 'walkIntro', 'walkPause', 'walkDone', 'petTapped', 'walkSph'].forEach(k => delete G.st[k]); G.save(); EV.add('restart'); showView('vStart'); renderStart(); }); return; }
   if (e.target.closest('[data-sph]') && walkI >= 0){ G.st.walkSph = today; } if (e.target.closest('[data-walk]')){ SFX.tap(); walk(0, true); } }, true);
 document.addEventListener('click', e => { if (e.target.closest('[data-pet]') && walkI >= 0){ G.st.petTapped = today; } }, true);
@@ -1605,10 +1618,10 @@ const ftueOn = () => !!G.st.ftue && !G.st.ftue.done;
 /* Путь первых 7 дней (решение совета 07.11): каждый день Ася открывает ОДНО новое и объясняет «зачем».
    [вид, название, куда, текст подсказки «нажми — это…», «это даст тебе…»] */
 const PATH7 = [
-  ['card', 'Карта и шаг', 'vToday', 'Это твоя карта дня и шаг на 5 минут.', 'Ощущение «я смогла» — с него начинается любая перемена.'],
+  ['card', 'Карта и шаг', 'vToday', 'Это твоя карта дня и один маленький шаг.', 'Ощущение «я смогла» — с него начинается любая перемена.'],
   ['diary', 'Дневник', 'vDiary', 'Это твой дневник — одна строка вечером. Видишь только ты.', 'Через неделю ты увидишь, что на самом деле изменилось.'],
   ['ready', 'Нужные слова', 'vReady', 'Здесь я помогаю с трудным: сообщение, которое ты откладываешь. Я напишу — отправишь ты сама.', 'Груз, который давит неделями, уходит за минуту.'],
-  ['test', 'Узнай себя', 'vTests', 'Это тесты самопознания — 2 минуты.', 'Поймёшь, почему реагируешь именно так, — и что с этим делать.'],
+  ['test', 'Узнай себя', 'vTests', 'Это тесты самопознания — короткие и про тебя.', 'Поймёшь, почему реагируешь именно так, — и что с этим делать.'],
   ['hero', 'Твоя героиня', 'vWay', 'Это твоя героиня. Смотри, сколько она уже выросла от твоих шагов.', 'Видишь свой рост — и хочется сделать ещё шаг. А монетки можно потратить в Шкатулке.'],
   ['balance', 'Колесо жизни', 'vBalance', 'Это колесо баланса: где сейчас мало сил, а где много.', 'Выберешь сферу недели — и шаги пойдут туда, где нужнее всего.'],
   ['week', 'Было — стало', 'vHome', 'Первый итог: твои цифры до и после.', 'Ты своими глазами увидишь, что сдвинулось за неделю.']];
@@ -1971,7 +1984,7 @@ function renderPath(){
   const cw = CH && G.st.chw && CH.chakras.find(x => x.id === G.st.chw.id), cwd = cw ? Math.floor((Date.parse(today) - Date.parse(G.st.chw.start)) / 864e5) : -1;
   if (cw && cwd < 7 && !G.st.chw.done?.[cwd]) h = `<button class="opt" data-go="vChakra"><span class="oi">◉</span><span>Неделя с центром «${esc(cw.ru)}» · день ${cwd + 1}<small>${esc(cw.week[cwd])}</small></span><span class="go">›</span></button>` + h;
   const walkCard = !ftueOn() && G.st.toured && !G.st.walked && dayNo() <= 3 && walkI < 0 ? `<div class="tip"><span class="eyebrow">🌟 Пройдёмся вместе?</span><p style="margin:0">${esc(fillT('{title}, я покажу, где что лежит, а ты попробуешь сама — пара минут, и ты как дома.'))}</p><div class="row"><button class="btn gold" data-walk="1">Пойдём ✦</button></div></div>` : '';
-  box.innerHTML = walkCard + pathCard() + h;
+  box.innerHTML = walkCard + ritualPick() + evePick() + pathCard() + h;
   const more = $('homeMore'); if (more) more.innerHTML = myDayCard() + adviceCard() + laterBox() + triCard() + dayQCard();
   renderCheck();
 }
@@ -2020,7 +2033,7 @@ document.addEventListener('click', e => { const g = e.target.closest('[data-g7]'
   const fill = () => document.querySelector('.hold .holdfill');
   const stop = () => { holding = false; clearTimeout(tm); clearTimeout(done); cancelAnimationFrame(raf); const f = fill(); if (f) f.style.width = '0'; };
   const finish = () => { stop(); if (!ftueOn()) return; G.st.ftue.done = today; G.st.ftue.promise = today; G.st.bonus = (G.st.bonus || 0) + 10; G.save(); hud(); buzz('success'); SFX.chime(); EV.add('promise');
-    showView('vHome'); fxCelebrate({icon: '🤍', kicker: 'Обещание себе', title: 'Вот. Теперь и тебя есть кому держать ✦', sub: '+10 монеток — первый подарок от меня.', btn: 'Спасибо ✦'}); setTimeout(() => tour(0), 3800); };
+    showView('vHome'); const o = overlay(`<div class="ckhead"><span class="ckav">🤍</span><div><span class="eyebrow">Обещание себе · +10 монеток</span><p style="margin:0;font:400 22px/1.3 var(--display)">Вот. Теперь и тебя есть кому держать ✦</p></div></div><p style="margin:0">Хочешь, покажу, где у нас что? Это минута.</p><button class="btn gold" id="tourGo">Покажи мне всё ✦</button><button class="back-link" data-x="1" style="align-self:center">Позже</button>`); o.querySelector('#tourGo').onclick = () => { o.remove(); tour(0); }; };
   const start = b => { if (holding) return; holding = true; t0 = Date.now(); buzz('light'); const f = b.querySelector('.holdfill');
     const tick = () => { if (!holding) return; const p = Math.min(1, (Date.now() - t0) / HOLD); if (f) f.style.width = p * 100 + '%'; if (p < 1) raf = requestAnimationFrame(tick); }; tick();
     let n = 0; const pulse = () => { if (!holding) return; n++; buzz(n < 2 ? 'light' : 'medium'); if (n < 3) tm = setTimeout(pulse, 450); }; tm = setTimeout(pulse, 450);
@@ -2238,7 +2251,7 @@ hud(); renderTests(); soundBtn(); renderHome(); applyQuiet();
 if (!(G.st.seen || []).includes(today)){ G.st.seen = [...(G.st.seen || []), today].slice(-90); G.save(); }
 if (!G.st.ftue){ G.st.ftue = G.st.days.length || G.st.me || G.st.arch ? {done: today, old: 1} : {step: 1}; G.save(); }  // кто уже с Асей — без знакомства
 if (!G.st.consent && G.st.ftue?.done) { G.st.consent = {at: new Date().toISOString(), ver: 'bot'}; G.save(); }  // кто уже начал — согласие дано в боте
-if (!ftueOn() && !G.st.toured && dayNo() <= 7) setTimeout(() => { if (!document.querySelector('.coach')) tour(0); }, 3200);
+if (!ftueOn() && !G.st.toured && dayNo() <= 7) setTimeout(() => { if (!document.querySelector('.coach') && walkI < 0) tour(0); }, 3200);
 if (ftueOn()) ftResume(); else if (document.querySelector('.view:not([hidden])') === null) showView('vHome', true);
 /* заставка уходит, когда всё готово и сверка с сервером закончена (не дольше 2,5 с) */
 Promise.all([Promise.race([window.SYNC_READY, new Promise(r => setTimeout(r, 2500))]), new Promise(r => setTimeout(r, 1400))]).then(() => setTimeout(() => { const s = $('splash'); if (s){ s.classList.add('off'); setTimeout(() => s.remove(), 450); } }, 250));
