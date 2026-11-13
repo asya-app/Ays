@@ -337,6 +337,7 @@ body.ftue .tabs{display:none}body.ftue #hud,body.ftue #soundBtn{visibility:hidde
 .bub{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:18px;font-size:15px;line-height:1.5;margin:0 0 10px}.bub.asya{background:rgba(232,204,140,.08);border:1px solid rgba(232,204,140,.25);margin-right:8%;border-bottom-left-radius:6px}.bub.me{background:rgba(255,255,255,.06);border:1px solid var(--line);margin-left:18%;border-bottom-right-radius:6px;align-self:flex-end}#aiLog{display:flex;flex-direction:column}.aip{display:block}.aip+.aip{margin-top:4px}.aistep{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding:10px 12px;border-radius:12px;border:1px solid rgba(232,204,140,.5);background:rgba(232,204,140,.1)}.ailist{margin:2px 0;padding-left:20px}.ailist li{margin:2px 0}
 #vWay [data-mp][hidden],#vPair [data-pm][hidden]{display:none!important}
 .spback{width:100%;aspect-ratio:2/3;font-size:22px}.spback.next{box-shadow:0 0 0 2px var(--gold),0 0 18px rgba(232,204,140,.5);animation:spotP 1.4s ease-in-out infinite}.spback:disabled{opacity:.55}
+.intentrite textarea{border-color:rgba(232,204,140,.45)}.intentrite textarea:focus{box-shadow:0 0 0 2px rgba(232,204,140,.35)}
 .sheet{position:fixed;inset:0;z-index:20;background:rgba(10,6,20,.6);display:flex;align-items:flex-end}
 .sheet .in{width:100%;max-width:520px;margin:0 auto;background:var(--ink);border:1px solid var(--line);border-radius:22px 22px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;max-height:85vh;overflow:auto;animation:shUp .35s cubic-bezier(.2,.9,.3,1)}
 @keyframes shUp{from{transform:translateY(100%)}}
@@ -749,6 +750,8 @@ async function fxReveal(b){
   const r = b.getBoundingClientRect(); fxBurst(r.left + r.width / 2, r.top + r.height / 2, 26);
 }
 /* Карта дня по шагам (аудит 12.11, «мешанина»): 1 Карта → 2 Твой шаг → 3 Готово; глубина — отдельными экранами из итога */
+const EASY = ['Сделай три медленных выдоха — каждый длиннее вдоха.', 'Выпей стакан воды не спеша, глядя в окно.', 'Положи ладонь на сердце и скажи себе: «Я справляюсь. Мне можно отдохнуть».', 'Отложи одно «надо» на завтра — и разреши себе это без вины.', 'Потянись так, как тянутся кошки, — медленно и с удовольствием.'];
+const easyOn = () => store.get('asya-easy') === today;
 const cStage = () => { const s = store.get('asya-cstage'); return s && s.d === today ? s.s : 1; };
 const setCStage = s => store.set('asya-cstage', {d: today, s});
 function cardDots(s){ return `<div class="cdots">${['Карта', 'Твой шаг', 'Готово'].map((x, i) => `<button class="${i + 1 < s ? 'on' : i + 1 === s ? 'now' : ''}" data-cs="${i + 1}" ${i + 1 > s && !(i === 2 && G.st.stepDay === today) ? 'disabled' : ''}><i></i>${x}</button>`).join('')}</div>`; }
@@ -757,17 +760,17 @@ function showDay(n){
   $('pickArea').hidden = true; $('cardArea').hidden = false;
   if (ftueOn()) return showDayFt(a, d);
   let s = cStage(); if (s === 2 && G.st.stepDay === today && store.get('asya-cstage-step') !== today){ store.set('asya-cstage-step', today); s = 3; setCStage(3); }
-  const back3 = '<button class="back-link" data-cs="3">‹ К итогу дня</button>', g = growStep(), stepText = g ? frameStep(g.text) : frameStep(d.step);
+  const back3 = '<button class="back-link" data-cs="3">‹ К итогу дня</button>', g = easyOn() ? null : growStep(), stepText = easyOn() ? EASY[dayN % EASY.length] : g ? frameStep(g.text) : frameStep(d.step);
   let h = '';
   if (s === 1) h = cardDots(1) + `<div class="reveal">${face(a)}<div class="meaning"><span class="eyebrow">Карта дня</span><h2>${esc(a.name)}</h2><p style="margin:0">${esc(d.meaning)}</p></div></div>
     ${asyaSays(n)}
     <button class="btn gold" data-cs="2">${G.st.stepDay === today ? 'Мой шаг сегодня ›' : 'Что она мне советует ›'}</button>`;
-  else if (s === 2) h = cardDots(2) + (g
+  else if (s === 2) h = cardDots(2) + (easyOn() ? `<div class="grow"><span class="eyebrow">Сегодня — полегче · минутный шаг</span><p style="margin:0;font-size:17px">${esc(stepText)}</p><span class="note">Отдых тоже растит героиню ✦ Свет за этот шаг — такой же.</span></div>` : g
       ? `<div class="grow"><span class="eyebrow">Твой шаг · ${g.a.e} ${esc(g.a.name)} · навык «${esc(g.s.name)}»</span><p style="margin:0;font-size:17px">${esc(stepText)}</p><details class="more"><summary>Не подходит? Другой шаг</summary><p class="note" style="margin:6px 0 0">Шаг от карты: ${esc(d.step)}. А если шаг сейчас небезопасен — пропусти, это тоже выбор.</p></details></div>`
       : `<div class="grow"><span class="eyebrow">Твой шаг на сегодня${d.sphere ? ' · ' + esc(d.sphere) : ''}</span><p style="margin:0;font-size:17px">${esc(stepText)}</p></div>`)
     + `<span class="note" style="text-align:center">5 минут — маленькое «я смогла». Из них складывается новая ты.</span>
     ${WRITE_RE.test(stepText) ? noteBox('win', stepText, 'card-step-' + today) : ''}
-    ${G.st.stepDay === today ? '<button class="btn gold" data-cs="3">✓ Шаг сделан — дальше ›</button>' : '<button class="btn gold" id="stepBtn">Я сделала шаг · +20 ✦</button><button class="back-link" data-cs="3">Сделаю позже — что ещё есть ›</button>'}
+    ${G.st.stepDay === today ? '<button class="btn gold" data-cs="3">✓ Шаг сделан — дальше ›</button>' : `<button class="btn gold" id="stepBtn">Я сделала шаг · +20 ✦</button>${easyOn() ? '<button class="back-link" data-easy="0">Вернуть обычный шаг</button>' : '<button class="back-link" data-easy="1">Сегодня — полегче: шаг на минуту</button>'}<button class="back-link" data-cs="3">Сделаю позже — что ещё есть ›</button>`}
     <button class="back-link" data-cs="1">‹ К карте</button>`;
   else if (s === 3) h = cardDots(3) + (G.st.stepDay === today ? giftBlock() + `<div class="grow"><span class="eyebrow">Завтра</span><p style="margin:0">Новая карта и ${PATH7[Math.min(6, pathDay())] && G.st.days.length < 7 ? 'новое на твоём пути: <b>' + esc(PATH7[Math.min(6, pathDay())][1].toLowerCase()) + '</b>' : 'новый шаг'}. Я буду ждать ✦</p></div>`
       : `<div class="block"><span class="eyebrow">${esc(a.name)} · твой шаг ждёт</span><p style="margin:0">${esc(stepText)}</p><div class="row"><button class="btn gold" data-cs="2">К шагу ›</button></div></div>`)
@@ -783,6 +786,7 @@ function showDay(n){
   else if (s === 7) h = back3 + `<div class="block"><span class="eyebrow">Вопрос на вечер</span><p style="margin:0;font-size:17px">${esc(d.evening)}</p></div>` + noteBox('emo', d.evening, 'card-eve-' + today);
   $('cardArea').innerHTML = h;
 }
+document.addEventListener('click', e => { const ez = e.target.closest('[data-easy]'); if (ez){ store.set('asya-easy', ez.dataset.easy === '1' ? today : null); EV.add('easy', ez.dataset.easy); SFX.tap(); const sv = store.get('asya-day'); if (sv) showDay(sv.n); } });
 document.addEventListener('click', e => { const c = e.target.closest('[data-cs]'); if (!c || c.disabled) return; e.preventDefault(); const sv = store.get('asya-day'); if (!sv) return;
   setCStage(+c.dataset.cs); SFX.tap(); buzz('select'); EV.add('card_stage', c.dataset.cs); showDay(sv.n); $('vToday').scrollIntoView({block: 'start'}); window.scrollTo(0, 0); });
 let picking = false;
@@ -932,6 +936,16 @@ function avatar(w = G.st.wear, lvl = levelOf().L){
 function hud(){ const a = archOf(); let lt = '✦ ' + (G.st.xp || 0); if (a){ const st = stageOf(), L = heroLight(), nx = ST_L[st + 1]; lt = nx ? `✦ ${L - ST_L[st]}/${nx - ST_L[st]}` : '✦ ' + L; }
   $('hud').innerHTML = (a ? `<span class="hp" style="--c1:${esc(a.c1)};--c2:${esc(a.c2)}">${a.e}</span>` : avatar()) + `<span class="hl" title="Свет — растит героиню">${lt}</span><span class="c" title="Монетки — для Шкатулки">● ${G.coins()}</span>`; }
 /* Шторка «Как растёт твоя героиня» (отдел геймификации 12.11): по тапу на верхнюю строку — что такое свет, монетки, ступени, на что тратить */
+/* «У меня 1 минута»: три дела по минуте — выбирает она */
+function minSheet(){ closeSheet(); EV.add('min_open'); const el = document.createElement('div'); el.className = 'sheet';
+  el.innerHTML = `<div class="in"><span class="eyebrow" style="text-align:center">Минута для себя</span><h2 style="text-align:center;margin:0">Что тебе сейчас нужнее?</h2>
+    <button class="opt" data-go="vBreath" data-sheet-x="1"><span class="oi">🌬</span><span>Выдохнуть<small>минута медленного дыхания со мной</small></span><span class="go">›</span></button>
+    <button class="opt" data-min-diary="1"><span class="oi">✎</span><span>Сказать себе одну строку<small>что я чувствую прямо сейчас</small></span><span class="go">›</span></button>
+    <button class="opt" data-min-word="1"><span class="oi">✦</span><span>Услышать слово от Аси<small>одна мысль на этот день</small></span><span class="go">›</span></button>
+    <button class="back-link" data-sheet-x="1" style="align-self:center">Закрыть</button></div>`; document.body.appendChild(el); buzz('select'); }
+document.addEventListener('click', e => { if (e.target.closest('[data-min]')){ e.preventDefault(); SFX.tap(); return minSheet(); }
+  if (e.target.closest('[data-min-diary]')){ closeSheet(); dKind = 'emo'; dView = 'write'; showView('vDiary'); return; }
+  if (e.target.closest('[data-min-word]')){ closeSheet(); G.add(5, 'минута для себя'); fxCelebrate({icon: '✦', kicker: 'Слово от Аси', title: C.phrases[(dayN + 7) % C.phrases.length], sub: 'Побудь с этой мыслью минуту. Этого достаточно на сегодня.', btn: 'Спасибо ✦'}); } });
 function ecoSheet(){ closeSheet(); G.st.ecoSeen = today; G.save(); EV.add('eco_open'); const a = archOf(), st = a ? stageOf() : 0, L = a ? heroLight() : 0, nx = ST_L[st + 1], left = nx ? nx - L : 0;
   const halls = SH?.halls || [], el = document.createElement('div'); el.className = 'sheet';
   el.innerHTML = `<div class="in"><span class="eyebrow" style="text-align:center">Как это устроено</span><h2 style="text-align:center;margin:0">Как растёт ${a ? 'твоя ' + esc(a.name) : 'твоя героиня'}</h2>
@@ -1158,10 +1172,10 @@ function renderHome(){
   const tiles = [['asya', 'Сделай за меня', '20 готовых сообщений', 'vReady', '#A0644E', '#3E2430'],['tarot', 'Карта дня', isDone('card') ? 'открыта ✦' : 'вытяни 1 из 3', 'vToday', '#5B3A73', '#2A1F4D'], ['tarot', 'Расклад на ситуацию', 'ситуация · что мешает · шаг', 'vSpread', '#6A3A73', '#2A1F4D'],
     ['moon', 'Луна сегодня', m.name, 'vAstro', '#3E5A86', '#1E2A4D'], ['numero', personalDay() ? 'Личный день ' + personalDay() : 'Число дня', personalDay() ? (DY?.personalDay[personalDay()]?.name || '') : 'энергия дня ' + dayNumber(), 'vNumero', '#7A5A2E', '#3A2A1A'],
     ['tests', 'Тест', 'узнай себя за 2 минуты', 'vTests', '#6A5A8E', '#2E2547'], ['diary', 'Дневник', hour >= 18 ? 'итог дня: роза, бутон, шип' : 'запиши, что чувствуешь', 'vDiary', '#7A5A44', '#33241E'],
-    ['asya', 'Поговорить с Асей', 'подруга, наставница, о душе', 'vChat', '#A0644E', '#3E2430'], ['breath', 'Подышать', 'минута, чтобы выдохнуть', 'vBreath', '#3E7A86', '#0F3A44']];
+    ['asya', 'Поговорить с Асей', 'подруга, наставница, о душе', 'vChat', '#A0644E', '#3E2430'], ['breath', 'У меня 1 минута', 'выдохнуть, записать, услышать себя', 'vBreath', '#3E7A86', '#0F3A44', 'min']];
   const quick = tiles.filter(x => ['vTests', 'vReady', 'vSpread', 'vBreath'].includes(x[3])).map(x => x[3] === 'vSpread' ? ['tarot', 'Расклад на ситуацию', 'когда нужен ответ себе', ...x.slice(3)] : x);
   const quick7 = tiles.filter(x => ['vToday', 'vChat', 'vDiary', 'vBreath'].includes(x[3]));
-  $('homeQuick').innerHTML = ftueOn() ? '' : (dayNo() <= 7 ? quick7 : quick).map(([i, t, s, go, g1, g2]) => `<button class="tile" data-go="${go}"${i === 'rel' ? ' data-rel="1"' : ''} style="--g1:${g1};--g2:${g2}"><span class="ti" style="color:var(--gold)">${sym(i, t)}</span><span>${esc(t)}<small style="display:block">${esc(s)}</small></span></button>`).join('');
+  $('homeQuick').innerHTML = ftueOn() ? '' : (dayNo() <= 7 ? quick7 : quick).map(([i, t, s, go, g1, g2, mn]) => `<button class="tile" ${mn ? 'data-min="1"' : `data-go="${go}"`}${i === 'rel' ? ' data-rel="1"' : ''} style="--g1:${g1};--g2:${g2}"><span class="ti" style="color:var(--gold)">${sym(i, t)}</span><span>${esc(t)}<small style="display:block">${esc(s)}</small></span></button>`).join('');
   const shownQ = (dayNo() <= 7 ? quick7 : quick).map(x => x[3]);  /* в «Ещё» — без повторов того, что уже на главной */
   $('homeTiles').innerHTML = tiles.filter(x => !shownQ.includes(x[3]) && x[3] !== 'vBreath').map(([i, t, s, go, g1, g2]) => `<button class="tile" data-go="${go}"${i === 'rel' ? ' data-rel="1"' : ''} style="--g1:${g1};--g2:${g2}"><span class="ti" style="color:var(--gold)">${sym(i, t)}</span><span>${esc(t)}<small style="display:block">${esc(s)}</small></span></button>`).join('');
   const wk = sphereWeek();
@@ -1223,6 +1237,7 @@ function renderTarot(){
 }
 let spreadTheme = 'Я сама', lastSpread = null, spreadMode = 'sit';
 let spOpen = 0, SPK = '';
+document.addEventListener('click', e => { const r = e.target.closest('[data-intent-redo]'); if (!r) return; e.preventDefault(); delete (G.st.intents || {})[r.dataset.intentRedo + ':' + today]; G.save(); renderSpread(); });
 document.addEventListener('click', async e => { const b = e.target.closest('[data-sp-open]'); if (!b || b.disabled) return; e.stopPropagation(); if (b.dataset.busy) return; b.dataset.busy = 1; try { await Promise.race([fxReveal(b), new Promise(r => setTimeout(r, 700))]); } catch {} spOpen = +b.dataset.spOpen + 1; buzz('select'); EV.add('spread_open', spOpen); renderSpread(lastSpread); }, true);
 function renderSpread(cards){
   if (cards){ const k = cards.map(c => c.n).join('-'); if (k !== SPK){ SPK = k; spOpen = 0; } }
@@ -1244,7 +1259,8 @@ function renderSpread(cards){
       ${aiBox('sp-' + cards.map(c => c.n).join('-'), 'spread', {kind: 'spread', theme: spreadTheme, cards: cards.map(c => c.name).join('; '), intent: intentToday('spread') || intentToday('card'), hero: archOf()?.name || ''}, 'Разбор от Аси ✨', 'Ася свяжет три карты с твоей темой.')}
       <details class="more"><summary>Подумать глубже</summary><p>Где в теме «${esc(spreadTheme)}» ты узнаёшь эти три карты? Что из этого ты можешь сделать уже сегодня?</p>${reflectBox('spread', {theme: spreadTheme, step: cards[2].day.step})}</details>
       <button class="btn" data-spread="1">Разложить ещё раз</button>`}`
-      : `<p class="lead">Подумай о своей ситуации. Три карты покажут, где ты сейчас, что мешает и какой шаг сделать.</p><button class="btn gold" data-spread="1">Разложить карты</button>`);
+      : intentToday('spread') ? `<p class="soulline" style="margin:0">Твой вопрос: «${esc(intentToday('spread'))}» <a href="#" data-intent-redo="spread" style="color:var(--gold)">изменить</a></p><p class="lead" style="margin:0">Три карты покажут, где ты сейчас, что мешает и какой шаг сделать.</p><button class="btn gold" data-spread="1">Разложить карты</button>`
+        : intentBox('spread'));
 }
 function renderDeck(n){
   const a = n && byN(n);
@@ -1678,6 +1694,16 @@ const fillT = s => String(s || '').replace(/\{title\}/g, herTitle() || 'моя �
 const RITUALS_AM = {card: ['🂠', 'Карта дня', 'vToday'], horo: ['☾', 'Луна и твой знак', 'vAstro'], num: ['∞', 'Число дня', 'vNumero'], question: ['✎', 'Вопрос дня', 'vDiary'], breath: ['🌬', 'Минута дыхания', 'vBreath']};
 function amMemory(){ const y = new Date(now); y.setDate(y.getDate() - 1); const yk = dayKey(y), ye = diary.get().find(e => e.d === yk && e.kind === 'emo' && e.mood), m = ye && C.moods.find(z => z.id === ye.mood);
   return m ? `вчера вечером ты была «${m.name.toLowerCase()}» — начнём бережно` : 'ты сама выбрала, как начинать день'; }
+const PULSE_Q = ['Я чувствую свою силу', 'Я могу выдохнуть', 'Я слышу себя'];
+function pulseCard(){ const PL = G.st.pulse || [], first = PL[0];
+  return `<div class="tip" id="pulseCard"><span class="eyebrow">💗 Пульс себя · раз в неделю</span><p style="margin:0">Три коротких вопроса о том, как ты живёшь сейчас — от 1 до 10, по ощущению.</p>
+    ${PULSE_Q.map((q, i) => `<label class="slider">${esc(q)} · <b id="plv${i}">${first ? first.s[i] : 5}</b><input type="range" min="1" max="10" value="${first ? first.s[i] : 5}" data-plq="${i}"></label>`).join('')}
+    <button class="btn gold" id="pulseSave">Сохранить · +10 ✦</button></div>`; }
+document.addEventListener('input', e => { const r = e.target.closest('[data-plq]'); if (r){ const b = $('plv' + r.dataset.plq); if (b) b.textContent = r.value; } });
+document.addEventListener('click', e => { if (!e.target.closest('#pulseSave')) return; const s = [...document.querySelectorAll('[data-plq]')].map(x => +x.value), PL = (G.st.pulse = G.st.pulse || []), first = PL[0];
+  PL.push({d: today, s}); G.save(); G.add(10, 'пульс себя'); EV.add('pulse', s.join('-'));
+  const diff = first ? PULSE_Q.map((q, i) => `${q}: ${first.s[i]} → ${s[i]}`).join('\n') : 'Это твоя отправная точка. Через неделю я покажу, что изменилось.';
+  fxCelebrate({icon: '💗', kicker: 'Пульс себя', title: first ? 'Было → стало' : 'Я запомнила, как ты сейчас', sub: diff, btn: 'Спасибо ✦'}); renderPath(); });
 function ritualPick(){ const r = G.st.ritualAm; if (ftueOn()) return '';
   if (r && !(walkI >= 0 && walkLeft()[0]?.k === 'R')){ const x = RITUALS_AM[r]; return `<button class="opt" data-go="${x[2]}" data-am="${r}"><span class="oi">${x[0]}</span><span>Твоё утро: ${esc(x[1])}<small>${G.st.amDay === today ? 'Сделано ✦ Утро было твоим' : amMemory()}</small></span><span class="go">›</span></button>`; }
   return `<div class="block" id="ritualPick"><span class="eyebrow">Твоё утро со мной</span><div class="ritgrid">${Object.entries(RITUALS_AM).map(([k, x]) => `<button class="ckopt${r === k ? ' on' : ''}" data-ritual-am="${k}"><span>${x[0]}</span>${esc(x[1])}</button>`).join('')}</div></div>`; }
@@ -2071,8 +2097,10 @@ function soulFill(s, o = {}){ const f = faithOpt(); let x = String(s || '');
   return x.replace(/^\s*[а-яё]/, c => c.toUpperCase()); }
 function intentBox(kind = 'card'){ if (!SOUL) return ''; const I = SOUL.intent?.[kind];
   if (!G.st.faith && !ftueOn() && G.st.days.length >= 1) return `<div class="grow"><span class="eyebrow">Прежде чем начать</span><p style="margin:0">${esc(SOUL.faith.q)}</p><span class="note">${esc(SOUL.faith.why)}</span><div class="chips">${SOUL.faith.options.map(o => `<button class="chip" data-faith="${o.id}">${esc(o.label)}</button>`).join('')}</div></div>`;
-  return `<div class="grow"><span class="eyebrow">${esc(I.title)}</span><p class="note" style="margin:0">${esc(I.hint)}</p><div class="chips">${I.chips.map((c, k) => `<button class="chip" data-intent="${kind}:${k}">${esc(soulFill(c))}</button>`).join('')}</div>
-    <textarea id="intentText-${kind}" placeholder="Или своими словами" style="min-height:56px">${esc(soulFill(I.chips[{confident: 1, love: 2, self: 0, calm: 3}[G.st.goal] % I.chips.length || 0]))}</textarea><button class="btn gold" data-intent-go="${kind}">Вытянуть с этим запросом ✦</button><button class="back-link" data-intent-skip="${kind}" style="align-self:center">Без запроса — просто карту дня</button></div>`; }
+  return `<div class="grow intentrite"><span class="eyebrow">${esc(I.title)}</span><p style="margin:0">Сделай вдох. Напиши свой вопрос так, как сказала бы самой близкой подруге, — или произнеси его вслух. Карты отвечают на твои слова.</p>
+    <textarea id="intentText-${kind}" placeholder="Что ты хочешь понять сегодня? Пиши как есть…" style="min-height:84px;font-size:16px"></textarea>${micBtn('intentText-' + kind)}
+    <details class="more"><summary>Не знаешь, с чего начать? Подсказки</summary><p class="note" style="margin:6px 0">${esc(I.hint)} Нажми — и допиши по-своему.</p><div class="chips">${I.chips.map((c, k) => `<button class="chip" data-intent="${kind}:${k}">${esc(soulFill(c))}</button>`).join('')}</div></details>
+    <button class="btn gold" data-intent-go="${kind}">${kind === 'spread' ? 'Задать вопрос картам ✦' : 'Вытянуть с моим запросом ✦'}</button>${kind === 'card' ? `<button class="back-link" data-intent-skip="${kind}" style="align-self:center;opacity:.6">Сегодня без запроса</button>` : ''}</div>`; }
 const intentToday = kind => (G.st.intents || {})[kind + ':' + today] || '';
 function intentGate(){ const box = $('intentBox'); if (!box || !SOUL) return; const has = intentToday('card'), deck = $('deck'), sh = $('shuffleBtn'), lead = $('pickArea').querySelector('.lead');
   box.innerHTML = has ? (QUIET ? '<p class="soulline">Запрос задан ✦</p>' : `<p class="soulline">Твой запрос: «${esc(has)}»</p>`) : intentBox('card'); [deck, sh, lead].forEach(el => el && (el.hidden = !has)); }
@@ -2158,6 +2186,8 @@ function renderPath(){
   if (cw && cwd < 7 && !G.st.chw.done?.[cwd]) side.unshift(`<button class="opt" data-go="vChakra"><span class="oi">◉</span><span>Неделя с центром «${esc(cw.ru)}» · день ${cwd + 1}<small>${esc(cw.week[cwd])}</small></span><span class="go">›</span></button>`);
   const walkCard = !ftueOn() && G.st.toured && !G.st.walked && dayNo() <= 3 && walkI < 0 ? `<div class="tip"><span class="eyebrow">🌟 Пройдёмся вместе?</span><p style="margin:0">${esc(fillT('{title}, я покажу, где что лежит, а ты попробуешь сама — пара минут, и ты как дома.'))}</p><div class="row"><button class="btn gold" data-walk="1">Пойдём ✦</button></div></div>` : '';
   const wk = walkI >= 0 ? walkLeft()[0]?.k : null;
+  const PL = G.st.pulse || [], plast = PL[PL.length - 1], pulseDue = G.st.walked && dayNo() >= 2 && (!plast || (Date.parse(today) - Date.parse(plast.d)) / 864e5 >= 7);
+  if (pulseDue) side.unshift(pulseCard());
   const eveT = G.st.eveTime && G.st.eveTime !== 'off' ? +G.st.eveTime - 1 : 18, eveOn = !ftueOn() && hour >= Math.min(18, eveT) && G.st.eveTime !== 'off' && !diary.get().some(e => e.d === today && e.kind === 'emo');
   if (eveOn){ const r = RITUALS_AM[G.st.ritualAm], amDone = G.st.amDay === today, nm = myName();
     side.unshift(`<div class="tip" id="eveHome"><span class="eyebrow">🌙 Вечер с Асей</span><p style="margin:0">${nm ? esc(nm) + ', к' : 'К'}ак прошёл твой день? ${amDone && r ? 'Утром ты начала с себя: ' + esc(r[1].toLowerCase()) + '. ' : ''}Назови одно чувство — и день сложится.</p>
@@ -2165,7 +2195,9 @@ function renderPath(){
   /* во время прогулки — ровно та карточка, на которой стоит шаг; иначе — одна второстепенная по приоритету */
   const one = wk === 'R' ? ritualPick() : wk === 'V' ? evePick() : [eveOn ? side[0] : '', walkCard, !G.st.ritualAm && G.st.walked ? ritualPick() : '', !G.st.eveTime && G.st.walked ? evePick() : '', ...side, drH].find(x => x && x.trim()) || '';
   const amBtn = G.st.ritualAm && wk !== 'R' ? ritualPick() : '';
-  box.innerHTML = h + amBtn + pathCard() + one + (heroLine || '');
+  const chosen = new Set([...(G.st.seen || []), ...G.st.days]).size;
+  const chosenH = chosen >= 2 && !wk ? `<p class="note chosen" style="margin:0">✦ Дней, когда ты выбрала себя: <b style="color:var(--gold)">${chosen}</b> — они не сгорают и не обнуляются</p>` : '';
+  box.innerHTML = chosenH + h + amBtn + pathCard() + one + (heroLine || '');
   const more = $('homeMore'); if (more) more.innerHTML = myDayCard() + adviceCard() + laterBox() + triCard() + dayQCard();
   renderCheck();
 }
@@ -2266,10 +2298,12 @@ document.addEventListener('click', e => {
   const fq = e.target.closest('[data-fbq]'); if (fq){ fbQ = +fq.dataset.fbq; SFX.tap(); return renderFb(); }
   const fg = e.target.closest('[data-fbgo]'); if (fg){ const link = 'https://t.me/Asya_app_bot?start=' + fg.dataset.fbgo + '_' + fbQ + '_' + fbFrom; (G.st.fbN = (G.st.fbN || 0) + 1); G.save(); if (TG?.openTelegramLink) TG.openTelegramLink(link); else window.open(link, '_blank'); return; }
   const fth = e.target.closest('[data-faith]'); if (fth){ G.st.faith = fth.dataset.faith; G.save(); SFX.chime(); toast('Запомнила ✦ Буду говорить твоими словами'); return !$('vWay').hidden ? renderMe() : $('vToday').hidden ? renderHome() : intentGate(); }
-  const itn = e.target.closest('[data-intent]'); if (itn){ const [kind, k] = itn.dataset.intent.split(':'); const ta = $('intentText-' + kind); if (ta) ta.value = soulFill(SOUL.intent[kind].chips[+k]); SFX.tap(); return; }
+  const itn = e.target.closest('[data-intent]'); if (itn){ const [kind, k] = itn.dataset.intent.split(':'); const ta = $('intentText-' + kind); if (ta){ ta.value = soulFill(SOUL.intent[kind].chips[+k]).replace(/\?$/, '') + ' — '; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); itn.closest('details').open = false; } SFX.tap(); return; }
   { const isk = e.target.closest('[data-intent-skip]'); if (isk){ const kind = isk.dataset.intentSkip; (G.st.intents = G.st.intents || {})[kind + ':' + today] = 'что мне важно сегодня'; G.save(); SFX.tap(); if (kind === 'card'){ intentGate(); setTimeout(fxShuffle, 80); } return; } }
-  const itg = e.target.closest('[data-intent-go]'); if (itg){ const kind = itg.dataset.intentGo, tx = ($('intentText-' + kind)?.value || '').trim().slice(0, 200); if (!tx){ toast('Выбери запрос или напиши свой — хотя бы пару слов'); return; }
-    (G.st.intents = G.st.intents || {})[kind + ':' + today] = tx; G.save(); SFX.chime(); buzz('medium'); if (kind === 'card'){ intentGate(); setTimeout(fxShuffle, 80); } return; }
+  const itg = e.target.closest('[data-intent-go]'); if (itg){ const kind = itg.dataset.intentGo, tx = ($('intentText-' + kind)?.value || '').trim().slice(0, 200); if (tx.replace(/[\s—–-]+$/, '').length < 8){ toast('Напиши хотя бы пару слов своими словами — так карта ответит именно тебе'); $('intentText-' + kind)?.focus(); return; }
+    const bare = (SOUL.intent[kind]?.chips || []).some(c => soulFill(c).replace(/\?$/, '').trim() === tx.replace(/[\s—–?-]+$/, '').trim()); if (bare){ toast('Допиши пару слов о своей ситуации — это твой вопрос ✦'); $('intentText-' + kind)?.focus(); return; }
+    EV.add('intent', kind, String(tx.length));
+    (G.st.intents = G.st.intents || {})[kind + ':' + today] = tx; G.save(); SFX.chime(); buzz('medium'); if (kind === 'card'){ intentGate(); setTimeout(fxShuffle, 80); } if (kind === 'spread'){ renderSpread(); toast('Вопрос задан ✦ Теперь разложи карты'); } return; }
   const spb = e.target.closest('[data-sp]'); if (spb){ spStop(); SP.id = spb.dataset.sp || null; SP.i = 0; SP.t = 0; if (SP.id){ if (SP.music) AMB.start(); SP.timer = setInterval(spTick, 1000); return spGo(0); } return renderSoul(); }
   if (e.target.closest('[data-sp-next]')) return spGo(SP.i + 1);
   if (e.target.closest('[data-sp-pause]')){ if (SP.timer){ clearInterval(SP.timer); SP.timer = null; } else SP.timer = setInterval(spTick, 1000); return renderSoul(); }
